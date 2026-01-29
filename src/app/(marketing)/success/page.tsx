@@ -1,18 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-// Force dynamic rendering for this page since it uses searchParams
-export const dynamic = 'force-dynamic';
-
 /**
- * Success Page
- * Handles redirect after successful Stripe payment
- * Fetches the message ID or collection ID from the session and redirects to delivery page
+ * Success Page Content Component
+ * Separated to allow Suspense boundary wrapping
  */
-export default function SuccessPage() {
+function SuccessPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -145,5 +141,25 @@ export default function SuccessPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+/**
+ * Success Page
+ * Handles redirect after successful Stripe payment
+ * Fetches the message ID or collection ID from the session and redirects to delivery page
+ */
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <SuccessPageContent />
+    </Suspense>
   );
 }
