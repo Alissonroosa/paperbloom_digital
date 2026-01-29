@@ -89,7 +89,9 @@ export function CardModal({ card, isFirstOpen, onClose }: CardModalProps) {
    */
   const getEmojiFromTitle = (): string => {
     // Extract emoji from message text or use default heart
-    const emojiMatch = card.messageText.match(/[\u{1F300}-\u{1F9FF}]/u);
+    // Using a simpler regex that works with ES5+
+    const emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDC00-\uDFFF]/;
+    const emojiMatch = card.messageText.match(emojiRegex);
     return emojiMatch ? emojiMatch[0] : '❤️';
   };
 
