@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
+// Force dynamic rendering for this page since it uses searchParams
+export const dynamic = 'force-dynamic';
+
 /**
  * Success Page
  * Handles redirect after successful Stripe payment
