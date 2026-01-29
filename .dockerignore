@@ -34,6 +34,7 @@ __tests__/
 test-*.ts
 test-*.tsx
 test-*.js
+test-*.html
 testar-*.js
 verificar-*.js
 debug-*.js
@@ -46,6 +47,10 @@ investigar-*.js
 listar-*.js
 patch-*.js
 atualizar-*.js
+
+# Test pages (exclude from production build)
+src/app/**/test/
+src/app/**/test-*/
 
 # IDE and Editor
 .vscode/
