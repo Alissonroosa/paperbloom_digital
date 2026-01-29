@@ -38,6 +38,7 @@ test-*.html
 testar-*.js
 verificar-*.js
 debug-*.js
+diagnose-*.ts
 diagnostico-*.js
 simular-*.js
 processar-*.js
@@ -47,6 +48,7 @@ investigar-*.js
 listar-*.js
 patch-*.js
 atualizar-*.js
+run-*.js
 
 # Test pages (exclude from production build)
 src/app/**/test/
