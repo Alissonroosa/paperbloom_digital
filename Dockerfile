@@ -19,12 +19,15 @@ RUN npm ci --only=production && \
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Copy package files
+COPY package.json package-lock.json ./
 
-# Install all dependencies (including devDependencies for build)
+# Install ALL dependencies (including devDependencies for build)
+# Important: Don't use --only=production here!
 RUN npm ci
+
+# Copy source code
+COPY . .
 
 # Build the application
 # Next.js collects anonymous telemetry data. Disable it for production builds.
