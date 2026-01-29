@@ -318,7 +318,6 @@ export function GroupedCardCollectionEditor({
             cards={currentMomentCards}
             onEditMessage={handleEditMessage}
             onEditPhoto={handleEditPhoto}
-            onEditMusic={handleEditMusic}
           />
         </div>
       </main>
