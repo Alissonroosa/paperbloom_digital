@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/lib/**/*.ts", "src/app/**/*.ts", "src/services/**/*.ts", "src/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

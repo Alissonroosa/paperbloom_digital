@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Player Test - Simple</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        #player {
+            width: 640px;
+            height: 360px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .status {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Player - Teste Simples</h1>
+    <p>Este é um teste básico do YouTube IFrame API para verificar se o problema é do YouTube ou da nossa implementação.</p>
+    
+    <div id="player"></div>
+    
+    <div>
+        <button onclick="playVideo()">Play</button>
+        <button onclick="pauseVideo()">Pause</button>
+        <button onclick="stopVideo()">Stop</button>
+        <button onclick="loadVideo('nSDgHBxUbVQ')">Perfect - Ed Sheeran</button>
+        <button onclick="loadVideo('JGwWNGJdvx8')">Shape of You</button>
+    </div>
+    
+    <div class="status">
+        <h3>Status:</h3>
+        <p id="status">Carregando API do YouTube...</p>
+        <p id="state">Estado: -</p>
+    </div>
+
+    <script>
+        var player;
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            console.log('YouTube API Ready');
+            document.getElementById('status').textContent = 'API carregada! Inicializando player...';
+            
+            player = new YT.Player('player', {
+                height: '360',
+                width: '640',
+                videoId: 'nSDgHBxUbVQ',
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 1,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'enablejsapi': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            console.log('Player Ready!');
+            document.getElementById('status').textContent = 'Player pronto! Clique em Play para começar.';
+            event.target.setVolume(80);
+        }
+
+        function onPlayerStateChange(event) {
+            var states = {
+                '-1': 'Não iniciado',
+                '0': 'Finalizado',
+                '1': 'Tocando',
+                '2': 'Pausado',
+                '3': 'Buffering',
+                '5': 'Cued'
+            };
+            console.log('State changed:', event.data);
+            document.getElementById('state').textContent = 'Estado: ' + states[event.data] + ' (' + event.data + ')';
+        }
+
+        function onPlayerError(event) {
+            console.error('Player Error:', event.data);
+            document.getElementById('status').textContent = 'ERRO: ' + event.data;
+        }
+
+        function playVideo() {
+            if (player && player.playVideo) {
+                player.playVideo();
+            }
+        }
+
+        function pauseVideo() {
+            if (player && player.pauseVideo) {
+                player.pauseVideo();
+            }
+        }
+
+        function stopVideo() {
+            if (player && player.stopVideo) {
+                player.stopVideo();
+            }
+        }
+
+        function loadVideo(videoId) {
+            if (player && player.loadVideoById) {
+                console.log('Loading video:', videoId);
+                player.loadVideoById(videoId);
+            }
+        }
+    </script>
+</body>
+</html>
