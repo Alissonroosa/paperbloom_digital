@@ -381,7 +381,7 @@ export default function DeliveryPage() {
                 {copied ? 'Copiado!' : 'Copiar Link'}
               </Button>
               <Button 
-                variant="default" 
+                variant="primary" 
                 className="gap-2"
                 onClick={() => messageUrl && window.open(messageUrl, '_blank')}
                 disabled={!messageUrl}
