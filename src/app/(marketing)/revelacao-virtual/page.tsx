@@ -326,7 +326,7 @@ export default function RevelacaoVirtualLP() {
                 className="mt-8 flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground/80"
               >
                 <Sparkles className="w-4 h-4 text-yellow-400" />
-                <span className="font-script text-lg">Teste gratuitamente antes de pagar</span>
+                <span className="font-script text-lg">Veja a demonstração antes de criar a sua</span>
               </motion.div>
 
               {/* Social Proof */}
@@ -831,7 +831,7 @@ export default function RevelacaoVirtualLP() {
                         </Link>
                         <p className="text-xs text-muted-foreground mt-4 flex items-center justify-center gap-1">
                           <Sparkles className="w-3 h-3 text-yellow-400" />
-                          Teste grátis antes de pagar
+                          Veja a demonstração antes de criar
                         </p>
                       </div>
                     </div>
@@ -878,7 +878,7 @@ export default function RevelacaoVirtualLP() {
             />
             <FAQItem
               question="Preciso pagar antes de criar?"
-              answer="Não! Você pode criar toda a sua revelação gratuitamente e visualizar como ficará. O pagamento só é necessário quando você quiser gerar o link e QR Code finais para compartilhar com seus convidados."
+              answer="Você pode ver a demonstração completa para entender como funciona antes de criar a sua. Ao criar sua revelação, você preenche os dados e só paga ao finalizar para receber o link e QR Code exclusivos para compartilhar com seus convidados."
             />
             <FAQItem
               question="Posso usar no chá revelação presencial?"
@@ -950,7 +950,7 @@ export default function RevelacaoVirtualLP() {
             </Link>
             <p className="text-sm text-muted-foreground mt-6 flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4 text-yellow-400" />
-              Teste gratuitamente • Pague só quando estiver satisfeito
+              Veja a demonstração • Crie em minutos
             </p>
           </motion.div>
         </div>
