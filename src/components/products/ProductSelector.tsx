@@ -20,6 +20,7 @@ interface Product {
   href: string;
   buttonText: string;
   demoHref?: string;
+  lpHref?: string; // Link para a Landing Page do produto
   comingSoon?: boolean;
   preview: {
     number: string;
@@ -71,6 +72,7 @@ const products: Product[] = [
     href: "/editor/12-cartas",
     buttonText: "Criar Minhas 12 Cartas",
     demoHref: "/demo/card-collection",
+    lpHref: "/12-cartas",
     preview: {
       number: "12",
       subtitle: "Momentos Únicos",
@@ -95,6 +97,7 @@ const products: Product[] = [
     href: "/editor/revelacao-virtual",
     buttonText: "Criar Minha Revelação",
     demoHref: "/demo/revelacao-virtual",
+    lpHref: "/revelacao-virtual",
     preview: {
       number: "🧸",
       subtitle: "Menino ou Menina?",
@@ -243,17 +246,30 @@ export function ProductSelector() {
                           {product.buttonText}
                         </Button>
                       </Link>
-                      {product.demoHref && (
-                        <Link href={product.demoHref} className="w-full">
-                          <Button
-                            size="lg"
-                            variant="outline"
-                            className="w-full border-primary/20 hover:bg-primary/5"
-                          >
-                            Ver Exemplo
-                          </Button>
-                        </Link>
-                      )}
+                      <div className="flex gap-2 w-full">
+                        {product.demoHref && (
+                          <Link href={product.demoHref} className="flex-1">
+                            <Button
+                              size="lg"
+                              variant="outline"
+                              className="w-full border-primary/20 hover:bg-primary/5"
+                            >
+                              Ver Demo
+                            </Button>
+                          </Link>
+                        )}
+                        {product.lpHref && (
+                          <Link href={product.lpHref} className="flex-1">
+                            <Button
+                              size="lg"
+                              variant="ghost"
+                              className="w-full text-primary hover:bg-primary/5"
+                            >
+                              Saiba mais
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
                     </>
                   )}
                 </CardFooter>
