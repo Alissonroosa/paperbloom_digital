@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Flower2, Instagram, Mail } from "lucide-react"
+import { Flower2, Instagram, Mail, Phone } from "lucide-react"
 
 export function Footer() {
     return (
@@ -12,11 +12,16 @@ export function Footer() {
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
+                    <Link href="https://wa.me/5551992698003" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                        <Phone className="h-5 w-5" />
+                        <span className="text-sm hidden sm:inline">Suporte</span>
+                        <span className="sr-only">Suporte WhatsApp</span>
+                    </Link>
                     <Link href="https://www.instagram.com/paperbloomrs/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                         <Instagram className="h-5 w-5" />
                         <span className="sr-only">Instagram</span>
                     </Link>
-                    <Link href="mailto:contato@paperbloom.com" className="text-muted-foreground hover:text-primary transition-colors">
+                    <Link href="mailto:contato@paperbloom.com.br" className="text-muted-foreground hover:text-primary transition-colors">
                         <Mail className="h-5 w-5" />
                         <span className="sr-only">Email</span>
                     </Link>
