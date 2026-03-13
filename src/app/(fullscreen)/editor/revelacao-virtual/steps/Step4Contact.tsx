@@ -7,9 +7,19 @@ import { Button } from '@/components/ui/Button';
 import { Loader2, ExternalLink } from 'lucide-react';
 import { usePrices } from '@/hooks/usePrices';
 
+// Função para formatar telefone
+const formatPhone = (value: string) => {
+  const numbers = value.replace(/\D/g, '');
+  if (numbers.length <= 2) return numbers;
+  if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+  if (numbers.length <= 11) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+  return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+};
+
 export function Step4Contact() {
   const { data, updateData, prevStep, goToCheckout, isLoading, error } = useGenderRevealEditor();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [confirmEmail, setConfirmEmail] = useState('');
   const { prices } = usePrices();
   const genderRevealPrice = prices['gender-reveal'];
 
@@ -24,9 +34,19 @@ export function Step4Contact() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contactEmail)) {
       newErrors.contactEmail = 'Email inválido';
     }
+    if (!confirmEmail.trim()) {
+      newErrors.confirmEmail = 'Confirme seu email';
+    } else if (confirmEmail.toLowerCase() !== data.contactEmail.toLowerCase()) {
+      newErrors.confirmEmail = 'Os emails não coincidem';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    updateData({ contactPhone: formatted });
   };
 
   const handleCheckout = async () => {
@@ -131,6 +151,25 @@ export function Step4Contact() {
           {errors.contactEmail && (
             <p className="text-red-500 text-sm mt-1">{errors.contactEmail}</p>
           )}
+        </div>
+
+        {/* Confirm Email */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            📧 Confirme seu Email:
+          </label>
+          <input
+            type="email"
+            value={confirmEmail}
+            onChange={(e) => setConfirmEmail(e.target.value)}
+            placeholder="Digite novamente seu email"
+            className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-pink-300 ${
+              errors.confirmEmail ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-pink-400'
+            }`}
+          />
+          {errors.confirmEmail && (
+            <p className="text-red-500 text-sm mt-1">{errors.confirmEmail}</p>
+          )}
           <p className="text-xs text-gray-500 mt-1">
             Enviaremos os links da revelação para este email
           </p>
@@ -144,8 +183,9 @@ export function Step4Contact() {
           <input
             type="tel"
             value={data.contactPhone}
-            onChange={(e) => updateData({ contactPhone: e.target.value })}
-            placeholder="(11) 99999-9999"
+            onChange={handlePhoneChange}
+            placeholder="(00) 00000-0000"
+            maxLength={15}
             className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400"
           />
         </div>
