@@ -1,0 +1,94 @@
+2026-Jan-29 05:33:58.054045 Starting deployment of Alissonroosa/paperbloom_digital:master to localhost.
+2026-Jan-29 05:33:58.240456 Preparing container with helper image: ghcr.io/coollabsio/coolify-helper:1.0.12
+2026-Jan-29 05:33:59.995985 ----------------------------------------
+2026-Jan-29 05:34:00.005352 Importing Alissonroosa/paperbloom_digital:master (commit sha 1f7b8ddad129b7628e8c5b739497f549acfdc848) to /artifacts/akkkw4gw4gcks0c000gcs80g.
+2026-Jan-29 05:34:02.682960 Image not found (kk8o04008k0s4wk48csksg04:1f7b8ddad129b7628e8c5b739497f549acfdc848). Building new image.
+2026-Jan-29 05:34:05.214307 ----------------------------------------
+2026-Jan-29 05:34:05.221328 Building docker image started.
+2026-Jan-29 05:34:05.227312 To check the current progress, click on Show Debug Logs.
+2026-Jan-29 05:35:10.578730 ========================================
+2026-Jan-29 05:35:10.586033 Deployment failed: Command execution failed (exit code 1): docker exec akkkw4gw4gcks0c000gcs80g bash -c 'bash /artifacts/build.sh'
+2026-Jan-29 05:35:10.586033 Error: #0 building with "default" instance using docker driver
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #1 [internal] load build definition from Dockerfile
+2026-Jan-29 05:35:10.586033 #1 transferring dockerfile: 5.92kB 0.0s done
+2026-Jan-29 05:35:10.586033 #1 DONE 0.0s
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #2 [internal] load metadata for docker.io/library/node:20-alpine
+2026-Jan-29 05:35:10.586033 #2 DONE 0.3s
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #3 [internal] load .dockerignore
+2026-Jan-29 05:35:10.586033 #3 transferring context: 2.40kB done
+2026-Jan-29 05:35:10.586033 #3 DONE 0.0s
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #4 [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:09e2b3d9726018aecf269bd35325f46bf75046a643a66d28360ec71132750ec8
+2026-Jan-29 05:35:10.586033 #4 DONE 0.0s
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #5 [builder 2/6] WORKDIR /app
+2026-Jan-29 05:35:10.586033 #5 CACHED
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #6 [runner 3/7] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+2026-Jan-29 05:35:10.586033 #6 CACHED
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #7 [internal] load build context
+2026-Jan-29 05:35:10.586033 #7 transferring context: 9.44MB 0.2s done
+2026-Jan-29 05:35:10.586033 #7 DONE 0.2s
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #8 [builder 3/6] COPY package.json package-lock.json ./
+2026-Jan-29 05:35:10.586033 #8 CACHED
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #9 [builder 4/6] RUN npm ci
+2026-Jan-29 05:35:10.586033 #9 CACHED
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #10 [builder 5/6] COPY . .
+2026-Jan-29 05:35:10.586033 #10 DONE 0.2s
+2026-Jan-29 05:35:10.586033
+2026-Jan-29 05:35:10.586033 #11 [builder 6/6] RUN npm run build
+2026-Jan-29 05:35:10.586033 #11 0.299
+2026-Jan-29 05:35:10.586033 #11 0.299 > paperbloom-digital@0.1.0 build
+2026-Jan-29 05:35:10.586033 #11 0.299 > next build
+2026-Jan-29 05:35:10.586033 #11 0.299
+2026-Jan-29 05:35:10.586033 #11 1.189 ▲ Next.js 14.2.35
+2026-Jan-29 05:35:10.586033 #11 1.191
+2026-Jan-29 05:35:10.586033 #11 1.218 Creating an optimized production build ...
+2026-Jan-29 05:35:10.586033 #11 40.00 ✓ Compiled successfully
+2026-Jan-29 05:35:10.586033 #11 40.00 Linting and checking validity of types ...
+2026-Jan-29 05:35:10.586033 #11 63.27 Failed to compile.
+2026-Jan-29 05:35:10.586033 #11 63.27
+2026-Jan-29 05:35:10.586033 #11 63.27 ./src/app/(marketing)/delivery/[messageId]/page.tsx:384:17
+2026-Jan-29 05:35:10.586033 #11 63.27 Type error: Type '"default"' is not assignable to type '"primary" | "secondary" | "outline" | "ghost" | undefined'.
+2026-Jan-29 05:35:10.586033 #11 63.27
+2026-Jan-29 05:35:10.586033 #11 63.27 382 | </Button>
+2026-Jan-29 05:35:10.586033 #11 63.27 383 | <Button
+2026-Jan-29 05:35:10.586033 #11 63.27 > 384 | variant="default"
+2026-Jan-29 05:35:10.586033 #11 63.27 | ^
+2026-Jan-29 05:35:10.586033 #11 63.27 385 | className="gap-2"
+2026-Jan-29 05:35:10.586033 #11 63.27 386 | onClick={() => messageUrl && window.open(messageUrl, '_blank')}
+2026-Jan-29 05:35:10.586033 #11 63.27 387 | disabled={!messageUrl}
+2026-Jan-29 05:35:10.586033 #11 63.38 Next.js build worker exited with code: 1 and signal: null
+2026-Jan-29 05:35:10.586033 #11 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Jan-29 05:35:10.586033 ------
+2026-Jan-29 05:35:10.586033 > [builder 6/6] RUN npm run build:
+2026-Jan-29 05:35:10.586033 63.27 Type error: Type '"default"' is not assignable to type '"primary" | "secondary" | "outline" | "ghost" | undefined'.
+2026-Jan-29 05:35:10.586033 63.27
+2026-Jan-29 05:35:10.586033 63.27 382 | </Button>
+2026-Jan-29 05:35:10.586033 63.27 383 | <Button
+2026-Jan-29 05:35:10.586033 63.27 > 384 | variant="default"
+2026-Jan-29 05:35:10.586033 63.27 | ^
+2026-Jan-29 05:35:10.586033 63.27 385 | className="gap-2"
+2026-Jan-29 05:35:10.586033 63.27 386 | onClick={() => messageUrl && window.open(messageUrl, '_blank')}
+2026-Jan-29 05:35:10.586033 63.27 387 | disabled={!messageUrl}
+2026-Jan-29 05:35:10.586033 63.38 Next.js build worker exited with code: 1 and signal: null
+2026-Jan-29 05:35:10.586033 ------
+2026-Jan-29 05:35:10.586033 Dockerfile:85
+2026-Jan-29 05:35:10.586033 --------------------
+2026-Jan-29 05:35:10.586033 83 | # Next.js collects anonymous telemetry data. Disable it for production builds.
+2026-Jan-29 05:35:10.586033 84 | ENV NEXT_TELEMETRY_DISABLED=1
+2026-Jan-29 05:35:10.586033 85 | >>> RUN npm run build
+2026-Jan-29 05:35:10.586033 86 |
+2026-Jan-29 05:35:10.586033 87 | # Stage 3: Runner
+2026-Jan-29 05:35:10.586033 --------------------
+2026-Jan-29 05:35:10.586033 ERROR: failed to build: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Jan-29 05:35:10.586033 exit status 1
+2026-Jan-29 05:35:10.667140 ========================================
+2026-Jan-29 05:35:10.676390 Deployment failed. Removing the new version of your application.

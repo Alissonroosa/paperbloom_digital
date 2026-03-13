@@ -1,0 +1,95 @@
+2026-Jan-29 05:36:32.292354 Starting deployment of Alissonroosa/paperbloom_digital:master to localhost.
+2026-Jan-29 05:36:32.984821 Preparing container with helper image: ghcr.io/coollabsio/coolify-helper:1.0.12
+2026-Jan-29 05:36:35.696425 ----------------------------------------
+2026-Jan-29 05:36:35.705296 Importing Alissonroosa/paperbloom_digital:master (commit sha 15c667f8c0a6e418eb3fa3f97d19f6afb2eb5a20) to /artifacts/uosgkcocw08wskgw8os840o0.
+2026-Jan-29 05:36:38.757158 Image not found (kk8o04008k0s4wk48csksg04:15c667f8c0a6e418eb3fa3f97d19f6afb2eb5a20). Building new image.
+2026-Jan-29 05:36:43.920177 ----------------------------------------
+2026-Jan-29 05:36:43.929145 Building docker image started.
+2026-Jan-29 05:36:43.935204 To check the current progress, click on Show Debug Logs.
+2026-Jan-29 05:37:53.557198 ========================================
+2026-Jan-29 05:37:53.563347 Deployment failed: Command execution failed (exit code 1): docker exec uosgkcocw08wskgw8os840o0 bash -c 'bash /artifacts/build.sh'
+2026-Jan-29 05:37:53.563347 Error: #0 building with "default" instance using docker driver
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #1 [internal] load build definition from Dockerfile
+2026-Jan-29 05:37:53.563347 #1 transferring dockerfile: 5.92kB done
+2026-Jan-29 05:37:53.563347 #1 DONE 0.0s
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #2 [internal] load metadata for docker.io/library/node:20-alpine
+2026-Jan-29 05:37:53.563347 #2 DONE 0.1s
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #3 [internal] load .dockerignore
+2026-Jan-29 05:37:53.563347 #3 transferring context: 2.40kB done
+2026-Jan-29 05:37:53.563347 #3 DONE 0.0s
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #4 [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:09e2b3d9726018aecf269bd35325f46bf75046a643a66d28360ec71132750ec8
+2026-Jan-29 05:37:53.563347 #4 DONE 0.0s
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #5 [builder 2/6] WORKDIR /app
+2026-Jan-29 05:37:53.563347 #5 CACHED
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #6 [runner 3/7] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+2026-Jan-29 05:37:53.563347 #6 CACHED
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #7 [internal] load build context
+2026-Jan-29 05:37:53.563347 #7 transferring context: 9.44MB 0.2s done
+2026-Jan-29 05:37:53.563347 #7 DONE 0.2s
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #8 [builder 3/6] COPY package.json package-lock.json ./
+2026-Jan-29 05:37:53.563347 #8 CACHED
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #9 [builder 4/6] RUN npm ci
+2026-Jan-29 05:37:53.563347 #9 CACHED
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #10 [builder 5/6] COPY . .
+2026-Jan-29 05:37:53.563347 #10 DONE 0.1s
+2026-Jan-29 05:37:53.563347
+2026-Jan-29 05:37:53.563347 #11 [builder 6/6] RUN npm run build
+2026-Jan-29 05:37:53.563347 #11 0.440
+2026-Jan-29 05:37:53.563347 #11 0.440 > paperbloom-digital@0.1.0 build
+2026-Jan-29 05:37:53.563347 #11 0.440 > next build
+2026-Jan-29 05:37:53.563347 #11 0.440
+2026-Jan-29 05:37:53.563347 #11 3.777 ▲ Next.js 14.2.35
+2026-Jan-29 05:37:53.563347 #11 3.780
+2026-Jan-29 05:37:53.563347 #11 3.950 Creating an optimized production build ...
+2026-Jan-29 05:37:53.563347 #11 49.11 ✓ Compiled successfully
+2026-Jan-29 05:37:53.563347 #11 49.11 Linting and checking validity of types ...
+2026-Jan-29 05:37:53.563347 #11 67.43 Failed to compile.
+2026-Jan-29 05:37:53.563347 #11 67.43
+2026-Jan-29 05:37:53.563347 #11 67.43 ./src/components/card-editor/GroupedCardCollectionEditor.tsx:321:13
+2026-Jan-29 05:37:53.563347 #11 67.43 Type error: Type '{ cards: Card[]; onEditMessage: (cardId: string) => void; onEditPhoto: (cardId: string) => void; onEditMusic: (cardId: string) => void; }' is not assignable to type 'IntrinsicAttributes & CardGridViewProps'.
+2026-Jan-29 05:37:53.563347 #11 67.43 Property 'onEditMusic' does not exist on type 'IntrinsicAttributes & CardGridViewProps'.
+2026-Jan-29 05:37:53.563347 #11 67.43
+2026-Jan-29 05:37:53.563347 #11 67.43 319 | onEditMessage={handleEditMessage}
+2026-Jan-29 05:37:53.563347 #11 67.43 320 | onEditPhoto={handleEditPhoto}
+2026-Jan-29 05:37:53.563347 #11 67.43 > 321 | onEditMusic={handleEditMusic}
+2026-Jan-29 05:37:53.563347 #11 67.43 | ^
+2026-Jan-29 05:37:53.563347 #11 67.43 322 | />
+2026-Jan-29 05:37:53.563347 #11 67.43 323 | </div>
+2026-Jan-29 05:37:53.563347 #11 67.43 324 | </main>
+2026-Jan-29 05:37:53.563347 #11 67.53 Next.js build worker exited with code: 1 and signal: null
+2026-Jan-29 05:37:53.563347 #11 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Jan-29 05:37:53.563347 ------
+2026-Jan-29 05:37:53.563347 > [builder 6/6] RUN npm run build:
+2026-Jan-29 05:37:53.563347 67.43 Property 'onEditMusic' does not exist on type 'IntrinsicAttributes & CardGridViewProps'.
+2026-Jan-29 05:37:53.563347 67.43
+2026-Jan-29 05:37:53.563347 67.43 319 | onEditMessage={handleEditMessage}
+2026-Jan-29 05:37:53.563347 67.43 320 | onEditPhoto={handleEditPhoto}
+2026-Jan-29 05:37:53.563347 67.43 > 321 | onEditMusic={handleEditMusic}
+2026-Jan-29 05:37:53.563347 67.43 | ^
+2026-Jan-29 05:37:53.563347 67.43 322 | />
+2026-Jan-29 05:37:53.563347 67.43 323 | </div>
+2026-Jan-29 05:37:53.563347 67.43 324 | </main>
+2026-Jan-29 05:37:53.563347 67.53 Next.js build worker exited with code: 1 and signal: null
+2026-Jan-29 05:37:53.563347 ------
+2026-Jan-29 05:37:53.563347 Dockerfile:85
+2026-Jan-29 05:37:53.563347 --------------------
+2026-Jan-29 05:37:53.563347 83 | # Next.js collects anonymous telemetry data. Disable it for production builds.
+2026-Jan-29 05:37:53.563347 84 | ENV NEXT_TELEMETRY_DISABLED=1
+2026-Jan-29 05:37:53.563347 85 | >>> RUN npm run build
+2026-Jan-29 05:37:53.563347 86 |
+2026-Jan-29 05:37:53.563347 87 | # Stage 3: Runner
+2026-Jan-29 05:37:53.563347 --------------------
+2026-Jan-29 05:37:53.563347 ERROR: failed to build: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Jan-29 05:37:53.563347 exit status 1
+2026-Jan-29 05:37:53.629977 ========================================
+2026-Jan-29 05:37:53.635980 Deployment failed. Removing the new version of your application.

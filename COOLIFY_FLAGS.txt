@@ -1,0 +1,157 @@
+# ============================================
+# CONFIGURAÇÃO DE FLAGS - COOLIFY
+# ============================================
+# Para cada variável, marque as flags conforme abaixo
+
+# ============================================
+# TODAS AS VARIÁVEIS SEGUEM O MESMO PADRÃO:
+# ============================================
+# Available at Buildtime: ✅ MARCAR
+# Available at Runtime: ✅ MARCAR
+# Is Literal?: ❌ DESMARCAR
+# Is Multiline?: ❌ DESMARCAR
+
+# ============================================
+# LISTA DE VARIÁVEIS
+# ============================================
+
+DATABASE_URL
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+DB_POOL_MAX
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+DB_POOL_IDLE_TIMEOUT
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+DB_POOL_CONNECTION_TIMEOUT
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+STRIPE_SECRET_KEY
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+STRIPE_WEBHOOK_SECRET
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+NEXT_PUBLIC_BASE_URL
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+NODE_ENV
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+R2_ACCOUNT_ID
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+R2_ACCESS_KEY_ID
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+R2_SECRET_ACCESS_KEY
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+R2_BUCKET_NAME
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+R2_ENDPOINT
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+R2_PUBLIC_URL
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+RESEND_API_KEY
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+RESEND_FROM_EMAIL
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+RESEND_FROM_NAME
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+MAX_IMAGE_SIZE
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+MAX_IMAGE_WIDTH
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+MAX_IMAGE_HEIGHT
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+LOG_LEVEL
+├─ Buildtime: ✅
+├─ Runtime: ✅
+├─ Literal: ❌
+└─ Multiline: ❌
+
+# ============================================
+# RESUMO SIMPLES
+# ============================================
+# TODAS as variáveis:
+# ✅ Available at Buildtime
+# ✅ Available at Runtime
+# ❌ Is Literal?
+# ❌ Is Multiline?

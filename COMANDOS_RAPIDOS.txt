@@ -1,0 +1,86 @@
+===========================================
+  COMANDOS RÁPIDOS - PAPER BLOOM
+===========================================
+
+📋 VERIFICAR STATUS
+-------------------------------------------
+.\verificar-status-simples.ps1
+
+
+🚀 INICIAR DESENVOLVIMENTO
+-------------------------------------------
+.\iniciar-desenvolvimento.ps1
+
+OU manualmente (2 terminais):
+
+Terminal 1 - Stripe:
+.\stripe.exe listen --forward-to localhost:3000/api/checkout/webhook
+
+Terminal 2 - Next.js:
+npm run dev
+
+
+🧪 TESTAR
+-------------------------------------------
+Mensagem:
+http://localhost:3000/editor/mensagem
+
+12 Cartas:
+http://localhost:3000/editor/12-cartas
+
+Cartão de Teste:
+4242 4242 4242 4242 | 12/34 | 123
+
+
+📊 VERIFICAR BANCO
+-------------------------------------------
+node verificar-schema-card-collections.js
+node verificar-schema-messages.js
+node verificar-schema-cards.js
+
+
+🔍 STRIPE CLI
+-------------------------------------------
+Ver eventos:
+.\stripe.exe events list --limit 10
+
+Testar webhook:
+.\stripe.exe trigger checkout.session.completed
+
+Ver logs:
+.\stripe.exe logs tail
+
+Verificar login:
+.\stripe.exe config --list
+
+
+🛠️ TROUBLESHOOTING
+-------------------------------------------
+Matar processo porta 3000:
+Stop-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess -Force
+
+Reinstalar dependências:
+Remove-Item node_modules -Recurse -Force
+npm install
+
+Limpar cache Next.js:
+Remove-Item .next -Recurse -Force
+npm run dev
+
+
+📚 DOCUMENTAÇÃO
+-------------------------------------------
+COMECAR_AGORA.md - Guia super rápido
+INICIO_RAPIDO_STRIPE.md - 3 passos
+CONFIGURAR_STRIPE_LOCAL.md - Guia completo
+ARQUITETURA_BANCO_DADOS_COMPLETA.md - Estrutura DB
+TESTAR_FLUXO_12_CARTAS_AGORA.md - Teste detalhado
+
+
+✅ TUDO PRONTO!
+-------------------------------------------
+Execute: .\iniciar-desenvolvimento.ps1
+Acesse: http://localhost:3000
+Teste: Crie uma mensagem ou coleção!
+
+===========================================

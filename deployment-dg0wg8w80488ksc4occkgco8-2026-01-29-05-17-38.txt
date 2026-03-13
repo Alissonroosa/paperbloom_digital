@@ -1,0 +1,163 @@
+2026-Jan-29 05:16:41.247326 Starting deployment of Alissonroosa/paperbloom_digital:master to localhost.
+2026-Jan-29 05:16:41.912852 Preparing container with helper image: ghcr.io/coollabsio/coolify-helper:1.0.12
+2026-Jan-29 05:16:44.827608 ----------------------------------------
+2026-Jan-29 05:16:44.834546 Importing Alissonroosa/paperbloom_digital:master (commit sha 0633873ad7028927c9a96fd2f2d62cb00fc367c2) to /artifacts/dg0wg8w80488ksc4occkgco8.
+2026-Jan-29 05:16:47.972938 Image not found (kk8o04008k0s4wk48csksg04:0633873ad7028927c9a96fd2f2d62cb00fc367c2). Building new image.
+2026-Jan-29 05:16:50.930980 ----------------------------------------
+2026-Jan-29 05:16:50.936653 ⚠️ Build-time environment variable warning: NODE_ENV=production
+2026-Jan-29 05:16:50.942536 Affects: Node.js/npm/yarn/bun/pnpm
+2026-Jan-29 05:16:50.949201 Issue: Skips devDependencies installation which are often required for building (webpack, typescript, etc.)
+2026-Jan-29 05:16:50.954738 Recommendation: Uncheck "Available at Buildtime" or use "development" during build
+2026-Jan-29 05:16:50.959757
+2026-Jan-29 05:16:50.964503 💡 Tips to resolve build issues:
+2026-Jan-29 05:16:50.969420 1. Set these variables as "Runtime only" in the environment variables settings
+2026-Jan-29 05:16:50.974267 2. Use different values for build-time (e.g., NODE_ENV=development for build)
+2026-Jan-29 05:16:50.979241 3. Consider using multi-stage Docker builds to separate build and runtime environments
+2026-Jan-29 05:16:52.275537 ----------------------------------------
+2026-Jan-29 05:16:52.283258 Building docker image started.
+2026-Jan-29 05:16:52.289534 To check the current progress, click on Show Debug Logs.
+2026-Jan-29 05:17:18.648595 ========================================
+2026-Jan-29 05:17:18.657214 Deployment failed: Command execution failed (exit code 1): docker exec dg0wg8w80488ksc4occkgco8 bash -c 'bash /artifacts/build.sh'
+2026-Jan-29 05:17:18.657214 Error: #0 building with "default" instance using docker driver
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #1 [internal] load build definition from Dockerfile
+2026-Jan-29 05:17:18.657214 #1 transferring dockerfile: 5.99kB done
+2026-Jan-29 05:17:18.657214 #1 DONE 0.0s
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #2 [internal] load metadata for docker.io/library/node:20-alpine
+2026-Jan-29 05:17:18.657214 #2 DONE 0.3s
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #3 [internal] load .dockerignore
+2026-Jan-29 05:17:18.657214 #3 transferring context: 2.28kB done
+2026-Jan-29 05:17:18.657214 #3 DONE 0.0s
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #4 [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:09e2b3d9726018aecf269bd35325f46bf75046a643a66d28360ec71132750ec8
+2026-Jan-29 05:17:18.657214 #4 DONE 0.0s
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #5 [builder 2/6] WORKDIR /app
+2026-Jan-29 05:17:18.657214 #5 CACHED
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #6 [runner 3/7] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+2026-Jan-29 05:17:18.657214 #6 CACHED
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #7 [internal] load build context
+2026-Jan-29 05:17:18.657214 #7 transferring context: 9.77MB 0.2s done
+2026-Jan-29 05:17:18.657214 #7 DONE 0.2s
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #8 [builder 3/6] COPY package.json package-lock.json ./
+2026-Jan-29 05:17:18.657214 #8 CACHED
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #9 [builder 4/6] RUN npm ci
+2026-Jan-29 05:17:18.657214 #9 CACHED
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #10 [builder 5/6] COPY . .
+2026-Jan-29 05:17:18.657214 #10 DONE 0.1s
+2026-Jan-29 05:17:18.657214
+2026-Jan-29 05:17:18.657214 #11 [builder 6/6] RUN npm run build
+2026-Jan-29 05:17:18.657214 #11 0.230
+2026-Jan-29 05:17:18.657214 #11 0.230 > paperbloom-digital@0.1.0 build
+2026-Jan-29 05:17:18.657214 #11 0.230 > next build
+2026-Jan-29 05:17:18.657214 #11 0.230
+2026-Jan-29 05:17:18.657214 #11 1.061 ▲ Next.js 14.2.35
+2026-Jan-29 05:17:18.657214 #11 1.062
+2026-Jan-29 05:17:18.657214 #11 1.087 Creating an optimized production build ...
+2026-Jan-29 05:17:18.657214 #11 23.74 Failed to compile.
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 src/app/layout.tsx
+2026-Jan-29 05:17:18.657214 #11 23.74 An error occurred in `next/font`.
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 Error: Cannot find module 'tailwindcss'
+2026-Jan-29 05:17:18.657214 #11 23.74 Require stack:
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/blocks/css/index.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/index.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack-config.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack-build/impl.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/compiled/jest-worker/processChild.js
+2026-Jan-29 05:17:18.657214 #11 23.74 at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+2026-Jan-29 05:17:18.657214 #11 23.74 at /app/node_modules/next/dist/server/require-hook.js:55:36
+2026-Jan-29 05:17:18.657214 #11 23.74 at Function.resolve (node:internal/modules/helpers:193:19)
+2026-Jan-29 05:17:18.657214 #11 23.74 at loadPlugin (/app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:49:32)
+2026-Jan-29 05:17:18.657214 #11 23.74 at /app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:56
+2026-Jan-29 05:17:18.657214 #11 23.74 at Array.map (<anonymous>)
+2026-Jan-29 05:17:18.657214 #11 23.74 at getPostCssPlugins (/app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:47)
+2026-Jan-29 05:17:18.657214 #11 23.74 at async /app/node_modules/next/dist/build/webpack/config/blocks/css/index.js:124:36
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 src/app/layout.tsx
+2026-Jan-29 05:17:18.657214 #11 23.74 An error occurred in `next/font`.
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 Error: Cannot find module 'tailwindcss'
+2026-Jan-29 05:17:18.657214 #11 23.74 Require stack:
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/blocks/css/index.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/index.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack-config.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack-build/impl.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/compiled/jest-worker/processChild.js
+2026-Jan-29 05:17:18.657214 #11 23.74 at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+2026-Jan-29 05:17:18.657214 #11 23.74 at /app/node_modules/next/dist/server/require-hook.js:55:36
+2026-Jan-29 05:17:18.657214 #11 23.74 at Function.resolve (node:internal/modules/helpers:193:19)
+2026-Jan-29 05:17:18.657214 #11 23.74 at loadPlugin (/app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:49:32)
+2026-Jan-29 05:17:18.657214 #11 23.74 at /app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:56
+2026-Jan-29 05:17:18.657214 #11 23.74 at Array.map (<anonymous>)
+2026-Jan-29 05:17:18.657214 #11 23.74 at getPostCssPlugins (/app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:47)
+2026-Jan-29 05:17:18.657214 #11 23.74 at async /app/node_modules/next/dist/build/webpack/config/blocks/css/index.js:124:36
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 src/app/layout.tsx
+2026-Jan-29 05:17:18.657214 #11 23.74 An error occurred in `next/font`.
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 Error: Cannot find module 'tailwindcss'
+2026-Jan-29 05:17:18.657214 #11 23.74 Require stack:
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/blocks/css/index.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack/config/index.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack-config.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/build/webpack-build/impl.js
+2026-Jan-29 05:17:18.657214 #11 23.74 - /app/node_modules/next/dist/compiled/jest-worker/processChild.js
+2026-Jan-29 05:17:18.657214 #11 23.74 at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+2026-Jan-29 05:17:18.657214 #11 23.74 at /app/node_modules/next/dist/server/require-hook.js:55:36
+2026-Jan-29 05:17:18.657214 #11 23.74 at Function.resolve (node:internal/modules/helpers:193:19)
+2026-Jan-29 05:17:18.657214 #11 23.74 at loadPlugin (/app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:49:32)
+2026-Jan-29 05:17:18.657214 #11 23.74 at /app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:56
+2026-Jan-29 05:17:18.657214 #11 23.74 at Array.map (<anonymous>)
+2026-Jan-29 05:17:18.657214 #11 23.74 at getPostCssPlugins (/app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:157:47)
+2026-Jan-29 05:17:18.657214 #11 23.74 at async /app/node_modules/next/dist/build/webpack/config/blocks/css/index.js:124:36
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 ./src/app/(fullscreen)/c/[...slug]/CardCollectionViewer.tsx
+2026-Jan-29 05:17:18.657214 #11 23.74 Module not found: Can't resolve '@/components/ui/Button'
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 https://nextjs.org/docs/messages/module-not-found
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 ./src/app/(fullscreen)/c/[...slug]/CardCollectionViewer.tsx
+2026-Jan-29 05:17:18.657214 #11 23.74 Module not found: Can't resolve '@/components/effects/FallingEmojis'
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.74 https://nextjs.org/docs/messages/module-not-found
+2026-Jan-29 05:17:18.657214 #11 23.74
+2026-Jan-29 05:17:18.657214 #11 23.77
+2026-Jan-29 05:17:18.657214 #11 23.78 > Build failed because of webpack errors
+2026-Jan-29 05:17:18.657214 #11 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Jan-29 05:17:18.657214 ------
+2026-Jan-29 05:17:18.657214 > [builder 6/6] RUN npm run build:
+2026-Jan-29 05:17:18.657214 23.74
+2026-Jan-29 05:17:18.657214 23.74 https://nextjs.org/docs/messages/module-not-found
+2026-Jan-29 05:17:18.657214 23.74
+2026-Jan-29 05:17:18.657214 23.74 ./src/app/(fullscreen)/c/[...slug]/CardCollectionViewer.tsx
+2026-Jan-29 05:17:18.657214 23.74 Module not found: Can't resolve '@/components/effects/FallingEmojis'
+2026-Jan-29 05:17:18.657214 23.74
+2026-Jan-29 05:17:18.657214 23.74 https://nextjs.org/docs/messages/module-not-found
+2026-Jan-29 05:17:18.657214 23.74
+2026-Jan-29 05:17:18.657214 23.77
+2026-Jan-29 05:17:18.657214 23.78 > Build failed because of webpack errors
+2026-Jan-29 05:17:18.657214 ------
+2026-Jan-29 05:17:18.657214 Dockerfile:87
+2026-Jan-29 05:17:18.657214 --------------------
+2026-Jan-29 05:17:18.657214 85 | # Next.js collects anonymous telemetry data. Disable it for production builds.
+2026-Jan-29 05:17:18.657214 86 | ENV NEXT_TELEMETRY_DISABLED=1
+2026-Jan-29 05:17:18.657214 87 | >>> RUN npm run build
+2026-Jan-29 05:17:18.657214 88 |
+2026-Jan-29 05:17:18.657214 89 | # Stage 3: Runner
+2026-Jan-29 05:17:18.657214 --------------------
+2026-Jan-29 05:17:18.657214 ERROR: failed to build: failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+2026-Jan-29 05:17:18.657214 exit status 1
+2026-Jan-29 05:17:18.734746 ========================================
+2026-Jan-29 05:17:18.742721 Deployment failed. Removing the new version of your application.
