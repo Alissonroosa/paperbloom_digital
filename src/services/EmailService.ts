@@ -221,7 +221,7 @@ export const QR_CODE_EMAIL_TEMPLATE = {
           
           <div class="footer">
             <p style="margin: 10px 0;">Com carinho,<br><strong>Equipe Paper Bloom</strong></p>
-            <p style="margin: 10px 0;"><a href="https://paperbloom.com">paperbloom.com</a></p>
+            <p style="margin: 10px 0;"><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
             <p style="margin: 10px 0; font-size: 12px; color: #9ca3af;">
               Este é um email automático. Por favor, não responda.
             </p>
@@ -450,7 +450,7 @@ export const CARD_COLLECTION_EMAIL_TEMPLATE = {
           
           <div class="footer">
             <p style="margin: 10px 0;">Com carinho,<br><strong>Equipe Paper Bloom</strong></p>
-            <p style="margin: 10px 0;"><a href="https://paperbloom.com">paperbloom.com</a></p>
+            <p style="margin: 10px 0;"><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
             <p style="margin: 10px 0; font-size: 12px; color: #9ca3af;">
               Este é um email automático. Por favor, não responda.
             </p>
@@ -932,7 +932,7 @@ export const GENDER_REVEAL_EMAIL_TEMPLATE = {
           
           <div class="footer">
             <p style="margin: 10px 0;">Com carinho,<br><strong>Equipe Paper Bloom</strong></p>
-            <p style="margin: 10px 0;"><a href="https://paperbloom.com" style="color: #4F46E5;">paperbloom.com</a></p>
+            <p style="margin: 10px 0;"><a href="https://paperbloom.com.br" style="color: #4F46E5;">paperbloom.com.br</a></p>
           </div>
         </div>
       </body>
