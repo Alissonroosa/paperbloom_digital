@@ -6,6 +6,7 @@ import { useGenderRevealEditor } from '@/contexts/GenderRevealEditorContext';
 import { Button } from '@/components/ui/Button';
 import { Loader2, ExternalLink } from 'lucide-react';
 import { usePrices } from '@/hooks/usePrices';
+import { analytics } from '@/lib/analytics';
 
 // Função para formatar telefone
 const formatPhone = (value: string) => {
@@ -17,7 +18,7 @@ const formatPhone = (value: string) => {
 };
 
 export function Step4Contact() {
-  const { data, updateData, prevStep, goToCheckout, isLoading, error } = useGenderRevealEditor();
+  const { data, updateData, prevStep, goToCheckout, isLoading, error, revealId } = useGenderRevealEditor();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [confirmEmail, setConfirmEmail] = useState('');
   const { prices } = usePrices();
@@ -51,6 +52,9 @@ export function Step4Contact() {
 
   const handleCheckout = async () => {
     if (validate()) {
+      // Track: Completou o editor e iniciou pagamento
+      analytics.completeEditor('gender-reveal');
+      analytics.initiatePayment('gender-reveal', revealId || 'unknown');
       await goToCheckout();
     }
   };

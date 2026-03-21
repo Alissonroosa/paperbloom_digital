@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { analytics } from "@/lib/analytics";
 
 interface GenderRevealData {
   id: string;
@@ -34,6 +35,13 @@ export default function GenderRevealDeliveryPage() {
   const [copied, setCopied] = useState(false);
   const [dashboardCopied, setDashboardCopied] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+
+  // Track conversion when reveal is loaded and paid
+  useEffect(() => {
+    if (revealData?.status === 'paid') {
+      analytics.purchase('gender-reveal', revealData.id, 29.90);
+    }
+  }, [revealData]);
 
   useEffect(() => {
     if (!revealId) {
@@ -74,6 +82,7 @@ export default function GenderRevealDeliveryPage() {
       try {
         await navigator.clipboard.writeText(publicUrl);
         setCopied(true);
+        analytics.shareLink(revealId, 'gender-reveal', 'copy');
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         console.error('Failed to copy:', err);
@@ -86,6 +95,7 @@ export default function GenderRevealDeliveryPage() {
       try {
         await navigator.clipboard.writeText(dashboardUrl);
         setDashboardCopied(true);
+        analytics.shareLink(revealId, 'gender-reveal', 'copy');
         setTimeout(() => setDashboardCopied(false), 2000);
       } catch (err) {
         console.error('Failed to copy:', err);
@@ -95,6 +105,7 @@ export default function GenderRevealDeliveryPage() {
 
   const handleDownloadQRCode = () => {
     if (revealData?.qrCodeUrl) {
+      analytics.downloadQRCode(revealId, 'gender-reveal');
       const link = document.createElement('a');
       link.href = revealData.qrCodeUrl;
       link.download = `qrcode-revelacao-${revealData.boyName}-ou-${revealData.girlName}.png`;

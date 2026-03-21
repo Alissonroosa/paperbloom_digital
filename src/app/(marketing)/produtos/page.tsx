@@ -3,9 +3,16 @@
 import { motion } from "framer-motion"
 import { ProductSelector } from "@/components/products/ProductSelector"
 import { usePrices } from "@/hooks/usePrices"
+import { useEffect } from "react"
+import { analytics } from "@/lib/analytics"
 
 export default function ProdutosPage() {
   const { prices, loading } = usePrices();
+
+  // Track: Visualização da página de produtos
+  useEffect(() => {
+    analytics.viewProductsPage()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FFFAFA] to-white">

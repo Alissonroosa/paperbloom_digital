@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Lato, Great_Vibes } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { MetaPixel } from "@/components/analytics/MetaPixel";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -38,6 +40,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        <GoogleAnalytics />
+        <MetaPixel />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",

@@ -6,9 +6,31 @@ import { Step1BabyInfo } from './steps/Step1BabyInfo';
 import { Step2ParentsInfo } from './steps/Step2ParentsInfo';
 import { Step3Photos } from './steps/Step3Photos';
 import { Step4Contact } from './steps/Step4Contact';
+import { useEffect, useRef } from 'react';
+import { analytics } from '@/lib/analytics';
+
+const STEP_NAMES = ['Informações do Bebê', 'Informações dos Pais', 'Fotos', 'Contato e Pagamento'];
 
 function EditorContent() {
   const { currentStep } = useGenderRevealEditor();
+  const hasTrackedStart = useRef(false);
+  const lastTrackedStep = useRef(0);
+
+  // Track: Início do editor
+  useEffect(() => {
+    if (!hasTrackedStart.current) {
+      analytics.startEditor('gender-reveal');
+      hasTrackedStart.current = true;
+    }
+  }, []);
+
+  // Track: Mudança de step
+  useEffect(() => {
+    if (currentStep !== lastTrackedStep.current) {
+      analytics.editorStep('gender-reveal', currentStep, STEP_NAMES[currentStep - 1] || `Step ${currentStep}`);
+      lastTrackedStep.current = currentStep;
+    }
+  }, [currentStep]);
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-blue-50 via-white to-pink-50">

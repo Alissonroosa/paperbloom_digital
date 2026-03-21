@@ -6,6 +6,7 @@ import { FiveStepCardCollectionEditor } from '@/components/card-editor/FiveStepC
 import { CardCollectionEditorProvider } from '@/contexts/CardCollectionEditorContext';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { analytics } from '@/lib/analytics';
 
 /**
  * Editor de 12 Cartas
@@ -16,6 +17,15 @@ export default function Editor12CartasPage() {
   const [collectionId, setCollectionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Track: Início do editor
+  const hasTrackedStart = useRef(false);
+  useEffect(() => {
+    if (!hasTrackedStart.current) {
+      analytics.startEditor('card-collection');
+      hasTrackedStart.current = true;
+    }
+  }, []);
 
   // Criar coleção automaticamente ao carregar (apenas uma vez)
   // Usa useRef para garantir execução única mesmo com React 18 Strict Mode
@@ -61,6 +71,10 @@ export default function Editor12CartasPage() {
   const handleFinalize = async () => {
     if (!collectionId) return;
 
+    // Track: Completou o editor e iniciou pagamento
+    analytics.completeEditor('card-collection');
+    analytics.initiatePayment('card-collection', collectionId);
+
     try {
       // Criar checkout session
       const response = await fetch('/api/checkout/card-collection', {
@@ -77,6 +91,7 @@ export default function Editor12CartasPage() {
       window.location.href = url;
     } catch (err) {
       console.error('Failed to create checkout:', err);
+      analytics.error('checkout_error', 'Falha ao criar checkout', { productType: 'card-collection', collectionId });
       alert('Erro ao processar pagamento. Tente novamente.');
     }
   };

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { analytics } from "@/lib/analytics";
 
 interface CardCollectionData {
   id: string;
@@ -35,6 +36,13 @@ export default function CardCollectionDeliveryPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+
+  // Track conversion when collection is loaded and paid
+  useEffect(() => {
+    if (collectionData?.status === 'paid') {
+      analytics.purchase('card-collection', collectionData.id, 29.90);
+    }
+  }, [collectionData]);
 
   useEffect(() => {
     if (!collectionId) {
@@ -75,6 +83,7 @@ export default function CardCollectionDeliveryPage() {
       try {
         await navigator.clipboard.writeText(collectionUrl);
         setCopied(true);
+        analytics.shareLink(collectionId, 'card-collection', 'copy');
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         console.error('Failed to copy:', err);
@@ -84,6 +93,7 @@ export default function CardCollectionDeliveryPage() {
 
   const handleDownloadQRCode = () => {
     if (collectionData?.qrCodeUrl) {
+      analytics.downloadQRCode(collectionId, 'card-collection');
       const link = document.createElement('a');
       link.href = collectionData.qrCodeUrl;
       link.download = `qrcode-12cartas-${collectionData.recipientName.replace(/\s+/g, '-')}.png`;

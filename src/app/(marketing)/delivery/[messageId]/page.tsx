@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { analytics } from "@/lib/analytics";
 
 interface MessageData {
   id: string;
@@ -39,6 +40,13 @@ export default function DeliveryPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+
+  // Track conversion when message is loaded and paid
+  useEffect(() => {
+    if (messageData?.status === 'paid') {
+      analytics.purchase('message', messageData.id, 19.90);
+    }
+  }, [messageData]);
 
   useEffect(() => {
     if (!messageId) {
@@ -90,6 +98,7 @@ export default function DeliveryPage() {
       try {
         await navigator.clipboard.writeText(messageUrl);
         setCopied(true);
+        analytics.shareLink(messageId, 'message', 'copy');
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         console.error('Failed to copy:', err);
@@ -100,6 +109,7 @@ export default function DeliveryPage() {
   // Requirement 11.4: Add download QR code button (PNG format)
   const handleDownloadQRCode = () => {
     if (messageData?.qrCodeUrl) {
+      analytics.downloadQRCode(messageId, 'message');
       const link = document.createElement('a');
       link.href = messageData.qrCodeUrl;
       link.download = `qrcode-${messageData.recipientName.replace(/\s+/g, '-')}.png`;

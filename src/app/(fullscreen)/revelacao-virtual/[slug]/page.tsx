@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { useParams } from "next/navigation";
+import { analytics } from "@/lib/analytics";
 
 type Stage = "intro" | "story" | "photos" | "vote" | "results" | "ready" | "countdown" | "tease" | "countdown2" | "reveal";
 
@@ -112,6 +113,8 @@ export default function RevelacaoVirtualPage() {
     try {
       await fetch(`/api/gender-reveal/${reveal.id}/vote`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ voterName, vote: pendingVote }) });
       setUserVote(pendingVote); setShowNameInput(false);
+      // Track: Voto na revelação
+      analytics.castVote(reveal.id, pendingVote);
       if (stats) setStats({ ...stats, totalVotes: stats.totalVotes + 1, boyVotes: stats.boyVotes + (pendingVote === "menino" ? 1 : 0), girlVotes: stats.girlVotes + (pendingVote === "menina" ? 1 : 0) });
       setVoteSuccess(true);
       setTimeout(() => { setVoteSuccess(false); setStage("results"); }, 1500);
