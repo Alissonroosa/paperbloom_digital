@@ -3,11 +3,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
-import { Sparkles, Eye, ChevronDown } from "lucide-react"
+import { Sparkles, Heart, Calendar, Baby, ChevronDown, Gift, Palette, QrCode, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
-import { ProductPreviewSection } from "@/components/ui/ProductPreviewSection"
-import { PhoneMockup } from "@/components/ui/PhoneMockup"
-import { HeroPreviewContent } from "@/components/ui/HeroPreviewContent"
 import { GiftCardPreview } from "@/components/ui/GiftCardPreview"
 import { ProductSelector } from "@/components/products/ProductSelector"
 import { useState } from "react"
@@ -15,10 +12,9 @@ import { useState } from "react"
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative py-24 md:py-32 overflow-hidden bg-[#FFFAFA] flex flex-col items-center justify-center min-h-[90vh] group">
-
-        {/* Abstract Flower Background (CSS) */}
+      {/* Hero Section - Generic, brand-focused */}
+      <section className="relative py-24 md:py-32 overflow-hidden bg-[#FFFAFA] flex flex-col items-center justify-center min-h-[85vh] group">
+        {/* Abstract Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 transition-all duration-1000 ease-in-out group-hover:opacity-60">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -28,127 +24,114 @@ export default function Home() {
           />
         </div>
 
-        <div className="container px-4 md:px-8 relative z-10 max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="container px-4 md:px-8 relative z-10 max-w-5xl mx-auto text-center">
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            <span className="font-script text-4xl md:text-6xl text-primary mb-4 block">
+              Paper Bloom
+            </span>
+          </motion.div>
 
-            {/* Left Column: Text Content */}
-            <div className="flex-1 text-center lg:text-left">
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
-              >
-                <span className="font-script text-4xl md:text-6xl text-primary mb-4 block">
-                  Paper Bloom
-                </span>
-              </motion.div>
+          <motion.h1
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-text-main mb-6 leading-tight"
+          >
+            Presentes Digitais <br />
+            que <span className="text-primary/90 italic">Emocionam de Verdade</span>
+          </motion.h1>
 
-              <motion.h1
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-text-main mb-6 leading-tight"
-              >
-                Transforme Sentimentos <br />
-                em <span className="text-primary/90 italic">Mensagens Inesquecíveis</span>
-              </motion.h1>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed font-light"
+          >
+            Crie experiências únicas com fotos, músicas e mensagens personalizadas.
+            Mensagens digitais, coleções de cartas ou revelações interativas — escolha o presente perfeito.
+          </motion.p>
 
-              <motion.p
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-                className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light"
-              >
-                Crie experiências emocionantes que misturam o físico e o digital.
-                Suas fotos e músicas favoritas em mensagens que tocam o coração.
-              </motion.p>
+          {/* Mini product highlights */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="flex flex-wrap justify-center gap-4 mb-10"
+          >
+            <Link href="/mensagem-digital" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
+              <Heart className="w-4 h-4 text-primary" />
+              Mensagem Digital
+            </Link>
+            <Link href="/12-cartas" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
+              <Calendar className="w-4 h-4 text-primary" />
+              12 Cartas
+            </Link>
+            <Link href="/revelacao-virtual" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
+              <Baby className="w-4 h-4 text-primary" />
+              Revelação Virtual
+            </Link>
+          </motion.div>
 
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.8 }}
-                className="flex flex-col sm:flex-row gap-4 w-full justify-center lg:justify-start"
-              >
-                <Link href="/produtos">
-                  <Button size="lg" className="w-full sm:w-auto text-lg px-10 h-14 rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1">
-                    Criar Minha Mensagem
-                  </Button>
-                </Link>
-              </motion.div>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1, duration: 0.8 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Link href="#products">
+              <Button size="lg" className="w-full sm:w-auto text-lg px-10 h-14 rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1">
+                Escolher Meu Presente
+              </Button>
+            </Link>
+          </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.2, duration: 1 }}
-                className="mt-12 flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground/80 font-script text-lg"
-              >
-                Teste gratuitamente antes de pagar <Sparkles className="w-4 h-4 text-yellow-400" />
-              </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 1 }}
+            className="mt-10 flex items-center justify-center gap-2 text-sm text-muted-foreground/80 font-script text-lg"
+          >
+            Teste gratuitamente antes de pagar <Sparkles className="w-4 h-4 text-yellow-400" />
+          </motion.div>
 
-              {/* Social Proof - Messages Delivered Counter */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.4, duration: 0.8 }}
-                className="mt-8 flex items-center justify-center lg:justify-start gap-3"
-              >
-                <div className="flex -space-x-3">
-                  {[
-                    "https://i.pravatar.cc/150?img=1",
-                    "https://i.pravatar.cc/150?img=2",
-                    "https://i.pravatar.cc/150?img=3",
-                    "https://i.pravatar.cc/150?img=4",
-                    "https://i.pravatar.cc/150?img=5"
-                  ].map((src, i) => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-md">
-                      <img src={src} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  ))}
+          {/* Social Proof */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4, duration: 0.8 }}
+            className="mt-8 flex items-center justify-center gap-3"
+          >
+            <div className="flex -space-x-3">
+              {[
+                "https://i.pravatar.cc/150?img=1",
+                "https://i.pravatar.cc/150?img=2",
+                "https://i.pravatar.cc/150?img=3",
+                "https://i.pravatar.cc/150?img=4",
+                "https://i.pravatar.cc/150?img=5"
+              ].map((src, i) => (
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-md">
+                  <img src={src} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="text-left">
-                  <p className="text-primary font-semibold text-lg">+1.600 Sentimentos eternizados</p>
-                  <p className="text-xs text-muted-foreground">Pessoas já emocionaram quem amam</p>
-                </div>
-              </motion.div>
+              ))}
             </div>
-
-            {/* Right Column: Interactive Preview */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: 1 }}
-              className="flex-1 relative w-full max-w-[350px] lg:max-w-none flex justify-center"
-            >
-              <div className="relative">
-                <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10 animate-pulse" />
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl -z-10" />
-
-                <div className="text-center mb-4">
-                  <div className="inline-flex items-center gap-2 text-sm font-medium text-text-main/60 bg-white/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/40 shadow-sm">
-                    <Eye className="w-4 h-4 text-primary" />
-                    Preview: É assim que eles vão ver no celular
-                  </div>
-                </div>
-
-                <PhoneMockup className="shadow-2xl shadow-primary/20 border-gray-900">
-                  <HeroPreviewContent />
-                </PhoneMockup>
-              </div>
-            </motion.div>
-
-          </div>
+            <div className="text-left">
+              <p className="text-primary font-semibold text-lg">+1.600 presentes criados</p>
+              <p className="text-xs text-muted-foreground">Pessoas já emocionaram quem amam</p>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Product Preview Section */}
-      <ProductPreviewSection />
-
-      {/* Product Selection Section */}
+      {/* Product Selection Section - RIGHT AFTER HERO */}
       <section id="products" className="py-24 bg-white relative">
         <ProductSelector />
       </section>
 
-      {/* How it Works */}
+      {/* How it Works - Generic for all products */}
       <section id="how-it-works" className="py-24 bg-[#FFFAFA]">
         <div className="container px-4 md:px-8 max-w-screen-xl mx-auto">
           <div className="text-center mb-20">
@@ -156,7 +139,7 @@ export default function Home() {
               Como Funciona
             </h2>
             <p className="text-muted-foreground text-lg font-light">
-              Simples, rápido e emocionante.
+              Três passos simples para qualquer presente.
             </p>
           </div>
 
@@ -165,25 +148,31 @@ export default function Home() {
             <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-primary/20 -z-10" />
 
             <div className="flex flex-col items-center space-y-6 group">
-              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center text-primary font-bold text-3xl font-serif shadow-lg group-hover:scale-110 transition-transform duration-300">1</div>
-              <h3 className="text-2xl font-bold text-text-main">Personalize</h3>
-              <p className="text-muted-foreground leading-relaxed">Escolha sua foto favorita e escreva uma mensagem do coração.</p>
+              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Palette className="w-10 h-10 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold text-text-main">Escolha e Personalize</h3>
+              <p className="text-muted-foreground leading-relaxed">Selecione o tipo de presente e adicione suas fotos, mensagens e músicas favoritas.</p>
             </div>
             <div className="flex flex-col items-center space-y-6 group">
-              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center text-primary font-bold text-3xl font-serif shadow-lg group-hover:scale-110 transition-transform duration-300">2</div>
-              <h3 className="text-2xl font-bold text-text-main">Adicione Música</h3>
-              <p className="text-muted-foreground leading-relaxed">Cole o link daquela música especial do YouTube para tocar junto.</p>
+              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Gift className="w-10 h-10 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold text-text-main">Visualize e Pague</h3>
+              <p className="text-muted-foreground leading-relaxed">Veja o resultado antes de pagar. Só finalize quando estiver 100% satisfeito.</p>
             </div>
             <div className="flex flex-col items-center space-y-6 group">
-              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center text-primary font-bold text-3xl font-serif shadow-lg group-hover:scale-110 transition-transform duration-300">3</div>
+              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <QrCode className="w-10 h-10 text-primary" />
+              </div>
               <h3 className="text-2xl font-bold text-text-main">Presenteie</h3>
-              <p className="text-muted-foreground leading-relaxed">Receba um QR Code exclusivo para enviar ou imprimir.</p>
+              <p className="text-muted-foreground leading-relaxed">Receba um QR Code exclusivo para enviar digitalmente ou imprimir em um cartão.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section - Social Proof */}
+      {/* Testimonials Section - Varied across products */}
       <section className="py-24 bg-white">
         <div className="container px-4 md:px-8 max-w-screen-xl mx-auto">
           <div className="text-center mb-16">
@@ -196,74 +185,83 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
+            {/* Testimonial 1 - Mensagem Digital */}
             <Card className="border-primary/10 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 overflow-hidden">
-                    <img src="https://i.pravatar.cc/150?img=10" alt="Ana Silva" className="w-full h-full object-cover" />
+                    <img src="https://i.pravatar.cc/150?img=10" alt="" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Ana Silva</CardTitle>
-                    <div className="flex gap-0.5 mt-1">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400">★</span>
-                      ))}
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className="text-yellow-400">★</span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-primary/70 font-medium">Mensagem Digital</span>
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  "Meu namorado chorou quando abriu! A combinação da foto com a música que tocou no nosso primeiro encontro foi perfeita. Nunca vi algo tão especial."
+                  &ldquo;Meu namorado chorou quando abriu! A combinação da foto com a música que tocou no nosso primeiro encontro foi perfeita. Nunca vi algo tão especial.&rdquo;
                 </p>
               </CardContent>
             </Card>
 
-            {/* Testimonial 2 */}
+            {/* Testimonial 2 - 12 Cartas */}
             <Card className="border-primary/10 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 overflow-hidden">
-                    <img src="https://i.pravatar.cc/150?img=12" alt="Carlos Mendes" className="w-full h-full object-cover" />
+                    <img src="https://i.pravatar.cc/150?img=12" alt="" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Carlos Mendes</CardTitle>
-                    <div className="flex gap-0.5 mt-1">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400">★</span>
-                      ))}
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className="text-yellow-400">★</span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-primary/70 font-medium">12 Cartas</span>
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  "Usei no aniversário da minha mãe. Ela não para de mostrar para todo mundo! O QR Code impresso ficou lindo no cartão. Vale cada centavo."
+                  &ldquo;Dei as 12 Cartas pra minha esposa no nosso aniversário. Cada mês ela abre uma carta nova e é uma emoção diferente. O presente que dura o ano inteiro!&rdquo;
                 </p>
               </CardContent>
             </Card>
 
-            {/* Testimonial 3 */}
+            {/* Testimonial 3 - Revelação Virtual */}
             <Card className="border-primary/10 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 overflow-hidden">
-                    <img src="https://i.pravatar.cc/150?img=20" alt="Juliana Costa" className="w-full h-full object-cover" />
+                    <img src="https://i.pravatar.cc/150?img=20" alt="" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <CardTitle className="text-base">Juliana Costa</CardTitle>
-                    <div className="flex gap-0.5 mt-1">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400">★</span>
-                      ))}
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className="text-yellow-400">★</span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-primary/70 font-medium">Revelação Virtual</span>
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  "Criei uma mensagem para cada amiga no casamento. Todas ficaram emocionadas! Super fácil de usar e o resultado é incrível. Recomendo demais!"
+                  &ldquo;A revelação do sexo do bebê ficou incrível! Todos os convidados votaram pelo celular e a contagem regressiva foi emocionante. Muito melhor que estourar balão!&rdquo;
                 </p>
               </CardContent>
             </Card>
@@ -273,7 +271,7 @@ export default function Home() {
           <div className="mt-16 flex flex-wrap items-center justify-center gap-8 md:gap-12 text-center">
             <div className="flex flex-col items-center">
               <p className="text-3xl md:text-4xl font-bold text-primary">1.600+</p>
-              <p className="text-sm text-muted-foreground mt-1">Mensagens Criadas</p>
+              <p className="text-sm text-muted-foreground mt-1">Presentes Criados</p>
             </div>
             <div className="flex flex-col items-center">
               <p className="text-3xl md:text-4xl font-bold text-primary">4.91/5</p>
@@ -287,7 +285,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ Section - Expanded for all products */}
       <section className="py-24 bg-[#FFFAFA]">
         <div className="container px-4 md:px-8 max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -303,32 +301,40 @@ export default function Home() {
             {/* Column 1 */}
             <div className="space-y-4">
               <FAQItem
-                question="Como funciona o Paper Bloom?"
-                answer="É simples! Você cria sua mensagem personalizada com fotos, texto e música. Depois, recebe um QR Code único que pode ser impresso ou enviado digitalmente. Quando a pessoa escaneia o QR Code, ela vê sua mensagem especial no celular dela."
+                question="O que é o Paper Bloom?"
+                answer="Paper Bloom é uma plataforma de presentes digitais personalizados. Você cria experiências únicas com fotos, músicas e mensagens que a pessoa acessa pelo celular através de um QR Code exclusivo. Temos diferentes tipos de presentes: Mensagem Digital, 12 Cartas e Revelação Virtual."
+              />
+              <FAQItem
+                question="Qual a diferença entre Mensagem Digital e 12 Cartas?"
+                answer="A Mensagem Digital é uma página única com foto, música e mensagem — perfeita para momentos especiais. Já as 12 Cartas são uma coleção de 12 mensagens que podem ser abertas ao longo do tempo, cada uma com sua própria foto e música. É como um calendário de emoções!"
+              />
+              <FAQItem
+                question="Como funciona a Revelação Virtual?"
+                answer="Você cria uma página interativa onde seus convidados podem votar se acham que é menino ou menina. Todos acompanham a votação em tempo real e, no momento certo, a revelação acontece de forma emocionante com animações e a resposta final."
               />
               <FAQItem
                 question="Preciso pagar antes de criar?"
-                answer="Não! Você pode criar e visualizar sua mensagem completamente grátis. Só pagamos quando você estiver 100% satisfeito e quiser gerar o QR Code final para enviar."
+                answer="Não! Você pode criar e visualizar seu presente completamente grátis. Só paga quando estiver 100% satisfeito e quiser gerar o QR Code final para enviar."
               />
               <FAQItem
                 question="Posso usar qualquer música?"
-                answer="Sim! Você pode usar qualquer música do YouTube. Basta copiar o link da música e colar no editor. A música vai tocar automaticamente quando a pessoa abrir sua mensagem."
-              />
-              <FAQItem
-                question="O QR Code expira?"
-                answer="Não! Seu QR Code e mensagem ficam disponíveis para sempre. A pessoa pode acessar quantas vezes quiser, quando quiser."
+                answer="Sim! Você pode usar qualquer música do YouTube. Basta copiar o link da música e colar no editor. A música vai tocar automaticamente quando a pessoa abrir seu presente."
               />
             </div>
 
             {/* Column 2 */}
             <div className="space-y-4">
               <FAQItem
-                question="Como recebo minha página após o pagamento?"
-                answer="Após a confirmação do pagamento, você receberá um link e um QR Code por e-mail para acessar sua página personalizada."
+                question="O QR Code expira?"
+                answer="Não! Seu QR Code e presente ficam disponíveis para sempre. A pessoa pode acessar quantas vezes quiser, quando quiser."
+              />
+              <FAQItem
+                question="Como recebo meu presente após o pagamento?"
+                answer="Após a confirmação do pagamento, você receberá um link e um QR Code por e-mail para acessar e compartilhar seu presente personalizado."
               />
               <FAQItem
                 question="Como faço para imprimir o QR Code?"
-                answer="Depois de criar sua mensagem, você recebe o QR Code em alta qualidade. Pode imprimir em casa, em uma gráfica, ou até mesmo em um cartão especial. Também enviamos por email para facilitar."
+                answer="Depois de criar seu presente, você recebe o QR Code em alta qualidade. Pode imprimir em casa, em uma gráfica, ou até mesmo em um cartão especial. Também enviamos por email para facilitar."
               />
               <FAQItem
                 question="É seguro? Meus dados estão protegidos?"
@@ -343,7 +349,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA - Generic */}
       <section className="py-32 bg-primary/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
         <div className="container px-4 md:px-8 text-center max-w-4xl mx-auto relative z-10">
@@ -353,12 +359,12 @@ export default function Home() {
                 Pronto para emocionar?
               </h2>
               <p className="text-xl text-muted-foreground mb-8 font-light max-w-xl mx-auto md:mx-0">
-                Crie agora sua mensagem personalizada e surpreenda quem você ama.
+                Escolha o presente perfeito e surpreenda quem você ama.
                 Teste gratuitamente antes de pagar.
               </p>
-              <Link href="/produtos">
+              <Link href="#products">
                 <Button size="lg" className="px-12 h-14 text-lg rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-1 transition-all duration-300">
-                  Começar Agora
+                  Escolher Meu Presente
                 </Button>
               </Link>
             </div>
@@ -369,7 +375,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </div >
+    </div>
   )
 }
 
@@ -385,13 +391,11 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
       >
         <span className="font-semibold text-text-main text-lg pr-4">{question}</span>
         <ChevronDown
-          className={`w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-            }`}
+          className={`w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-96" : "max-h-0"
-          }`}
+        className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-96" : "max-h-0"}`}
       >
         <div className="px-6 pb-5 text-muted-foreground leading-relaxed">
           {answer}

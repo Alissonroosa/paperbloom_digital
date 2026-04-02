@@ -3,20 +3,38 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/Button"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
+import { Heart, Calendar, Baby, ChevronDown } from "lucide-react"
+
+const PRODUCTS = [
+    { name: "Mensagem Digital", href: "/mensagem-digital", icon: Heart, description: "Foto, música e mensagem" },
+    { name: "12 Cartas", href: "/12-cartas", icon: Calendar, description: "12 momentos inesquecíveis" },
+    { name: "Revelação Virtual", href: "/revelacao-virtual", icon: Baby, description: "Menino ou menina?" },
+]
 
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false)
+    const [productsOpen, setProductsOpen] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20)
         }
-
         window.addEventListener("scroll", handleScroll)
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
+
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        setProductsOpen(true)
+    }
+
+    const handleMouseLeave = () => {
+        timeoutRef.current = setTimeout(() => setProductsOpen(false), 200)
+    }
 
     return (
         <header
@@ -55,9 +73,70 @@ export function Header() {
                     <Link href="/#how-it-works" className="text-text-main/80 hover:text-primary transition-colors">
                         Como Funciona
                     </Link>
-                    <Link href="/#products" className="text-text-main/80 hover:text-primary transition-colors">
-                        Produtos
-                    </Link>
+
+                    {/* Products Dropdown */}
+                    <div
+                        ref={dropdownRef}
+                        className="relative"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        <button
+                            className="flex items-center gap-1 text-text-main/80 hover:text-primary transition-colors"
+                            onClick={() => setProductsOpen(!productsOpen)}
+                        >
+                            Produtos
+                            <ChevronDown className={cn(
+                                "w-3.5 h-3.5 transition-transform duration-200",
+                                productsOpen && "rotate-180"
+                            )} />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        <div
+                            className={cn(
+                                "absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 rounded-2xl border border-white/30 bg-white/95 backdrop-blur-xl shadow-xl shadow-black/10 overflow-hidden transition-all duration-200 origin-top",
+                                productsOpen
+                                    ? "opacity-100 scale-100 pointer-events-auto"
+                                    : "opacity-0 scale-95 pointer-events-none"
+                            )}
+                        >
+                            <div className="p-2">
+                                {PRODUCTS.map((product) => {
+                                    const Icon = product.icon
+                                    return (
+                                        <Link
+                                            key={product.href}
+                                            href={product.href}
+                                            onClick={() => setProductsOpen(false)}
+                                            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/5 transition-colors group"
+                                        >
+                                            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                                                <Icon className="w-4.5 h-4.5 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-text-main group-hover:text-primary transition-colors">
+                                                    {product.name}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {product.description}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    )
+                                })}
+                            </div>
+                            <div className="border-t border-primary/10 p-2">
+                                <Link
+                                    href="/produtos"
+                                    onClick={() => setProductsOpen(false)}
+                                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
+                                >
+                                    Ver todos os produtos
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
                 <div className="flex items-center gap-4">
                     <Link href="/produtos">

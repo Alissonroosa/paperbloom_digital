@@ -48,6 +48,7 @@ const products: Product[] = [
     href: "/editor/mensagem",
     buttonText: "Criar Minha Mensagem",
     demoHref: "/demo/message",
+    lpHref: "/mensagem-digital",
     preview: {
       number: "1",
       subtitle: "Momento Único",
