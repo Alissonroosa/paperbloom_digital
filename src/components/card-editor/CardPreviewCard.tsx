@@ -43,11 +43,12 @@ export const CardPreviewCard = React.memo(function CardPreviewCard({
   className,
 }: CardPreviewCardProps) {
   // Determine button labels based on media presence
-  const photoButtonLabel = card.imageUrl ? 'Editar Foto' : 'Adicionar Foto';
+  const photoButtonLabel = card.imageUrl ? 'Trocar Foto' : 'Adicionar Foto';
 
   // Check if card has required content
   const hasTitle = card.title.trim().length > 0;
   const hasMessage = card.messageText.trim().length > 0;
+  const hasPhoto = !!card.imageUrl;
   const isComplete = hasTitle && hasMessage && card.messageText.length <= 500;
 
   return (
@@ -77,7 +78,7 @@ export const CardPreviewCard = React.memo(function CardPreviewCard({
 
           {/* Status and Media Indicators */}
           <div className="flex flex-wrap gap-1.5" role="list" aria-label="Indicadores de conteúdo">
-            {/* Message Completion Indicator - Requirement 9.2 */}
+            {/* Message Completion Indicator */}
             {hasMessage && (
               <Badge
                 variant="secondary"
@@ -89,21 +90,30 @@ export const CardPreviewCard = React.memo(function CardPreviewCard({
               </Badge>
             )}
             
-            {/* Photo Indicator - Requirement 9.3 */}
-            {card.imageUrl && (
+            {/* Photo Indicator */}
+            {hasPhoto ? (
               <Badge
                 variant="secondary"
                 className="bg-blue-100 text-blue-700 border-blue-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5"
                 role="listitem"
               >
                 <ImageIcon className="w-2.5 h-2.5" aria-hidden="true" />
-                <span>Foto</span>
+                <span>Foto ✓</span>
+              </Badge>
+            ) : (
+              <Badge
+                variant="secondary"
+                className="bg-amber-100 text-amber-700 border-amber-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5"
+                role="listitem"
+              >
+                <ImageIcon className="w-2.5 h-2.5" aria-hidden="true" />
+                <span>Sem foto</span>
               </Badge>
             )}
           </div>
         </div>
 
-        {/* Action Buttons - Requirement 10.5: Touch targets min 44x44px */}
+        {/* Action Buttons */}
         <div className="flex gap-2" role="group" aria-label="Ações da carta">
           {/* Edit Message Button */}
           <Button
@@ -117,16 +127,19 @@ export const CardPreviewCard = React.memo(function CardPreviewCard({
             <span className="truncate">Mensagem</span>
           </Button>
 
-          {/* Photo Button */}
+          {/* Photo Button - highlighted when no photo */}
           <Button
-            variant="outline"
+            variant={hasPhoto ? 'outline' : 'default'}
             size="sm"
             onClick={onEditPhoto}
-            className="flex-1 justify-center gap-1.5 text-xs min-h-[40px] touch-manipulation px-2"
+            className={cn(
+              'flex-1 justify-center gap-1.5 text-xs min-h-[40px] touch-manipulation px-2',
+              !hasPhoto && 'bg-amber-500 hover:bg-amber-600 border-amber-500 text-white'
+            )}
             aria-label={`${photoButtonLabel} da carta: ${card.title || 'sem título'}`}
           >
             <ImageIcon className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-            <span className="truncate">Foto</span>
+            <span className="truncate">{hasPhoto ? 'Foto' : '+ Foto'}</span>
           </Button>
         </div>
       </div>

@@ -54,6 +54,37 @@ function getMomentLabel(order: number): string {
     return "Para Momentos de Reflexão";
 }
 
+// Component to display intro message with "Ver mais" functionality
+function IntroMessageDisplay({ message, textColor }: { message: string; textColor: string }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const MAX_LENGTH = 150; // Characters before truncating
+    
+    const shouldTruncate = message.length > MAX_LENGTH;
+    const displayText = shouldTruncate && !isExpanded 
+        ? message.slice(0, MAX_LENGTH).trim() + '...'
+        : message;
+    
+    return (
+        <div className="my-4 px-4 max-w-2xl mx-auto">
+            <p 
+                className="text-base md:text-lg font-light italic leading-relaxed"
+                style={{ color: textColor, opacity: 0.9 }}
+            >
+                &ldquo;{displayText}&rdquo;
+            </p>
+            {shouldTruncate && (
+                <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="mt-2 text-sm font-medium hover:underline transition-all"
+                    style={{ color: textColor, opacity: 0.7 }}
+                >
+                    {isExpanded ? 'Ver menos' : '...Ver mais'}
+                </button>
+            )}
+        </div>
+    );
+}
+
 export default function CardCollectionViewer({
     collection,
     cards: rawCards
@@ -77,6 +108,10 @@ export default function CardCollectionViewer({
     const [selectedCard, setSelectedCard] = useState<any>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [youtubeReady, setYoutubeReady] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [showAlreadyOpenedMessage, setShowAlreadyOpenedMessage] = useState(false);
+    const [cardToOpen, setCardToOpen] = useState<Card | null>(null);
+    const [showEnvelopeAnimation, setShowEnvelopeAnimation] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const playerRef = useRef<any>(null);
     const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -187,19 +222,43 @@ export default function CardCollectionViewer({
 
     const handleOpenCard = (card: Card) => {
         if (openedCards.has(card.id)) {
-            // Card already opened, just show it
-            setSelectedCard(card);
+            // Card already opened - show "already opened" message
+            setCardToOpen(card);
+            setShowAlreadyOpenedMessage(true);
         } else {
-            // First time opening
+            // First time opening - show confirmation popup
+            setCardToOpen(card);
+            setShowConfirmation(true);
+        }
+    };
+
+    const handleConfirmOpen = () => {
+        if (!cardToOpen) return;
+
+        // Close confirmation
+        setShowConfirmation(false);
+
+        // Show envelope animation
+        setShowEnvelopeAnimation(true);
+
+        // After animation, mark as opened and show card
+        setTimeout(() => {
             const newOpened = new Set(openedCards);
-            newOpened.add(card.id);
+            newOpened.add(cardToOpen.id);
             setOpenedCards(newOpened);
             
             // Save to localStorage (unique per collection)
             localStorage.setItem(`paperbloom-opened-cards-${collection.id}`, JSON.stringify(Array.from(newOpened)));
             
-            setSelectedCard(card);
-        }
+            setShowEnvelopeAnimation(false);
+            setSelectedCard(cardToOpen);
+            setCardToOpen(null);
+        }, 2500); // Duration of envelope animation
+    };
+
+    const handleCancelOpen = () => {
+        setShowConfirmation(false);
+        setCardToOpen(null);
     };
 
     const handleCloseCard = () => {
@@ -459,6 +518,15 @@ export default function CardCollectionViewer({
                         >
                             Suas 12 Cartas Especiais
                         </h1>
+                        
+                        {/* Intro Message from sender */}
+                        {collection.introMessage && (
+                            <IntroMessageDisplay 
+                                message={collection.introMessage} 
+                                textColor={themeColors.textColor}
+                            />
+                        )}
+                        
                         <p 
                             className="text-lg md:text-xl font-light"
                             style={{ color: themeColors.secondaryTextColor }}
@@ -599,15 +667,6 @@ export default function CardCollectionViewer({
                                     {selectedCard.message}
                                 </p>
 
-                                {!openedCards.has(selectedCard.id) && (
-                                    <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 mb-6">
-                                        <p className="text-sm text-amber-800 flex items-center gap-2">
-                                            <Lock className="w-4 h-4" />
-                                            Esta é a primeira vez que você abre esta carta. Ela ficará marcada como aberta.
-                                        </p>
-                                    </div>
-                                )}
-
                                 <Button
                                     onClick={handleCloseCard}
                                     className="w-full"
@@ -620,6 +679,200 @@ export default function CardCollectionViewer({
                                     Fechar
                                 </Button>
                             </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* CONFIRMATION POPUP */}
+            <AnimatePresence>
+                {showConfirmation && cardToOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={handleCancelOpen}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, y: 50 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.8, y: 50 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-md w-full p-8"
+                        >
+                            <div className="text-center">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                                    className="mb-6"
+                                >
+                                    <div 
+                                        className="w-20 h-20 mx-auto rounded-full flex items-center justify-center"
+                                        style={{ backgroundColor: themeColors.accentColor + '20' }}
+                                    >
+                                        <Lock 
+                                            className="w-10 h-10"
+                                            style={{ color: themeColors.accentColor }}
+                                        />
+                                    </div>
+                                </motion.div>
+
+                                <h2 
+                                    className="text-2xl md:text-3xl font-semibold mb-4"
+                                    style={{ color: themeColors.textColor }}
+                                >
+                                    Abrir esta carta?
+                                </h2>
+
+                                <p 
+                                    className="text-lg mb-2"
+                                    style={{ color: themeColors.secondaryTextColor }}
+                                >
+                                    <span className="font-medium">{cardToOpen.title}</span>
+                                </p>
+
+                                <p 
+                                    className="text-base mb-8"
+                                    style={{ color: themeColors.secondaryTextColor }}
+                                >
+                                    Esta carta só pode ser aberta uma vez. Tem certeza que este é o momento certo?
+                                </p>
+
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <Button
+                                        onClick={handleCancelOpen}
+                                        variant="outline"
+                                        size="lg"
+                                        className="flex-1 rounded-full border-2"
+                                        style={{
+                                            borderColor: themeColors.accentColor,
+                                            color: themeColors.textColor
+                                        }}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        onClick={handleConfirmOpen}
+                                        size="lg"
+                                        className="flex-1 rounded-full"
+                                        style={{
+                                            backgroundColor: themeColors.accentColor,
+                                            color: 'white'
+                                        }}
+                                    >
+                                        Sim, abrir carta
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ALREADY OPENED MESSAGE POPUP */}
+            <AnimatePresence>
+                {showAlreadyOpenedMessage && cardToOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => {
+                            setShowAlreadyOpenedMessage(false);
+                            setCardToOpen(null);
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, y: 50 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.8, y: 50 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-md w-full p-8"
+                        >
+                            <div className="text-center">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                                    className="mb-6"
+                                >
+                                    <div 
+                                        className="w-20 h-20 mx-auto rounded-full flex items-center justify-center"
+                                        style={{ backgroundColor: '#f0f0f0' }}
+                                    >
+                                        <LockOpen 
+                                            className="w-10 h-10"
+                                            style={{ color: '#999' }}
+                                        />
+                                    </div>
+                                </motion.div>
+
+                                <h2 
+                                    className="text-2xl md:text-3xl font-semibold mb-4"
+                                    style={{ color: themeColors.textColor }}
+                                >
+                                    Carta já aberta
+                                </h2>
+
+                                <p 
+                                    className="text-lg mb-2"
+                                    style={{ color: themeColors.secondaryTextColor }}
+                                >
+                                    <span className="font-medium">{cardToOpen.title}</span>
+                                </p>
+
+                                <p 
+                                    className="text-base mb-8"
+                                    style={{ color: themeColors.secondaryTextColor }}
+                                >
+                                    Você já abriu esta carta. Cada carta só pode ser aberta uma única vez para manter a magia do momento especial. ✨
+                                </p>
+
+                                <Button
+                                    onClick={() => {
+                                        setShowAlreadyOpenedMessage(false);
+                                        setCardToOpen(null);
+                                    }}
+                                    size="lg"
+                                    className="w-full rounded-full"
+                                    style={{
+                                        backgroundColor: themeColors.accentColor,
+                                        color: 'white'
+                                    }}
+                                >
+                                    Entendi
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ENVELOPE ANIMATION */}
+            <AnimatePresence>
+                {showEnvelopeAnimation && cardToOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.5, rotateY: 0 }}
+                            animate={{ 
+                                scale: [0.5, 1, 1, 0.8],
+                                rotateY: [0, 0, 180, 180],
+                            }}
+                            transition={{ 
+                                duration: 2.5,
+                                times: [0, 0.3, 0.7, 1],
+                            }}
+                            className="text-center"
+                        >
+                            <div className="text-8xl mb-4">💌</div>
+                            <p className="text-white text-xl">Abrindo sua carta...</p>
                         </motion.div>
                     </motion.div>
                 )}

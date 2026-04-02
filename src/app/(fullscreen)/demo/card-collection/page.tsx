@@ -628,6 +628,17 @@ export default function CardCollectionDemoPage() {
                         >
                             Suas 12 Cartas Especiais
                         </h1>
+                        
+                        {/* Demo intro message */}
+                        <div className="my-4 px-4 max-w-2xl mx-auto">
+                            <p 
+                                className="text-base md:text-lg font-light italic leading-relaxed"
+                                style={{ color: themeColors.textColor, opacity: 0.9 }}
+                            >
+                                &ldquo;Preparei essas cartas com muito carinho para você. Cada uma representa um momento especial que quero compartilhar. Abra quando sentir que é o momento certo!&rdquo;
+                            </p>
+                        </div>
+                        
                         <p 
                             className="text-lg md:text-xl font-light"
                             style={{ color: themeColors.secondaryTextColor }}

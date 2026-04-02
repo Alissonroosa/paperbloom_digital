@@ -46,12 +46,26 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    console.log('[upload] Processing file:', file.name, file.type, buffer.length);
+
     // Upload to R2
-    const url = await imageService.upload({
-      buffer,
-      mimeType: file.type,
-      size: buffer.length,
-    });
+    let url: string;
+    try {
+      url = await imageService.upload({
+        buffer,
+        mimeType: file.type,
+        size: buffer.length,
+      });
+      console.log('[upload] Upload successful:', url);
+    } catch (uploadError) {
+      console.error('[upload] R2 upload failed:', uploadError);
+      return NextResponse.json(
+        {
+          error: uploadError instanceof Error ? uploadError.message : 'Failed to upload to storage',
+        },
+        { status: 500, headers }
+      );
+    }
 
     // Validate URL accessibility
     const validation = await validateURLAccessibility(url, {

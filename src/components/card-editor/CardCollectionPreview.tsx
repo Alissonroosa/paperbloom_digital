@@ -29,6 +29,37 @@ const themeColors = {
   accentColorDark: '#D4A5A5',
 };
 
+// Component to display intro message with "Ver mais" functionality (preview version)
+function IntroMessagePreview({ message, textColor }: { message: string; textColor: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const MAX_LENGTH = 100; // Shorter for preview
+  
+  const shouldTruncate = message.length > MAX_LENGTH;
+  const displayText = shouldTruncate && !isExpanded 
+    ? message.slice(0, MAX_LENGTH).trim() + '...'
+    : message;
+  
+  return (
+    <div className="my-2 px-2 max-w-md mx-auto">
+      <p 
+        className="text-xs font-light italic leading-relaxed"
+        style={{ color: textColor, opacity: 0.9 }}
+      >
+        &ldquo;{displayText}&rdquo;
+      </p>
+      {shouldTruncate && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="mt-1 text-xs font-medium hover:underline transition-all"
+          style={{ color: textColor, opacity: 0.7 }}
+        >
+          {isExpanded ? 'Ver menos' : '...Ver mais'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /**
  * Displays real-time preview of the card collection in Desktop or Mobile view.
  */
@@ -139,6 +170,15 @@ export function CardCollectionPreview({
             >
               Suas 12 Cartas Especiais
             </h1>
+            
+            {/* Intro Message */}
+            {introMessage && (
+              <IntroMessagePreview 
+                message={introMessage} 
+                textColor={themeColors.textColor}
+              />
+            )}
+            
             <p 
               className="text-xs font-light"
               style={{ color: themeColors.secondaryTextColor }}

@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 /**
  * YouTube URL validation regex
- * Supports formats: youtube.com/watch?v=, youtu.be/, youtube.com/embed/
+ * Supports formats: youtube.com/watch?v=, youtu.be/, youtube.com/embed/, youtube.com/shorts/
  * Also accepts additional query parameters like &list=, &start_radio=, etc.
  */
-const YOUTUBE_URL_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/)|youtu\.be\/)[\w-]+(\?[\w&=%-]*)?(&[\w&=%-]*)*$/;
+const YOUTUBE_URL_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/)[\w-]+(\?[\w&=%-]*)?(&[\w&=%-]*)*$/;
 
 /**
  * Zod schema for YouTube URL validation

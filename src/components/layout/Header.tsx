@@ -69,7 +69,7 @@ export function Header() {
                                 !isScrolled && "bg-white/50 hover:bg-white border-primary/20 text-primary hover:text-primary-dark backdrop-blur-sm"
                             )}
                         >
-                            Criar Mensagem
+                            Criar Presente
                         </Button>
                     </Link>
                 </div>
