@@ -129,7 +129,7 @@ export const CardPreviewCard = React.memo(function CardPreviewCard({
 
           {/* Photo Button - highlighted when no photo */}
           <Button
-            variant={hasPhoto ? 'outline' : 'default'}
+            variant={hasPhoto ? 'outline' : 'primary'}
             size="sm"
             onClick={onEditPhoto}
             className={cn(
