@@ -125,10 +125,14 @@ export function RosePetals() {
       mouseRef.current.active = false
     }
 
-    canvas.addEventListener("mousemove", handleMouseMove)
-    canvas.addEventListener("mouseleave", handleMouseLeave)
-    canvas.addEventListener("touchmove", handleTouchMove, { passive: true })
-    canvas.addEventListener("touchend", handleTouchEnd)
+    // Escuta eventos no elemento pai (section) pra não bloquear cliques
+    const parent = canvas.parentElement
+    if (!parent) return
+
+    parent.addEventListener("mousemove", handleMouseMove)
+    parent.addEventListener("mouseleave", handleMouseLeave)
+    parent.addEventListener("touchmove", handleTouchMove, { passive: true })
+    parent.addEventListener("touchend", handleTouchEnd)
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -167,18 +171,19 @@ export function RosePetals() {
     return () => {
       cancelAnimationFrame(frameRef.current)
       window.removeEventListener("resize", resizeCanvas)
-      canvas.removeEventListener("mousemove", handleMouseMove)
-      canvas.removeEventListener("mouseleave", handleMouseLeave)
-      canvas.removeEventListener("touchmove", handleTouchMove)
-      canvas.removeEventListener("touchend", handleTouchEnd)
+      if (parent) {
+        parent.removeEventListener("mousemove", handleMouseMove)
+        parent.removeEventListener("mouseleave", handleMouseLeave)
+        parent.removeEventListener("touchmove", handleTouchMove)
+        parent.removeEventListener("touchend", handleTouchEnd)
+      }
     }
   }, [createPetal, drawPetal])
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-20 pointer-events-auto"
-      style={{ touchAction: "pan-y" }}
+      className="absolute inset-0 z-20 pointer-events-none"
       aria-hidden="true"
     />
   )
