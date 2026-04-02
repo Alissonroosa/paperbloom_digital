@@ -7,6 +7,7 @@ import { Sparkles, Heart, Calendar, Baby, ChevronDown, Gift, Palette, QrCode, Ar
 import { motion } from "framer-motion"
 import { GiftCardPreview } from "@/components/ui/GiftCardPreview"
 import { ProductSelector } from "@/components/products/ProductSelector"
+import { RosePetals } from "@/components/effects/RosePetals"
 import { useState } from "react"
 
 export default function Home() {
@@ -14,6 +15,9 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       {/* Hero Section - Generic, brand-focused */}
       <section className="relative py-24 md:py-32 overflow-hidden bg-[#FFFAFA] flex flex-col items-center justify-center min-h-[85vh] group">
+        {/* Rose Petals Effect */}
+        <RosePetals />
+
         {/* Abstract Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 transition-all duration-1000 ease-in-out group-hover:opacity-60">
           <motion.div
