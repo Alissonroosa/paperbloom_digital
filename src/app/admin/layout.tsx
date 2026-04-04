@@ -7,6 +7,8 @@ import {
   LayoutDashboard, 
   ShoppingCart, 
   DollarSign, 
+  Megaphone,
+  Package,
   LogOut,
   Menu,
   X
@@ -22,6 +24,8 @@ const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingCart },
   { href: "/admin/precos", label: "Preços", icon: DollarSign },
+  { href: "/admin/marketing", label: "Marketing", icon: Megaphone },
+  { href: "/admin/produtos", label: "Produtos", icon: Package },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
