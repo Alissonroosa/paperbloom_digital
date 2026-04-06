@@ -25,6 +25,7 @@ interface RecentOrder {
   amountCents: number;
   status: string;
   createdAt: string;
+  slug: string | null;
 }
 
 interface SalesByPeriod {

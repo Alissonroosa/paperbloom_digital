@@ -27,6 +27,7 @@ export interface RecentOrder {
   amountCents: number;
   status: string;
   createdAt: Date;
+  slug: string | null;
 }
 
 export interface SalesByPeriod {
@@ -136,7 +137,7 @@ export class AnalyticsService {
 
     // Messages
     const msgQuery = `
-      SELECT id, 'message' as product_type, contact_email, status, created_at
+      SELECT id, 'message' as product_type, contact_email, status, created_at, slug
       FROM messages WHERE status = 'paid'
       ORDER BY created_at DESC LIMIT $1
     `;
@@ -150,12 +151,13 @@ export class AnalyticsService {
         amountCents: PRODUCTS.message.priceInCents,
         status: row.status,
         createdAt: row.created_at,
+        slug: row.slug || null,
       });
     }
 
     // Card Collections
     const cardQuery = `
-      SELECT id, 'card-collection' as product_type, contact_email, status, created_at
+      SELECT id, 'card-collection' as product_type, contact_email, status, created_at, slug
       FROM card_collections WHERE status = 'paid'
       ORDER BY created_at DESC LIMIT $1
     `;
@@ -169,12 +171,13 @@ export class AnalyticsService {
         amountCents: PRODUCTS['card-collection'].priceInCents,
         status: row.status,
         createdAt: row.created_at,
+        slug: row.slug || null,
       });
     }
 
     // Gender Reveals
     const revealQuery = `
-      SELECT id, 'gender-reveal' as product_type, contact_email, status, created_at
+      SELECT id, 'gender-reveal' as product_type, contact_email, status, created_at, slug
       FROM gender_reveals WHERE status = 'paid'
       ORDER BY created_at DESC LIMIT $1
     `;
@@ -188,6 +191,7 @@ export class AnalyticsService {
         amountCents: PRODUCTS['gender-reveal'].priceInCents,
         status: row.status,
         createdAt: row.created_at,
+        slug: row.slug || null,
       });
     }
 
@@ -328,7 +332,7 @@ export class AnalyticsService {
       total += parseInt(countResult.rows[0].count) || 0;
 
       const query = `
-        SELECT id, '${table}' as product_type, contact_email, status, created_at
+        SELECT id, '${table}' as product_type, contact_email, status, created_at, slug
         FROM ${tableName}
         WHERE ${whereClause}
         ORDER BY created_at DESC
@@ -345,6 +349,7 @@ export class AnalyticsService {
           amountCents: product?.priceInCents || 0,
           status: row.status,
           createdAt: row.created_at,
+          slug: row.slug || null,
         });
       }
     }

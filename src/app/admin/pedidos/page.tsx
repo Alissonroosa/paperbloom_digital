@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShoppingCart, Download, Search, Filter } from "lucide-react";
+import { ShoppingCart, Download, Search, Filter, ExternalLink } from "lucide-react";
 
 interface Order {
   id: string;
@@ -11,6 +11,7 @@ interface Order {
   amountCents: number;
   status: string;
   createdAt: string;
+  slug: string | null;
 }
 
 function formatCurrency(cents: number): string {
@@ -203,6 +204,7 @@ export default function AdminPedidosPage() {
                   <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Cliente</th>
                   <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Valor</th>
                   <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Status</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Link</th>
                   <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Data</th>
                 </tr>
               </thead>
@@ -226,6 +228,22 @@ export default function AdminPedidosPage() {
                       `}>
                         {order.status === "paid" ? "Pago" : "Pendente"}
                       </span>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      {order.status === "paid" && order.slug ? (
+                        <a
+                          href={order.slug}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-pink-600 hover:text-pink-800 transition-colors"
+                          title="Abrir produto"
+                        >
+                          <ExternalLink size={14} />
+                          Abrir
+                        </a>
+                      ) : (
+                        <span className="text-xs text-gray-300">—</span>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-right text-gray-500 text-sm">
                       {formatDate(order.createdAt)}
