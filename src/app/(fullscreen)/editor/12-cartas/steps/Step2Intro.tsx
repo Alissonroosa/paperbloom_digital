@@ -6,7 +6,8 @@ import { WizardNavigation } from '@/components/interactive-wizard/WizardNavigati
 import { useInteractiveWizardNavigation } from '@/contexts/InteractiveWizardContext';
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronUp, Search, Link as LinkIcon, Music, X } from 'lucide-react';
+import { YouTubeSearch } from '@/components/interactive-wizard/YouTubeSearch';
 
 const MESSAGE_SUGGESTIONS = [
   {
@@ -48,6 +49,8 @@ export function Step2Intro() {
   const [videoId, setVideoId] = useState<string | null>(null);
   const [urlError, setUrlError] = useState<string | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [musicMode, setMusicMode] = useState<'search' | 'link'>('search');
+  const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
 
   // Sync with collection data
   useEffect(() => {
@@ -83,6 +86,7 @@ export function Step2Intro() {
   const handleUrlChange = (url: string) => {
     setYoutubeUrl(url);
     setUrlError(null);
+    setSelectedTitle(null);
 
     if (!url.trim()) {
       setVideoId(null);
@@ -96,6 +100,20 @@ export function Step2Intro() {
       setVideoId(null);
       setUrlError('URL do YouTube inválida');
     }
+  };
+
+  const handleSearchSelect = (selectedVideoId: string, title: string) => {
+    setVideoId(selectedVideoId);
+    setYoutubeUrl(`https://www.youtube.com/watch?v=${selectedVideoId}`);
+    setSelectedTitle(title);
+    setUrlError(null);
+  };
+
+  const handleRemoveMusic = () => {
+    setVideoId(null);
+    setYoutubeUrl('');
+    setSelectedTitle(null);
+    setUrlError(null);
   };
 
   const handleNext = async () => {
@@ -188,25 +206,85 @@ export function Step2Intro() {
         </div>
 
         {/* YouTube Music */}
-        <div className="space-y-2">
-          <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700">
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-gray-700">
             🎵 Música de fundo (opcional)
           </label>
-          <input
-            id="youtubeUrl"
-            type="url"
-            value={youtubeUrl}
-            onChange={(e) => handleUrlChange(e.target.value)}
-            placeholder="https://www.youtube.com/watch?v=..."
-            className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-pink-300 ${
-              urlError 
-                ? 'border-red-300 bg-red-50' 
-                : 'border-pink-200 focus:border-pink-400'
-            }`}
-          />
-          {urlError && (
-            <p className="text-sm text-red-600">{urlError}</p>
+
+          {/* Mode Toggle */}
+          <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setMusicMode('search')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                musicMode === 'search'
+                  ? 'bg-white text-pink-600 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Search size={13} />
+              Buscar música
+            </button>
+            <button
+              type="button"
+              onClick={() => setMusicMode('link')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                musicMode === 'link'
+                  ? 'bg-white text-pink-600 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <LinkIcon size={13} />
+              Colar link
+            </button>
+          </div>
+
+          {/* Search Mode */}
+          {musicMode === 'search' && (
+            <YouTubeSearch onSelect={handleSearchSelect} />
           )}
+
+          {/* Link Mode */}
+          {musicMode === 'link' && (
+            <div className="space-y-2">
+              <input
+                id="youtubeUrl"
+                type="url"
+                value={youtubeUrl}
+                onChange={(e) => handleUrlChange(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-pink-300 ${
+                  urlError 
+                    ? 'border-red-300 bg-red-50' 
+                    : 'border-pink-200 focus:border-pink-400'
+                }`}
+              />
+              {urlError && (
+                <p className="text-sm text-red-600">{urlError}</p>
+              )}
+            </div>
+          )}
+
+          {/* Selected Music Info */}
+          {videoId && selectedTitle && musicMode === 'search' && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2 px-3 py-2 bg-pink-50 border border-pink-200 rounded-xl"
+            >
+              <Music size={14} className="text-pink-500 flex-shrink-0" />
+              <p className="text-xs text-pink-700 font-medium flex-1 line-clamp-1">{selectedTitle}</p>
+              <button
+                type="button"
+                onClick={handleRemoveMusic}
+                className="text-pink-400 hover:text-pink-600 transition-colors"
+                aria-label="Remover música"
+              >
+                <X size={14} />
+              </button>
+            </motion.div>
+          )}
+
           <p className="text-xs text-gray-500">
             A música tocará quando as cartas forem abertas 🎶
           </p>

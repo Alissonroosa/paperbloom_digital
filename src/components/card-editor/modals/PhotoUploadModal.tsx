@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
+import Cropper from 'react-easy-crop';
+import type { Area, Point } from 'react-easy-crop';
 import { Card } from '@/types/card';
 import { Button } from '@/components/ui/Button';
-import { Upload, X, Loader2, XCircle, CheckCircle, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Loader2, XCircle, Crop, ZoomIn, ZoomOut, RotateCcw, RotateCw } from 'lucide-react';
+import { getCroppedImage, fixImageOrientation } from '@/lib/crop-image';
 
 /**
  * PhotoUploadModal Props
@@ -52,6 +55,14 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
+  // Crop states
+  const [cropMode, setCropMode] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Reset state when modal opens or card changes
@@ -64,6 +75,12 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
       setHasChanges(false);
       setShowConfirmation(false);
       setIsRemoving(false);
+      setCropMode(false);
+      setCropImageSrc(null);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setRotation(0);
+      setCroppedAreaPixels(null);
     }
   }, [isOpen, card.imageUrl]);
 
@@ -101,7 +118,7 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
    * Handle file selection
    * Requirements: 5.1, 5.3, 5.4
    */
-  const handleFileSelect = useCallback((file: File) => {
+  const handleFileSelect = useCallback(async (file: File) => {
     // Validate file
     const validation = validateImage(file);
     if (!validation.valid) {
@@ -114,16 +131,77 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
     // Clear any previous errors
     setError(null);
 
-    // Set selected file
+    // Fix EXIF orientation (mobile photos come rotated)
+    // This re-draws the image through canvas to bake in the correct orientation
+    const fixedUrl = await fixImageOrientation(file);
+
+    setCropImageSrc(fixedUrl);
+    setCropMode(true);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setRotation(0);
+    setCroppedAreaPixels(null);
+
+    // Store original file temporarily
     setSelectedFile(file);
-
-    // Create preview URL
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
-
-    // Cleanup old preview URL
-    return () => URL.revokeObjectURL(objectUrl);
   }, [card.imageUrl, validateImage]);
+
+  /**
+   * Handle crop complete callback from react-easy-crop
+   */
+  const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPx: Area) => {
+    setCroppedAreaPixels(croppedAreaPx);
+  }, []);
+
+  /**
+   * Confirm crop and generate cropped image
+   */
+  const handleCropConfirm = useCallback(async () => {
+    if (!cropImageSrc || !croppedAreaPixels) return;
+
+    try {
+      const croppedFile = await getCroppedImage(
+        cropImageSrc,
+        croppedAreaPixels,
+        rotation,
+        selectedFile?.name || 'cropped.jpg'
+      );
+
+      // Set the cropped file as the selected file
+      setSelectedFile(croppedFile);
+
+      // Create preview from cropped file
+      const croppedPreview = URL.createObjectURL(croppedFile);
+      setPreviewUrl(croppedPreview);
+
+      // Exit crop mode
+      setCropMode(false);
+
+      // Cleanup crop source
+      URL.revokeObjectURL(cropImageSrc);
+      setCropImageSrc(null);
+    } catch (err) {
+      console.error('Error cropping image:', err);
+      setError('Erro ao cortar a imagem. Tente novamente.');
+    }
+  }, [cropImageSrc, croppedAreaPixels, rotation, selectedFile]);
+
+  /**
+   * Cancel crop and go back
+   */
+  const handleCropCancel = useCallback(() => {
+    setCropMode(false);
+    setSelectedFile(null);
+    setPreviewUrl(card.imageUrl);
+    setRotation(0);
+    if (cropImageSrc) {
+      URL.revokeObjectURL(cropImageSrc);
+      setCropImageSrc(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [card.imageUrl, cropImageSrc]);
 
   /**
    * Handle file input change
@@ -339,43 +417,159 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4">
-            {/* Current/Preview Photo */}
-            {previewUrl && (
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  {selectedFile ? 'Prévia da Nova Foto' : 'Foto Atual'}
-                </label>
-                <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                  <Image
-                    src={previewUrl}
-                    alt="Preview da foto"
-                    fill
-                    className="object-contain"
+            {/* Crop Mode */}
+            {cropMode && cropImageSrc && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <Crop className="w-4 h-4" />
+                  Posicione e corte a foto
+                </div>
+
+                {/* Cropper Container */}
+                <div className="relative w-full aspect-square bg-gray-900 rounded-lg overflow-hidden">
+                  <Cropper
+                    image={cropImageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    rotation={rotation}
+                    aspect={4 / 3}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onRotationChange={setRotation}
+                    onCropComplete={onCropComplete}
+                    showGrid={true}
                   />
-                  {selectedFile && (
-                    <div className="absolute top-2 right-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedFile(null);
-                          setPreviewUrl(card.imageUrl);
-                          setError(null);
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = '';
-                          }
-                        }}
-                        className="bg-white/90 hover:bg-white min-h-[44px] min-w-[44px]"
-                        aria-label="Remover seleção de foto"
-                      >
-                        <X className="w-4 h-4" aria-hidden="true" />
-                      </Button>
-                    </div>
-                  )}
+                </div>
+
+                {/* Controls */}
+                <div className="space-y-3">
+                  {/* Zoom Controls */}
+                  <div className="flex items-center gap-3 px-2">
+                    <ZoomOut className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <input
+                      type="range"
+                      min={1}
+                      max={3}
+                      step={0.05}
+                      value={zoom}
+                      onChange={(e) => setZoom(Number(e.target.value))}
+                      className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                      aria-label="Zoom da imagem"
+                    />
+                    <ZoomIn className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  </div>
+
+                  {/* Rotation Controls */}
+                  <div className="flex items-center justify-center gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRotation((r) => ((r - 90) % 360 + 360) % 360)}
+                      className="min-h-[40px] min-w-[40px] gap-1.5"
+                      aria-label="Girar 90° para esquerda"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                    <span className="text-xs text-gray-500 min-w-[40px] text-center">
+                      {rotation}°
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRotation((r) => (r + 90) % 360)}
+                      className="min-h-[40px] min-w-[40px] gap-1.5"
+                      aria-label="Girar 90° para direita"
+                    >
+                      <RotateCw className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-500 text-center">
+                  Arraste para posicionar • Use o controle para dar zoom
+                </p>
+
+                {/* Crop Actions */}
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleCropCancel}
+                    className="flex-1 min-h-[44px]"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={handleCropConfirm}
+                    disabled={!croppedAreaPixels}
+                    className="flex-1 min-h-[44px]"
+                  >
+                    <Crop className="w-4 h-4 mr-2" />
+                    Confirmar Corte
+                  </Button>
                 </div>
               </div>
             )}
+
+            {/* Normal Mode (not cropping) */}
+            {!cropMode && (
+              <>
+                {/* Current/Preview Photo */}
+                {previewUrl && (
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {selectedFile ? 'Foto Cortada' : 'Foto Atual'}
+                    </label>
+                    <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={previewUrl}
+                        alt="Preview da foto"
+                        fill
+                        className="object-contain"
+                      />
+                      {selectedFile && (
+                        <div className="absolute top-2 right-2 flex gap-2">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={async () => {
+                              // Re-enter crop mode with the original file
+                              const fixedUrl = await fixImageOrientation(selectedFile);
+                              setCropImageSrc(fixedUrl);
+                              setCropMode(true);
+                              setCrop({ x: 0, y: 0 });
+                              setZoom(1);
+                              setRotation(0);
+                            }}
+                            className="bg-white/90 hover:bg-white min-h-[44px] min-w-[44px]"
+                            aria-label="Recortar novamente"
+                          >
+                            <Crop className="w-4 h-4" aria-hidden="true" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedFile(null);
+                              setPreviewUrl(card.imageUrl);
+                              setError(null);
+                              if (fileInputRef.current) {
+                                fileInputRef.current.value = '';
+                              }
+                            }}
+                            className="bg-white/90 hover:bg-white min-h-[44px] min-w-[44px]"
+                            aria-label="Remover seleção de foto"
+                          >
+                            <X className="w-4 h-4" aria-hidden="true" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
             {/* Upload Area */}
             <div className="space-y-2">
@@ -462,12 +656,15 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
                 💡 Dica
               </h3>
               <p className="text-sm text-blue-800">
-                Escolha uma foto especial que complemente sua mensagem. A foto será exibida junto com o texto da carta.
+                Escolha uma foto especial que complemente sua mensagem. Você poderá cortar e posicionar a foto antes de salvar.
               </p>
             </div>
+              </>
+            )}
           </div>
 
-          {/* Footer */}
+          {/* Footer - hidden during crop mode */}
+          {!cropMode && (
           <div className="px-4 sm:px-6 py-4 border-t border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-between gap-3">
             <div>
               {card.imageUrl && !selectedFile && (
@@ -516,6 +713,7 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
               </Button>
             </div>
           </div>
+          )}
         </div>
       </div>
 

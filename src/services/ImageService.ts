@@ -88,7 +88,9 @@ export class ImageService {
    */
   async resize(buffer: Buffer): Promise<Buffer> {
     try {
-      const image = sharp(buffer);
+      // .rotate() without arguments auto-orients based on EXIF data
+      // This fixes mobile photos that come rotated
+      const image = sharp(buffer).rotate();
       const metadata = await image.metadata();
 
       // Check if resizing is needed

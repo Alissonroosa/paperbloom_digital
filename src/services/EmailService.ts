@@ -61,11 +61,11 @@ export interface IEmailService {
 }
 
 /**
- * QR Code email template
+ * QR Code email template — Paper Bloom visual identity
  */
 export const QR_CODE_EMAIL_TEMPLATE = {
   subject: (recipientName: string) => 
-    `Sua mensagem especial para ${recipientName} está pronta! 🎁`,
+    `Sua mensagem para ${recipientName} está pronta 🌸`,
   
   html: (data: QRCodeEmailData) => `
     <!DOCTYPE html>
@@ -74,157 +74,75 @@ export const QR_CODE_EMAIL_TEMPLATE = {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6; 
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-          }
-          .container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: 20px;
-            background-color: #ffffff;
-          }
-          .header { 
-            text-align: center; 
-            padding: 20px 0;
-            border-bottom: 2px solid #f0f0f0;
-          }
-          .header h1 {
-            color: #4F46E5;
-            margin: 0 0 10px 0;
-            font-size: 28px;
-          }
-          .qr-code { 
-            text-align: center; 
-            margin: 30px 0;
-            padding: 20px;
-            background-color: #f9fafb;
-            border-radius: 8px;
-          }
-          .qr-code img { 
-            max-width: 300px;
-            width: 100%;
-            height: auto;
-            border: 2px solid #e5e7eb;
-            padding: 10px;
-            background-color: #ffffff;
-            border-radius: 8px;
-          }
-          .message-url { 
-            background: #f3f4f6; 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin: 20px 0;
-            border-left: 4px solid #4F46E5;
-          }
-          .message-url h3 {
-            margin-top: 0;
-            color: #1f2937;
-          }
-          .message-url a {
-            color: #4F46E5;
-            text-decoration: none;
-            word-break: break-all;
-          }
-          .button { 
-            display: inline-block; 
-            padding: 12px 24px; 
-            background: #4F46E5; 
-            color: white !important; 
-            text-decoration: none; 
-            border-radius: 6px;
-            font-weight: 600;
-            margin-top: 15px;
-          }
-          .button:hover {
-            background: #4338CA;
-          }
-          .instructions {
-            margin: 30px 0;
-            padding: 20px;
-            background-color: #fef3c7;
-            border-radius: 8px;
-            border-left: 4px solid #f59e0b;
-          }
-          .instructions h3 {
-            margin-top: 0;
-            color: #92400e;
-          }
-          .instructions ul {
-            margin: 10px 0;
-            padding-left: 20px;
-          }
-          .instructions li {
-            margin: 8px 0;
-            color: #78350f;
-          }
-          .footer { 
-            text-align: center; 
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-            color: #6b7280; 
-            font-size: 14px;
-          }
-          .footer a {
-            color: #4F46E5;
-            text-decoration: none;
-          }
-          @media only screen and (max-width: 600px) {
-            .container {
-              padding: 10px;
-            }
-            .header h1 {
-              font-size: 24px;
-            }
-            .qr-code img {
-              max-width: 250px;
-            }
-          }
+          body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.7; color: #4A4A4A; margin: 0; padding: 0; background-color: #FFFAFA; }
+          .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+          .brand-bar { height: 6px; background: linear-gradient(90deg, #E6C2C2, #D4A5A5, #E6C2C2); }
+          .header { text-align: center; padding: 40px 30px 20px; }
+          .header .logo { font-family: 'Georgia', serif; font-size: 26px; color: #8B5F5F; letter-spacing: 1px; margin: 0; }
+          .header .tagline { font-size: 13px; color: #D4A5A5; margin: 6px 0 0; letter-spacing: 2px; text-transform: uppercase; }
+          .divider { width: 60px; height: 1px; background: #E6C2C2; margin: 0 auto; }
+          .content { padding: 30px; text-align: center; }
+          .content h2 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 22px; font-weight: normal; margin: 0 0 10px; }
+          .content p { color: #4A4A4A; font-size: 15px; margin: 8px 0; }
+          .hero { margin: 25px 0; padding: 28px 20px; background: linear-gradient(135deg, #FFFAFA 0%, #f5e6e6 100%); border-radius: 12px; border: 1px solid #E6C2C2; }
+          .hero h3 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 18px; font-weight: normal; margin: 0 0 6px; }
+          .qr-section { text-align: center; margin: 30px 0; padding: 25px; background-color: #FFFAFA; border-radius: 12px; }
+          .qr-section img { max-width: 220px; width: 100%; height: auto; border: 2px solid #E6C2C2; padding: 12px; background: #fff; border-radius: 12px; }
+          .qr-section p { color: #8B5F5F; font-size: 13px; margin: 12px 0 0; }
+          .link-box { background: #FFFAFA; padding: 20px; border-radius: 12px; margin: 20px 30px; border: 1px solid #E6C2C2; text-align: center; }
+          .link-box a.url { color: #8B5F5F; text-decoration: none; word-break: break-all; font-size: 14px; }
+          .btn { display: inline-block; padding: 14px 32px; background: #D4A5A5; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 15px; font-family: 'Georgia', serif; letter-spacing: 0.5px; margin-top: 16px; }
+          .tips { margin: 25px 30px; padding: 20px; background: #fdf8f4; border-radius: 12px; border: 1px solid #f0ddd0; text-align: left; }
+          .tips h4 { color: #8B5F5F; font-family: 'Georgia', serif; font-weight: normal; margin: 0 0 12px; font-size: 15px; }
+          .tips ul { margin: 0; padding-left: 18px; }
+          .tips li { color: #4A4A4A; font-size: 14px; margin: 6px 0; }
+          .footer { text-align: center; padding: 30px; border-top: 1px solid #f0e6e6; }
+          .footer .name { color: #8B5F5F; font-family: 'Georgia', serif; font-size: 16px; }
+          .footer a { color: #D4A5A5; text-decoration: none; font-size: 13px; }
+          .footer .auto { font-size: 11px; color: #c4b0b0; margin-top: 12px; }
+          @media only screen and (max-width: 600px) { .content { padding: 20px; } .link-box, .tips { margin: 20px 15px; } }
         </style>
       </head>
       <body>
         <div class="container">
+          <div class="brand-bar"></div>
           <div class="header">
-            <h1>🎁 Sua Mensagem Está Pronta!</h1>
-            <p>Olá ${data.recipientName},</p>
-            <p>Sua mensagem especial "${data.messageTitle}" foi criada com sucesso!</p>
+            <p class="logo">Paper Bloom</p>
+            <p class="tagline">Mensagens com emoção</p>
           </div>
-          
-          <div class="qr-code">
-            <h2 style="color: #1f2937; margin-top: 0;">QR Code da Mensagem</h2>
+          <div class="divider"></div>
+
+          <div class="content">
+            <h2>Sua mensagem está pronta 🌸</h2>
+            <p>Olá, ${data.recipientName}</p>
+            <p>A mensagem "<strong>${data.messageTitle}</strong>" foi criada com carinho e já pode ser compartilhada.</p>
+          </div>
+
+          <div class="qr-section">
             <img src="cid:qrcode" alt="QR Code da mensagem ${data.messageTitle}" />
-            <p style="color: #6b7280; margin-bottom: 0;">Escaneie este código para acessar sua mensagem</p>
+            <p>Escaneie para acessar a mensagem</p>
           </div>
-          
-          <div class="message-url">
-            <h3>Link Direto:</h3>
-            <p><a href="${data.messageUrl}">${data.messageUrl}</a></p>
-            <p style="text-align: center; margin-top: 15px; margin-bottom: 0;">
-              <a href="${data.messageUrl}" class="button">Visualizar Mensagem</a>
-            </p>
+
+          <div class="link-box">
+            <p style="color: #8B5F5F; font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">Link direto</p>
+            <a class="url" href="${data.messageUrl}">${data.messageUrl}</a>
+            <br />
+            <a href="${data.messageUrl}" class="btn">Visualizar Mensagem</a>
           </div>
-          
-          <div class="instructions">
-            <h3>💡 Como Compartilhar:</h3>
+
+          <div class="tips">
+            <h4>🌿 Como compartilhar</h4>
             <ul>
-              <li>Envie o QR Code por WhatsApp, email ou redes sociais</li>
-              <li>Imprima o QR Code e coloque em um cartão físico</li>
+              <li>Envie o QR Code por WhatsApp ou redes sociais</li>
+              <li>Imprima e coloque em um cartão físico</li>
               <li>Compartilhe o link direto com o destinatário</li>
-              <li>Salve o QR Code em seu dispositivo para uso futuro</li>
             </ul>
           </div>
-          
+
           <div class="footer">
-            <p style="margin: 10px 0;">Com carinho,<br><strong>Equipe Paper Bloom</strong></p>
-            <p style="margin: 10px 0;"><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
-            <p style="margin: 10px 0; font-size: 12px; color: #9ca3af;">
-              Este é um email automático. Por favor, não responda.
-            </p>
+            <p class="name">Paper Bloom</p>
+            <p><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
+            <p class="auto">Este é um email automático. Por favor, não responda.</p>
           </div>
         </div>
       </body>
@@ -233,11 +151,11 @@ export const QR_CODE_EMAIL_TEMPLATE = {
 };
 
 /**
- * Card Collection email template
+ * Card Collection email template — Paper Bloom visual identity
  */
 export const CARD_COLLECTION_EMAIL_TEMPLATE = {
   subject: (recipientName: string) => 
-    `Suas 12 Cartas para ${recipientName} estão prontas! 💌`,
+    `Suas 12 Cartas para ${recipientName} estão prontas 💌`,
   
   html: (data: CardCollectionEmailData) => `
     <!DOCTYPE html>
@@ -246,214 +164,103 @@ export const CARD_COLLECTION_EMAIL_TEMPLATE = {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6; 
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-          }
-          .container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: 20px;
-            background-color: #ffffff;
-          }
-          .header { 
-            text-align: center; 
-            padding: 20px 0;
-            border-bottom: 2px solid #f0f0f0;
-          }
-          .header h1 {
-            color: #4F46E5;
-            margin: 0 0 10px 0;
-            font-size: 28px;
-          }
-          .hero {
-            text-align: center;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            margin: 20px 0;
-            color: white;
-          }
-          .hero h2 {
-            margin: 0 0 10px 0;
-            font-size: 24px;
-          }
-          .hero p {
-            margin: 0;
-            font-size: 16px;
-            opacity: 0.95;
-          }
-          .qr-code { 
-            text-align: center; 
-            margin: 30px 0;
-            padding: 20px;
-            background-color: #f9fafb;
-            border-radius: 8px;
-          }
-          .qr-code img { 
-            max-width: 300px;
-            width: 100%;
-            height: auto;
-            border: 2px solid #e5e7eb;
-            padding: 10px;
-            background-color: #ffffff;
-            border-radius: 8px;
-          }
-          .message-url { 
-            background: #f3f4f6; 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin: 20px 0;
-            border-left: 4px solid #4F46E5;
-          }
-          .message-url h3 {
-            margin-top: 0;
-            color: #1f2937;
-          }
-          .message-url a {
-            color: #4F46E5;
-            text-decoration: none;
-            word-break: break-all;
-          }
-          .button { 
-            display: inline-block; 
-            padding: 12px 24px; 
-            background: #4F46E5; 
-            color: white !important; 
-            text-decoration: none; 
-            border-radius: 6px;
-            font-weight: 600;
-            margin-top: 15px;
-          }
-          .button:hover {
-            background: #4338CA;
-          }
-          .instructions {
-            margin: 30px 0;
-            padding: 20px;
-            background-color: #fef3c7;
-            border-radius: 8px;
-            border-left: 4px solid #f59e0b;
-          }
-          .instructions h3 {
-            margin-top: 0;
-            color: #92400e;
-          }
-          .instructions ul {
-            margin: 10px 0;
-            padding-left: 20px;
-          }
-          .instructions li {
-            margin: 8px 0;
-            color: #78350f;
-          }
-          .special-note {
-            margin: 30px 0;
-            padding: 20px;
-            background-color: #fce7f3;
-            border-radius: 8px;
-            border-left: 4px solid #ec4899;
-          }
-          .special-note h3 {
-            margin-top: 0;
-            color: #9f1239;
-          }
-          .special-note p {
-            margin: 8px 0;
-            color: #831843;
-          }
-          .footer { 
-            text-align: center; 
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-            color: #6b7280; 
-            font-size: 14px;
-          }
-          .footer a {
-            color: #4F46E5;
-            text-decoration: none;
-          }
-          @media only screen and (max-width: 600px) {
-            .container {
-              padding: 10px;
-            }
-            .header h1 {
-              font-size: 24px;
-            }
-            .hero h2 {
-              font-size: 20px;
-            }
-            .qr-code img {
-              max-width: 250px;
-            }
-          }
+          body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.7; color: #4A4A4A; margin: 0; padding: 0; background-color: #FFFAFA; }
+          .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+          .brand-bar { height: 6px; background: linear-gradient(90deg, #E6C2C2, #D4A5A5, #E6C2C2); }
+          .header { text-align: center; padding: 40px 30px 20px; }
+          .header .logo { font-family: 'Georgia', serif; font-size: 26px; color: #8B5F5F; letter-spacing: 1px; margin: 0; }
+          .header .tagline { font-size: 13px; color: #D4A5A5; margin: 6px 0 0; letter-spacing: 2px; text-transform: uppercase; }
+          .divider { width: 60px; height: 1px; background: #E6C2C2; margin: 0 auto; }
+          .content { padding: 30px; text-align: center; }
+          .content h2 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 22px; font-weight: normal; margin: 0 0 10px; }
+          .content p { color: #4A4A4A; font-size: 15px; margin: 8px 0; }
+          .hero { margin: 25px 30px; padding: 28px 20px; background: linear-gradient(135deg, #FFFAFA 0%, #f5e6e6 100%); border-radius: 12px; border: 1px solid #E6C2C2; text-align: center; }
+          .hero h3 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 18px; font-weight: normal; margin: 0 0 8px; }
+          .hero p { color: #4A4A4A; font-size: 14px; margin: 4px 0; }
+          .qr-section { text-align: center; margin: 30px 0; padding: 25px; background-color: #FFFAFA; border-radius: 12px; }
+          .qr-section img { max-width: 220px; width: 100%; height: auto; border: 2px solid #E6C2C2; padding: 12px; background: #fff; border-radius: 12px; }
+          .qr-section p { color: #8B5F5F; font-size: 13px; margin: 12px 0 0; }
+          .link-box { background: #FFFAFA; padding: 20px; border-radius: 12px; margin: 20px 30px; border: 1px solid #E6C2C2; text-align: center; }
+          .link-box a.url { color: #8B5F5F; text-decoration: none; word-break: break-all; font-size: 14px; }
+          .btn { display: inline-block; padding: 14px 32px; background: #D4A5A5; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 15px; font-family: 'Georgia', serif; letter-spacing: 0.5px; margin-top: 16px; }
+          .note { margin: 25px 30px; padding: 20px; background: #fdf2f4; border-radius: 12px; border: 1px solid #f0d4d8; text-align: center; }
+          .note h4 { color: #8B5F5F; font-family: 'Georgia', serif; font-weight: normal; margin: 0 0 8px; font-size: 15px; }
+          .note p { color: #4A4A4A; font-size: 14px; margin: 4px 0; }
+          .tips { margin: 25px 30px; padding: 20px; background: #fdf8f4; border-radius: 12px; border: 1px solid #f0ddd0; text-align: left; }
+          .tips h4 { color: #8B5F5F; font-family: 'Georgia', serif; font-weight: normal; margin: 0 0 12px; font-size: 15px; }
+          .tips ul { margin: 0; padding-left: 18px; }
+          .tips li { color: #4A4A4A; font-size: 14px; margin: 6px 0; }
+          .how { margin: 25px 30px; padding: 20px; background: #f8f4f0; border-radius: 12px; border: 1px solid #e8ddd4; text-align: left; }
+          .how h4 { color: #8B5F5F; font-family: 'Georgia', serif; font-weight: normal; margin: 0 0 12px; font-size: 15px; }
+          .how ul { margin: 0; padding-left: 18px; }
+          .how li { color: #4A4A4A; font-size: 14px; margin: 6px 0; }
+          .footer { text-align: center; padding: 30px; border-top: 1px solid #f0e6e6; }
+          .footer .name { color: #8B5F5F; font-family: 'Georgia', serif; font-size: 16px; }
+          .footer a { color: #D4A5A5; text-decoration: none; font-size: 13px; }
+          .footer .auto { font-size: 11px; color: #c4b0b0; margin-top: 12px; }
+          @media only screen and (max-width: 600px) { .content { padding: 20px; } .link-box, .tips, .how, .note, .hero { margin: 20px 15px; } }
         </style>
       </head>
       <body>
         <div class="container">
+          <div class="brand-bar"></div>
           <div class="header">
-            <h1>💌 Suas 12 Cartas Estão Prontas!</h1>
-            <p>Olá,</p>
-            <p>Suas 12 cartas para <strong>${data.recipientName}</strong> foram criadas com sucesso!</p>
+            <p class="logo">Paper Bloom</p>
+            <p class="tagline">Mensagens com emoção</p>
           </div>
-          
+          <div class="divider"></div>
+
+          <div class="content">
+            <h2>Suas 12 Cartas estão prontas 💌</h2>
+            <p>As cartas para <strong>${data.recipientName}</strong> foram criadas com carinho e já podem ser compartilhadas.</p>
+          </div>
+
           <div class="hero">
-            <h2>🎁 Uma Jornada Emocional Única</h2>
+            <h3>🌸 Uma jornada emocional única</h3>
             <p>12 mensagens especiais que só podem ser abertas uma vez cada</p>
           </div>
-          
-          <div class="qr-code">
-            <h2 style="color: #1f2937; margin-top: 0;">QR Code das 12 Cartas</h2>
+
+          <div class="qr-section">
             <img src="cid:qrcode" alt="QR Code das 12 Cartas para ${data.recipientName}" />
-            <p style="color: #6b7280; margin-bottom: 0;">Escaneie este código para acessar as cartas</p>
+            <p>Escaneie para acessar as cartas</p>
           </div>
-          
-          <div class="message-url">
-            <h3>Link Direto:</h3>
-            <p><a href="${data.collectionUrl}">${data.collectionUrl}</a></p>
-            <p style="text-align: center; margin-top: 15px; margin-bottom: 0;">
-              <a href="${data.collectionUrl}" class="button">Visualizar as 12 Cartas</a>
-            </p>
+
+          <div class="link-box">
+            <p style="color: #8B5F5F; font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">Link direto</p>
+            <a class="url" href="${data.collectionUrl}">${data.collectionUrl}</a>
+            <br />
+            <a href="${data.collectionUrl}" class="btn">Abrir as 12 Cartas</a>
           </div>
-          
-          <div class="special-note">
-            <h3>✨ Experiência Única e Especial</h3>
-            <p><strong>Importante:</strong> Cada carta só pode ser aberta uma única vez! Quando ${data.recipientName} abrir uma carta, ela não poderá ser visualizada novamente.</p>
-            <p>Isso torna cada momento ainda mais especial e memorável. 💝</p>
+
+          <div class="note">
+            <h4>✨ Experiência única</h4>
+            <p>Cada carta só pode ser aberta <strong>uma única vez</strong>.</p>
+            <p>Quando ${data.recipientName} abrir uma carta, ela não poderá ser visualizada novamente — tornando cada momento ainda mais especial. 💝</p>
           </div>
-          
-          <div class="instructions">
-            <h3>💡 Como Compartilhar:</h3>
+
+          <div class="tips">
+            <h4>🌿 Como compartilhar</h4>
             <ul>
-              <li><strong>QR Code:</strong> Envie por WhatsApp, email ou redes sociais</li>
-              <li><strong>Impresso:</strong> Imprima o QR Code e coloque em um cartão físico especial</li>
-              <li><strong>Link Direto:</strong> Compartilhe o link com ${data.recipientName}</li>
-              <li><strong>Salvar:</strong> Guarde o QR Code em seu dispositivo para referência futura</li>
+              <li>Envie o QR Code por WhatsApp ou redes sociais</li>
+              <li>Imprima e coloque em um cartão físico especial</li>
+              <li>Compartilhe o link direto com ${data.recipientName}</li>
             </ul>
           </div>
-          
-          <div class="instructions" style="background-color: #dbeafe; border-left-color: #3b82f6;">
-            <h3 style="color: #1e3a8a;">📖 Como Funciona:</h3>
-            <ul style="color: #1e40af;">
+
+          <div class="how">
+            <h4>📖 Como funciona</h4>
+            <ul>
               <li>${data.recipientName} verá as 12 cartas disponíveis</li>
               <li>Cada carta tem um título especial ("Abra quando...")</li>
-              <li>Ao clicar em uma carta, ela será aberta pela primeira vez</li>
-              <li>Após abrir, a carta ficará marcada como "já aberta"</li>
-              <li>As outras cartas continuam disponíveis para serem abertas quando ${data.recipientName} quiser</li>
+              <li>Ao clicar, a carta será aberta pela primeira e única vez</li>
+              <li>As outras cartas continuam disponíveis para quando quiser</li>
             </ul>
           </div>
-          
+
           <div class="footer">
-            <p style="margin: 10px 0;">Com carinho,<br><strong>Equipe Paper Bloom</strong></p>
-            <p style="margin: 10px 0;"><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
-            <p style="margin: 10px 0; font-size: 12px; color: #9ca3af;">
-              Este é um email automático. Por favor, não responda.
-            </p>
+            <p class="name">Paper Bloom</p>
+            <p><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
+            <p class="auto">Este é um email automático. Por favor, não responda.</p>
           </div>
         </div>
       </body>
@@ -775,11 +582,11 @@ export interface GenderRevealEmailData {
 }
 
 /**
- * Gender Reveal email template
+ * Gender Reveal email template — Paper Bloom visual identity
  */
 export const GENDER_REVEAL_EMAIL_TEMPLATE = {
   subject: (boyName: string, girlName: string) => 
-    `🎉 Sua Revelação Virtual está pronta! ${boyName} ou ${girlName}?`,
+    `Sua Revelação Virtual está pronta 🧸 ${boyName} ou ${girlName}?`,
   
   html: (data: GenderRevealEmailData) => `
     <!DOCTYPE html>
@@ -788,151 +595,91 @@ export const GENDER_REVEAL_EMAIL_TEMPLATE = {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6; 
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-          }
-          .container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: 20px;
-            background-color: #ffffff;
-          }
-          .header { 
-            text-align: center; 
-            padding: 20px 0;
-            border-bottom: 2px solid #f0f0f0;
-          }
-          .header h1 {
-            color: #E6A0B8;
-            margin: 0 0 10px 0;
-            font-size: 28px;
-          }
-          .hero {
-            text-align: center;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, #5B9BD5 0%, #E6A0B8 100%);
-            border-radius: 8px;
-            margin: 20px 0;
-            color: white;
-          }
-          .hero h2 {
-            margin: 0 0 10px 0;
-            font-size: 24px;
-          }
-          .qr-code { 
-            text-align: center; 
-            margin: 30px 0;
-            padding: 20px;
-            background-color: #f9fafb;
-            border-radius: 8px;
-          }
-          .qr-code img { 
-            max-width: 250px;
-            width: 100%;
-            height: auto;
-            border: 2px solid #e5e7eb;
-            padding: 10px;
-            background-color: #ffffff;
-            border-radius: 8px;
-          }
-          .link-box { 
-            background: #f3f4f6; 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin: 20px 0;
-          }
-          .link-box h3 {
-            margin-top: 0;
-            color: #1f2937;
-          }
-          .link-box a {
-            color: #4F46E5;
-            text-decoration: none;
-            word-break: break-all;
-          }
-          .button { 
-            display: inline-block; 
-            padding: 12px 24px; 
-            color: white !important; 
-            text-decoration: none; 
-            border-radius: 6px;
-            font-weight: 600;
-            margin-top: 10px;
-          }
-          .button-pink { background: #E6A0B8; }
-          .button-blue { background: #5B9BD5; }
-          .special-note {
-            margin: 30px 0;
-            padding: 20px;
-            background-color: #fef3c7;
-            border-radius: 8px;
-            border-left: 4px solid #f59e0b;
-          }
-          .footer { 
-            text-align: center; 
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-            color: #6b7280; 
-            font-size: 14px;
-          }
+          body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.7; color: #4A4A4A; margin: 0; padding: 0; background-color: #FFFAFA; }
+          .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+          .brand-bar { height: 6px; background: linear-gradient(90deg, #a8d4e6, #E6C2C2, #a8d4e6); }
+          .header { text-align: center; padding: 40px 30px 20px; }
+          .header .logo { font-family: 'Georgia', serif; font-size: 26px; color: #8B5F5F; letter-spacing: 1px; margin: 0; }
+          .header .tagline { font-size: 13px; color: #D4A5A5; margin: 6px 0 0; letter-spacing: 2px; text-transform: uppercase; }
+          .divider { width: 60px; height: 1px; background: #E6C2C2; margin: 0 auto; }
+          .content { padding: 30px; text-align: center; }
+          .content h2 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 22px; font-weight: normal; margin: 0 0 10px; }
+          .content p { color: #4A4A4A; font-size: 15px; margin: 8px 0; }
+          .hero { margin: 25px 30px; padding: 28px 20px; background: linear-gradient(135deg, #e8f4fa 0%, #fce8ee 100%); border-radius: 12px; border: 1px solid #E6C2C2; text-align: center; }
+          .hero h3 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 20px; font-weight: normal; margin: 0 0 8px; }
+          .hero p { color: #4A4A4A; font-size: 14px; margin: 4px 0; }
+          .qr-section { text-align: center; margin: 30px 0; padding: 25px; background-color: #FFFAFA; border-radius: 12px; }
+          .qr-section img { max-width: 220px; width: 100%; height: auto; border: 2px solid #E6C2C2; padding: 12px; background: #fff; border-radius: 12px; }
+          .qr-section p { color: #8B5F5F; font-size: 13px; margin: 12px 0 0; }
+          .link-box { background: #FFFAFA; padding: 20px; border-radius: 12px; margin: 20px 30px; border: 1px solid #E6C2C2; text-align: center; }
+          .link-box a.url { color: #8B5F5F; text-decoration: none; word-break: break-all; font-size: 14px; }
+          .btn { display: inline-block; padding: 14px 32px; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 15px; font-family: 'Georgia', serif; letter-spacing: 0.5px; margin-top: 16px; }
+          .btn-pink { background: #D4A5A5; }
+          .btn-blue { background: #8bb8d4; }
+          .tips { margin: 25px 30px; padding: 20px; background: #fdf8f4; border-radius: 12px; border: 1px solid #f0ddd0; text-align: left; }
+          .tips h4 { color: #8B5F5F; font-family: 'Georgia', serif; font-weight: normal; margin: 0 0 12px; font-size: 15px; }
+          .tips ul { margin: 0; padding-left: 18px; }
+          .tips li { color: #4A4A4A; font-size: 14px; margin: 6px 0; }
+          .footer { text-align: center; padding: 30px; border-top: 1px solid #f0e6e6; }
+          .footer .name { color: #8B5F5F; font-family: 'Georgia', serif; font-size: 16px; }
+          .footer a { color: #D4A5A5; text-decoration: none; font-size: 13px; }
+          .footer .auto { font-size: 11px; color: #c4b0b0; margin-top: 12px; }
+          @media only screen and (max-width: 600px) { .content { padding: 20px; } .link-box, .tips { margin: 20px 15px; } .hero { margin: 20px 15px; } }
         </style>
       </head>
       <body>
         <div class="container">
+          <div class="brand-bar"></div>
           <div class="header">
-            <h1>🧸 Revelação Virtual Pronta!</h1>
-            <p>Olá ${data.recipientName},</p>
-            <p>A revelação do sexo do bebê de <strong>${data.dadName} & ${data.momName}</strong> está pronta!</p>
+            <p class="logo">Paper Bloom</p>
+            <p class="tagline">Mensagens com emoção</p>
           </div>
-          
+          <div class="divider"></div>
+
+          <div class="content">
+            <h2>Revelação Virtual pronta 🧸</h2>
+            <p>Olá, ${data.recipientName}</p>
+            <p>A revelação do sexo do bebê de <strong>${data.dadName} & ${data.momName}</strong> está pronta para ser compartilhada.</p>
+          </div>
+
           <div class="hero">
-            <h2>💙 ${data.boyName} ou ${data.girlName}? 💖</h2>
-            <p>Compartilhe com família e amigos para descobrirem juntos!</p>
+            <h3>💙 ${data.boyName} ou ${data.girlName}? 💖</h3>
+            <p>Compartilhe com família e amigos para descobrirem juntos</p>
           </div>
-          
-          <div class="qr-code">
-            <h2 style="color: #1f2937; margin-top: 0;">QR Code para Compartilhar</h2>
+
+          <div class="qr-section">
             <img src="cid:qrcode" alt="QR Code da Revelação Virtual" />
-            <p style="color: #6b7280; margin-bottom: 0;">Escaneie para acessar a revelação</p>
+            <p>Escaneie para acessar a revelação</p>
           </div>
-          
-          <div class="link-box" style="border-left: 4px solid #E6A0B8;">
-            <h3>🎁 Link para Convidados:</h3>
-            <p>Compartilhe este link com família e amigos:</p>
-            <p><a href="${data.publicUrl}">${data.publicUrl}</a></p>
-            <p style="text-align: center;">
-              <a href="${data.publicUrl}" class="button button-pink">Abrir Revelação</a>
-            </p>
+
+          <div class="link-box">
+            <p style="color: #8B5F5F; font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">Link para convidados</p>
+            <a class="url" href="${data.publicUrl}">${data.publicUrl}</a>
+            <br />
+            <a href="${data.publicUrl}" class="btn btn-pink">Abrir Revelação</a>
           </div>
-          
-          <div class="link-box" style="border-left: 4px solid #5B9BD5;">
-            <h3>📊 Seu Dashboard Privado:</h3>
-            <p>Acompanhe os votos e mensagens dos convidados:</p>
-            <p><a href="${data.dashboardUrl}">${data.dashboardUrl}</a></p>
-            <p style="text-align: center;">
-              <a href="${data.dashboardUrl}" class="button button-blue">Ver Dashboard</a>
-            </p>
+
+          <div class="link-box">
+            <p style="color: #8B5F5F; font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">Seu dashboard privado</p>
+            <a class="url" href="${data.dashboardUrl}">${data.dashboardUrl}</a>
+            <br />
+            <a href="${data.dashboardUrl}" class="btn btn-blue">Ver Dashboard</a>
           </div>
-          
-          <div class="special-note">
-            <h3 style="margin-top: 0; color: #92400e;">💡 Como Funciona:</h3>
-            <ul style="color: #78350f; margin: 10px 0; padding-left: 20px;">
-              <li>Compartilhe o <strong>Link para Convidados</strong> com todos</li>
+
+          <div class="tips">
+            <h4>🌿 Como funciona</h4>
+            <ul>
+              <li>Compartilhe o link para convidados com todos</li>
               <li>Eles vão poder dar palpites e deixar mensagens</li>
-              <li>No final, a revelação acontece com confetes!</li>
-              <li>Use o <strong>Dashboard</strong> para ver todos os votos e mensagens</li>
+              <li>No final, a revelação acontece com confetes</li>
+              <li>Use o dashboard para ver todos os votos e mensagens</li>
             </ul>
           </div>
-          
+
           <div class="footer">
-            <p style="margin: 10px 0;">Com carinho,<br><strong>Equipe Paper Bloom</strong></p>
-            <p style="margin: 10px 0;"><a href="https://paperbloom.com.br" style="color: #4F46E5;">paperbloom.com.br</a></p>
+            <p class="name">Paper Bloom</p>
+            <p><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
+            <p class="auto">Este é um email automático. Por favor, não responda.</p>
           </div>
         </div>
       </body>
