@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const html = await response.text();
 
     // Extract ytInitialData JSON from the page
-    const dataMatch = html.match(/var ytInitialData\s*=\s*({.+?});\s*<\/script>/s);
+    const dataMatch = html.match(/var ytInitialData\s*=\s*(\{[\s\S]+?\});\s*<\/script>/);
     if (!dataMatch) {
       return NextResponse.json({ results: [] });
     }
