@@ -31,21 +31,7 @@ interface CardCollectionViewerProps {
     cards: Card[];
 }
 
-// Fallback images if card doesn't have one
-const FALLBACK_IMAGES = [
-    "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=2000&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1974&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=2000&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1974&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop",
-];
+import { CardFallbackImage } from '@/components/card-viewer/CardFallbackImage';
 
 // Get moment label based on card order
 function getMomentLabel(order: number): string {
@@ -92,7 +78,8 @@ export default function CardCollectionViewer({
     // Prepare cards data with fallback images and moment labels
     const cards = rawCards.map((card, index) => ({
         ...card,
-        imageUrl: card.imageUrl || FALLBACK_IMAGES[index] || FALLBACK_IMAGES[0],
+        imageUrl: card.imageUrl || null,
+        fallbackVariant: index % 6,
         momentLabel: getMomentLabel(card.order),
         message: card.messageText,
     }));
@@ -654,7 +641,7 @@ export default function CardCollectionViewer({
                                     }}
                                 >
                                     {isOpened ? (
-                                        // Opened card - show image preview
+                                        // Opened card - show image or fallback
                                         <>
                                             {card.imageUrl ? (
                                                 <Image
@@ -664,7 +651,9 @@ export default function CardCollectionViewer({
                                                     className="object-cover opacity-60"
                                                 />
                                             ) : (
-                                                <div className="absolute inset-0 bg-gray-200" />
+                                                <div className="absolute inset-0 opacity-60">
+                                                    <CardFallbackImage variant={card.fallbackVariant} />
+                                                </div>
                                             )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
@@ -775,19 +764,23 @@ export default function CardCollectionViewer({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="p-8 pb-4">
-                                    <span 
-                                        className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
-                                        style={{ 
-                                            backgroundColor: themeColors.accentColor + '20',
-                                            color: themeColors.accentColor 
-                                        }}
-                                    >
-                                        {selectedCard.momentLabel}
-                                    </span>
-                                    <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: themeColors.textColor }}>
-                                        {selectedCard.title}
-                                    </h2>
+                                <div className="relative h-48 overflow-hidden">
+                                    <CardFallbackImage variant={selectedCard.fallbackVariant ?? selectedCard.order ?? 0} />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 w-full p-6">
+                                        <span 
+                                            className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
+                                            style={{ 
+                                                backgroundColor: themeColors.accentColor + '20',
+                                                color: themeColors.accentColor 
+                                            }}
+                                        >
+                                            {selectedCard.momentLabel}
+                                        </span>
+                                        <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                                            {selectedCard.title}
+                                        </h2>
+                                    </div>
                                 </div>
                             )}
 
@@ -1040,13 +1033,15 @@ export default function CardCollectionViewer({
                                 }}
                             >
                                 <div className="relative h-full">
-                                    {cardToOpen.imageUrl && (
+                                    {cardToOpen.imageUrl ? (
                                         <Image
                                             src={cardToOpen.imageUrl}
                                             alt={cardToOpen.title}
                                             fill
                                             className="object-cover"
                                         />
+                                    ) : (
+                                        <CardFallbackImage variant={cardToOpen.order ?? 0} />
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-4">

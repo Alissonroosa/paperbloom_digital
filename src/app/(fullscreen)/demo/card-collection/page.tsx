@@ -6,6 +6,7 @@ import { Heart, Volume2, VolumeX, Lock, LockOpen, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 import { FallingEmojis } from "@/components/effects/FallingEmojis";
+import { CardFallbackImage } from "@/components/card-viewer/CardFallbackImage";
 
 // YouTube Player Types
 declare global {
@@ -57,7 +58,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 1,
             title: "Quando estiver triste",
             message: "Meu amor, eu sei que a vida às vezes pesa demais nos seus ombros. Sei que existem dias em que você acorda e o mundo parece cinza, em que tudo parece difícil demais. Mas eu preciso que você saiba de uma coisa: você é a pessoa mais forte que eu conheço. Eu vi você superar coisas que a maioria das pessoas nem conseguiria imaginar. Vi você chorar escondida e mesmo assim levantar no dia seguinte com um sorriso. Essa força que você tem me inspira todos os dias. Então quando a tristeza vier, deixa ela passar por você como uma onda — ela vai embora, eu prometo. E quando ela for embora, eu vou estar aqui, do seu lado, te lembrando de quem você realmente é.",
-            imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos Difíceis",
             isOpened: false
         },
@@ -66,7 +67,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 2,
             title: "Quando precisar de coragem",
             message: "Lembra daquela vez que você disse que não ia conseguir? Pois é, você conseguiu. E daquela outra vez? Também. A verdade é que você sempre acha que não vai dar conta, mas no final você sempre dá. Isso não é sorte, é quem você é. Coragem não é não ter medo — é tremer inteira e ir assim mesmo. E você faz isso toda vez. Eu queria que você se visse pelos meus olhos, porque o que eu vejo é uma mulher incrível que enfrenta tudo de peito aberto, mesmo quando o coração está apertado. Então vai lá, enfrenta o que precisar enfrentar. Eu estou aqui torcendo por você, como sempre estive e sempre vou estar.",
-            imageUrl: "https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=2000&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos Difíceis",
             isOpened: false
         },
@@ -75,7 +76,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 3,
             title: "Quando se sentir sozinho(a)",
             message: "Eu sei que às vezes, mesmo rodeada de gente, você se sente sozinha. Que tem horas que parece que ninguém entende o que você está sentindo, que ninguém enxerga de verdade. Mas eu enxergo. Eu vejo cada detalhe seu — os que você mostra e os que tenta esconder. E eu quero que você saiba que não importa a hora, o dia, a distância: eu estou com você. Pode ser de madrugada, pode ser no meio de uma segunda-feira caótica. Me liga, me manda mensagem, aparece na minha porta. Você nunca vai ser um incômodo pra mim. Você é a pessoa que eu escolhi pra vida, e solidão não combina com a gente.",
-            imageUrl: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1974&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos Difíceis",
             isOpened: false
         },
@@ -84,7 +85,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 4,
             title: "Quando conquistar algo",
             message: "VOCÊ CONSEGUIU! Eu sabia, eu sempre soube. Enquanto você duvidava, eu já estava aqui comemorando por dentro porque eu conheço você — eu sei do que você é capaz. Cada noite mal dormida, cada momento de dúvida, cada vez que você pensou em desistir e não desistiu... tudo valeu a pena. Essa conquista é sua e de mais ninguém. Você batalhou, você mereceu, você chegou lá. Eu tenho tanto orgulho de você que nem cabe no peito. Celebra isso, viu? Não minimiza, não fala que foi sorte, não muda de assunto. Para, respira, e sente o tamanho do que você fez. Eu te amo e estou explodindo de orgulho.",
-            imageUrl: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos Felizes",
             isOpened: false
         },
@@ -93,7 +94,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 5,
             title: "Quando estiver feliz",
             message: "Sabe o que é engraçado? Quando você está feliz, o mundo inteiro ao redor parece mais bonito. Seus olhos brilham de um jeito que me faz esquecer de qualquer problema. Seu riso é a minha música favorita — e olha que eu já ouvi muita música boa. Eu vivo pros seus momentos de felicidade. Não porque os tristes não importem, mas porque ver você radiante me lembra do porquê de tudo. Então guarda esse momento. Fecha os olhos e grava essa sensação no coração. Nos dias difíceis, volta aqui e lembra: a felicidade não é um destino, é o caminho. E o nosso caminho juntos é lindo demais.",
-            imageUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos Felizes",
             isOpened: false
         },
@@ -102,7 +103,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 6,
             title: "Quando quiser sorrir",
             message: "Lembra do dia que a gente ficou preso na chuva e em vez de reclamar a gente começou a dançar no meio da rua? Ou daquela vez que você tentou cozinhar aquele prato elaborado e acabou pedindo pizza? Eu rio até hoje. A verdade é que os melhores momentos da minha vida são os mais simples — e todos eles têm você. Seu sorriso tem o poder de transformar o dia mais comum em algo extraordinário. Então se você está precisando sorrir, lembra da gente. Lembra das nossas bobeiras, das nossas piadas sem graça que só a gente entende, dos olhares cúmplices. A gente é isso: dois bobos que se encontraram e fizeram a vida ficar mais leve.",
-            imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos Felizes",
             isOpened: false
         },
@@ -111,7 +112,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 7,
             title: "Quando precisar rir",
             message: "Ok, prepara que eu vou te fazer rir. Lembra quando eu tentei te impressionar cozinhando e quase coloquei fogo na cozinha? Ou quando eu tropecei na frente de toda a sua família no primeiro almoço de domingo? Sua mãe até hoje me olha diferente por causa daquilo. E aquela vez que eu mandei uma mensagem romântica... pro grupo da família? Eu queria sumir da face da Terra. Mas sabe o que eu mais amo? Que em todos esses momentos vergonhosos, você estava lá rindo comigo (e de mim, vamos ser honestos). Nosso amor é feito de gargalhadas, e eu não trocaria nenhuma delas por nada nesse mundo.",
-            imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos Felizes",
             isOpened: false
         },
@@ -120,7 +121,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 8,
             title: "Quando sentir saudade",
             message: "Se você está sentindo saudade, saiba que eu também estou. A saudade é engraçada — ela dói, mas ao mesmo tempo é bonita, porque só sente saudade quem viveu algo que valeu a pena. E a gente viveu tanta coisa bonita juntos. Cada abraço apertado, cada beijo demorado, cada noite conversando até o sono vencer. Eu guardo tudo isso num lugar especial dentro de mim. Às vezes, no meio do dia, uma lembrança sua aparece do nada e eu fico sorrindo sozinho feito bobo. As pessoas devem achar que eu sou maluco. Mas é que pensar em você me faz bem demais. A saudade vai passar, e quando a gente se encontrar de novo, vai ser ainda mais especial.",
-            imageUrl: "https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=2000&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
             isOpened: false
         },
@@ -129,7 +130,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 9,
             title: "Quando precisar de paz",
             message: "Para tudo. Respira fundo. Inspira pelo nariz... segura... solta pela boca. De novo. Mais uma vez. Pronto, agora me escuta: você não precisa resolver tudo hoje. Não precisa ter todas as respostas agora. Não precisa ser perfeita, não precisa agradar todo mundo, não precisa carregar o mundo nas costas. Você só precisa ser você, no seu tempo, do seu jeito. E isso já é mais que suficiente. Eu sei que sua mente às vezes parece uma tempestade, com mil pensamentos ao mesmo tempo. Mas depois de toda tempestade vem a calmaria. E eu estou aqui pra ser sua calmaria. Descansa o coração, meu bem. Tudo vai ficar bem.",
-            imageUrl: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1974&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
             isOpened: false
         },
@@ -138,7 +139,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 10,
             title: "Quando quiser agradecer",
             message: "Eu é que deveria estar agradecendo. Agradecer por você existir, por ter cruzado o meu caminho, por ter escolhido ficar. Você transformou a minha vida de um jeito que eu nem sabia que era possível. Antes de você, eu achava que sabia o que era amor. Mas você me mostrou que amor de verdade é muito mais do que eu imaginava. É acordar e a primeira coisa que vem na cabeça é o seu sorriso. É querer ser uma pessoa melhor só porque você merece o melhor. É encontrar paz no meio do caos só porque você está por perto. Então se você quer agradecer por algo, eu te digo: obrigado por me deixar te amar. Esse é o maior presente que eu já recebi.",
-            imageUrl: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
             isOpened: false
         },
@@ -147,7 +148,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 11,
             title: "Quando sonhar com o futuro",
             message: "Fecha os olhos e imagina a gente daqui a dez anos. Eu imagino a gente numa casa com um jardim bagunçado, talvez um cachorro (ou três, conhecendo você). Imagino manhãs de domingo preguiçosas, café na cama, risadas ecoando pelos corredores. Imagino a gente viajando pra aqueles lugares que a gente vive falando, envelhecendo juntos e ainda se olhando do mesmo jeito. Eu não sei exatamente como o futuro vai ser — ninguém sabe. Mas eu sei que quero você nele. Em todos os cenários, em todos os planos, em todas as versões do amanhã. Você é o meu futuro favorito. E eu mal posso esperar pra viver tudo isso com você.",
-            imageUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
             isOpened: false
         },
@@ -156,7 +157,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
             order: 12,
             title: "Quando quiser lembrar de mim",
             message: "Se um dia você precisar lembrar de mim, não precisa ir longe. Eu estou em cada música que a gente ouviu juntos, em cada lugar que a gente visitou, em cada piada interna que só a gente entende. Eu estou no seu sorriso quando você lembra de algo engraçado que eu fiz, no seu suspiro quando você sente saudade, no seu coração quando ele bate mais forte. Eu sou seu e você é minha — não de um jeito possessivo, mas de um jeito que transcende tudo. A gente se pertence de alma. E não importa o que aconteça, onde a vida nos leve, uma coisa nunca vai mudar: eu te amo. Te amo de um jeito que eu nem sabia que existia antes de você. Te amo hoje, amanhã e em todas as vidas que vierem depois dessa. Pra sempre, seu João. ❤️",
-            imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop",
+            imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
             isOpened: false
         }
@@ -177,6 +178,7 @@ export default function CardCollectionDemoPage() {
     const [showEnvelopeAnimation, setShowEnvelopeAnimation] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [showSealAnimation, setShowSealAnimation] = useState(false);
+    const [showAlreadyOpened, setShowAlreadyOpened] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const playerRef = useRef<any>(null);
     const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -303,8 +305,9 @@ export default function CardCollectionDemoPage() {
 
     const handleOpenCard = (card: CardData) => {
         if (openedCards.has(card.id)) {
-            // Card already opened, just show it
-            setSelectedCard(card);
+            // Card already opened - show "already opened" message
+            setCardToOpen(card);
+            setShowAlreadyOpened(true);
         } else {
             // First time opening - show confirmation popup
             setCardToOpen(card);
@@ -679,14 +682,20 @@ export default function CardCollectionDemoPage() {
                                     }}
                                 >
                                     {isOpened ? (
-                                        // Opened card - show image preview
+                                        // Opened card - show fallback or image
                                         <>
-                                            <Image
-                                                src={card.imageUrl}
-                                                alt={card.title}
-                                                fill
-                                                className="object-cover opacity-60"
-                                            />
+                                            {card.imageUrl ? (
+                                                <Image
+                                                    src={card.imageUrl}
+                                                    alt={card.title}
+                                                    fill
+                                                    className="object-cover opacity-60"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 opacity-60">
+                                                    <CardFallbackImage variant={index} />
+                                                </div>
+                                            )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
                                                 <LockOpen className="w-8 h-8 text-white mb-2" />
@@ -777,28 +786,49 @@ export default function CardCollectionDemoPage() {
                                 <X className="w-4 h-4 text-white/80" />
                             </button>
                             {/* Card Image */}
-                            <div className="relative overflow-hidden">
-                                <img
-                                    src={selectedCard.imageUrl}
-                                    alt={selectedCard.title}
-                                    className="w-full max-h-[50vh] object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <div className="absolute bottom-0 left-0 w-full p-6">
-                                    <span 
-                                        className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
-                                        style={{ 
-                                            backgroundColor: themeColors.accentColor + '20',
-                                            color: themeColors.accentColor 
-                                        }}
-                                    >
-                                        {selectedCard.momentLabel}
-                                    </span>
-                                    <h2 className="text-2xl md:text-3xl font-semibold text-white">
-                                        {selectedCard.title}
-                                    </h2>
+                            {selectedCard.imageUrl ? (
+                                <div className="relative overflow-hidden">
+                                    <img
+                                        src={selectedCard.imageUrl}
+                                        alt={selectedCard.title}
+                                        className="w-full max-h-[50vh] object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 w-full p-6">
+                                        <span 
+                                            className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
+                                            style={{ 
+                                                backgroundColor: themeColors.accentColor + '20',
+                                                color: themeColors.accentColor 
+                                            }}
+                                        >
+                                            {selectedCard.momentLabel}
+                                        </span>
+                                        <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                                            {selectedCard.title}
+                                        </h2>
+                                    </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="relative h-48 overflow-hidden">
+                                    <CardFallbackImage variant={selectedCard.order - 1} label="Sua foto aqui" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 w-full p-6">
+                                        <span 
+                                            className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
+                                            style={{ 
+                                                backgroundColor: themeColors.accentColor + '20',
+                                                color: themeColors.accentColor 
+                                            }}
+                                        >
+                                            {selectedCard.momentLabel}
+                                        </span>
+                                        <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                                            {selectedCard.title}
+                                        </h2>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Card Message */}
                             <div className="p-8">
@@ -970,12 +1000,16 @@ export default function CardCollectionDemoPage() {
                                 }}
                             >
                                 <div className="relative h-full">
-                                    <Image
-                                        src={cardToOpen.imageUrl}
-                                        alt={cardToOpen.title}
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    {cardToOpen.imageUrl ? (
+                                        <Image
+                                            src={cardToOpen.imageUrl}
+                                            alt={cardToOpen.title}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <CardFallbackImage variant={cardToOpen.order - 1} />
+                                    )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-4">
                                         <p className="text-white text-sm font-medium">
@@ -1124,6 +1158,61 @@ export default function CardCollectionDemoPage() {
                                 <p className="text-white/60 text-sm">Este momento ficará guardado para sempre ✨</p>
                             </motion.div>
                         </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ALREADY OPENED MESSAGE */}
+            <AnimatePresence>
+                {showAlreadyOpened && cardToOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+                        onClick={() => { setShowAlreadyOpened(false); setCardToOpen(null); }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, y: 30 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.8, y: 30 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8"
+                        >
+                            <div className="text-center">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                                    className="mb-6"
+                                >
+                                    <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center bg-gray-100">
+                                        <LockOpen className="w-10 h-10 text-gray-400" />
+                                    </div>
+                                </motion.div>
+
+                                <h2 className="text-2xl font-semibold mb-4" style={{ color: themeColors.textColor }}>
+                                    Carta já aberta
+                                </h2>
+
+                                <p className="text-lg mb-2 font-medium" style={{ color: themeColors.secondaryTextColor }}>
+                                    {cardToOpen.title}
+                                </p>
+
+                                <p className="text-base mb-8" style={{ color: themeColors.secondaryTextColor }}>
+                                    Você já abriu esta carta. Cada carta só pode ser aberta uma única vez para manter a magia do momento especial. ✨
+                                </p>
+
+                                <Button
+                                    onClick={() => { setShowAlreadyOpened(false); setCardToOpen(null); }}
+                                    size="lg"
+                                    className="w-full rounded-full"
+                                    style={{ backgroundColor: themeColors.accentColor, color: 'white' }}
+                                >
+                                    Entendi
+                                </Button>
+                            </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
