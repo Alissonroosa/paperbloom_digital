@@ -6,7 +6,7 @@ import Cropper from 'react-easy-crop';
 import type { Area, Point } from 'react-easy-crop';
 import { Card } from '@/types/card';
 import { Button } from '@/components/ui/Button';
-import { Upload, X, Loader2, XCircle, Crop, ZoomIn, ZoomOut, RotateCcw, RotateCw } from 'lucide-react';
+import { Upload, X, Loader2, XCircle, Crop, RotateCcw, RotateCw } from 'lucide-react';
 import { getCroppedImage, fixImageOrientation } from '@/lib/crop-image';
 
 /**
@@ -426,7 +426,7 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
                 </div>
 
                 {/* Cropper Container */}
-                <div className="relative w-full aspect-square bg-gray-900 rounded-lg overflow-hidden">
+                <div className="relative w-full aspect-[3/4] bg-gray-900 rounded-lg overflow-hidden">
                   <Cropper
                     image={cropImageSrc}
                     crop={crop}
@@ -438,57 +438,40 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
                     onRotationChange={setRotation}
                     onCropComplete={onCropComplete}
                     showGrid={true}
+                    minZoom={1}
+                    maxZoom={3}
                   />
                 </div>
 
-                {/* Controls */}
-                <div className="space-y-3">
-                  {/* Zoom Controls */}
-                  <div className="flex items-center gap-3 px-2">
-                    <ZoomOut className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                    <input
-                      type="range"
-                      min={1}
-                      max={3}
-                      step={0.05}
-                      value={zoom}
-                      onChange={(e) => setZoom(Number(e.target.value))}
-                      className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                      aria-label="Zoom da imagem"
-                    />
-                    <ZoomIn className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  </div>
-
-                  {/* Rotation Controls */}
-                  <div className="flex items-center justify-center gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setRotation((r) => ((r - 90) % 360 + 360) % 360)}
-                      className="min-h-[40px] min-w-[40px] gap-1.5"
-                      aria-label="Girar 90° para esquerda"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                    </Button>
-                    <span className="text-xs text-gray-500 min-w-[40px] text-center">
-                      {rotation}°
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setRotation((r) => (r + 90) % 360)}
-                      className="min-h-[40px] min-w-[40px] gap-1.5"
-                      aria-label="Girar 90° para direita"
-                    >
-                      <RotateCw className="w-4 h-4" />
-                    </Button>
-                  </div>
+                {/* Rotation only */}
+                <div className="flex items-center justify-center gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setRotation((r) => ((r - 90) % 360 + 360) % 360)}
+                    className="min-h-[44px] min-w-[44px] gap-1.5"
+                    aria-label="Girar 90° para esquerda"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                  <span className="text-xs text-gray-500 min-w-[40px] text-center">
+                    {rotation}°
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setRotation((r) => (r + 90) % 360)}
+                    className="min-h-[44px] min-w-[44px] gap-1.5"
+                    aria-label="Girar 90° para direita"
+                  >
+                    <RotateCw className="w-4 h-4" />
+                  </Button>
                 </div>
 
                 <p className="text-xs text-gray-500 text-center">
-                  Arraste para posicionar • Use o controle para dar zoom
+                  Arraste para posicionar • Pinça para zoom
                 </p>
 
                 {/* Crop Actions */}
@@ -506,7 +489,7 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
                     className="flex-1 min-h-[44px]"
                   >
                     <Crop className="w-4 h-4 mr-2" />
-                    Confirmar Corte
+                    Confirmar
                   </Button>
                 </div>
               </div>
