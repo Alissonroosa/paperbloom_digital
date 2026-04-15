@@ -289,7 +289,7 @@ export default function CardCollectionViewer({
                 
                 setShowEnvelopeAnimation(false);
                 // Merge API data with the mapped card (which has fallback image and momentLabel)
-                setSelectedCard({ ...cardToOpen, ...data.card, imageUrl: data.card?.imageUrl || cardToOpen.imageUrl, message: data.card?.messageText || cardToOpen.message || cardToOpen.messageText });
+                setSelectedCard({ ...cardToOpen, ...data.card, imageUrl: data.card?.imageUrl || cardToOpen.imageUrl, message: data.card?.messageText || (cardToOpen as any).message || cardToOpen.messageText });
                 setCardToOpen(null);
             }, 2500);
         } catch (error) {
