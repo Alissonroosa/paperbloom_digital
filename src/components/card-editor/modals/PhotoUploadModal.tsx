@@ -432,7 +432,7 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
                     crop={crop}
                     zoom={zoom}
                     rotation={rotation}
-                    aspect={4 / 3}
+                    aspect={3 / 4}
                     onCropChange={setCrop}
                     onZoomChange={setZoom}
                     onRotationChange={setRotation}
@@ -521,7 +521,7 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
                     <label className="block text-sm font-medium text-gray-700">
                       {selectedFile ? 'Foto Cortada' : 'Foto Atual'}
                     </label>
-                    <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                    <div className="relative w-full aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden">
                       <Image
                         src={previewUrl}
                         alt="Preview da foto"

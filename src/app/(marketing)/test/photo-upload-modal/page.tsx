@@ -176,7 +176,7 @@ export default function PhotoUploadModalTestPage() {
                     Photo
                   </label>
                   {testCard.imageUrl ? (
-                    <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                    <div className="relative w-full aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden">
                       <Image
                         src={testCard.imageUrl}
                         alt="Card photo"
@@ -198,7 +198,7 @@ export default function PhotoUploadModalTestPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="w-full aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-full aspect-[3/4] bg-gray-100 rounded-lg flex items-center justify-center">
                       <div className="text-center text-gray-400">
                         <ImageIcon className="w-12 h-12 mx-auto mb-2" />
                         <p className="text-sm">No photo</p>

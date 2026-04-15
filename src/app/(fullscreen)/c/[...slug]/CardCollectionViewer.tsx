@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Volume2, VolumeX, Lock, LockOpen } from "lucide-react";
+import { Volume2, VolumeX, Lock, LockOpen, Heart, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 import { FallingEmojis } from "@/components/effects/FallingEmojis";
@@ -122,21 +122,37 @@ export default function CardCollectionViewer({
     const [showAlreadyOpenedMessage, setShowAlreadyOpenedMessage] = useState(false);
     const [cardToOpen, setCardToOpen] = useState<Card | null>(null);
     const [showEnvelopeAnimation, setShowEnvelopeAnimation] = useState(false);
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+    const [showSealAnimation, setShowSealAnimation] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const playerRef = useRef<any>(null);
     const playerContainerRef = useRef<HTMLDivElement>(null);
 
-    // Load opened cards from localStorage (unique per collection)
+    // Initialize opened cards from server data (cards that have status 'opened' in the database)
+    // This is the source of truth — localStorage is just a cache
     useEffect(() => {
+        const serverOpened = new Set<string>();
+        rawCards.forEach(card => {
+            if (card.status === 'opened') {
+                serverOpened.add(card.id);
+            }
+        });
+        
+        // Also merge any localStorage data (in case the page was opened mid-animation)
         const savedOpened = localStorage.getItem(`paperbloom-opened-cards-${collection.id}`);
         if (savedOpened) {
             try {
-                setOpenedCards(new Set(JSON.parse(savedOpened)));
+                const parsed: string[] = JSON.parse(savedOpened);
+                parsed.forEach(id => serverOpened.add(id));
             } catch (e) {
-                console.error('Failed to load opened cards:', e);
+                console.error('Failed to load opened cards from localStorage:', e);
             }
         }
-    }, [collection.id]);
+        
+        setOpenedCards(serverOpened);
+        // Sync back to localStorage
+        localStorage.setItem(`paperbloom-opened-cards-${collection.id}`, JSON.stringify(Array.from(serverOpened)));
+    }, [collection.id, rawCards]);
 
     // Load YouTube IFrame API
     useEffect(() => {
@@ -242,7 +258,7 @@ export default function CardCollectionViewer({
         }
     };
 
-    const handleConfirmOpen = () => {
+    const handleConfirmOpen = async () => {
         if (!cardToOpen) return;
 
         // Close confirmation
@@ -251,19 +267,49 @@ export default function CardCollectionViewer({
         // Show envelope animation
         setShowEnvelopeAnimation(true);
 
-        // After animation, mark as opened and show card
-        setTimeout(() => {
-            const newOpened = new Set(openedCards);
-            newOpened.add(cardToOpen.id);
-            setOpenedCards(newOpened);
-            
-            // Save to localStorage (unique per collection)
-            localStorage.setItem(`paperbloom-opened-cards-${collection.id}`, JSON.stringify(Array.from(newOpened)));
-            
+        // Call the API to mark card as opened in the database
+        try {
+            const response = await fetch(`/api/cards/${cardToOpen.id}/open`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                if (data.alreadyOpened) {
+                    // Card was already opened (race condition or stale state)
+                    const newOpened = new Set(openedCards);
+                    newOpened.add(cardToOpen.id);
+                    setOpenedCards(newOpened);
+                    localStorage.setItem(`paperbloom-opened-cards-${collection.id}`, JSON.stringify(Array.from(newOpened)));
+                    setShowEnvelopeAnimation(false);
+                    setCardToOpen(null);
+                    setShowAlreadyOpenedMessage(true);
+                    return;
+                }
+                throw new Error('Failed to open card');
+            }
+
+            const data = await response.json();
+
+            // After animation, mark as opened and show card with server data
+            setTimeout(() => {
+                const newOpened = new Set(openedCards);
+                newOpened.add(cardToOpen.id);
+                setOpenedCards(newOpened);
+                
+                // Save to localStorage as cache
+                localStorage.setItem(`paperbloom-opened-cards-${collection.id}`, JSON.stringify(Array.from(newOpened)));
+                
+                setShowEnvelopeAnimation(false);
+                // Merge API data with the mapped card (which has fallback image and momentLabel)
+                setSelectedCard({ ...cardToOpen, ...data.card, imageUrl: data.card?.imageUrl || cardToOpen.imageUrl, message: data.card?.messageText || cardToOpen.message || cardToOpen.messageText });
+                setCardToOpen(null);
+            }, 2500);
+        } catch (error) {
+            console.error('Error opening card:', error);
             setShowEnvelopeAnimation(false);
-            setSelectedCard(cardToOpen);
             setCardToOpen(null);
-        }, 2500); // Duration of envelope animation
+        }
     };
 
     const handleCancelOpen = () => {
@@ -272,7 +318,23 @@ export default function CardCollectionViewer({
     };
 
     const handleCloseCard = () => {
-        setSelectedCard(null);
+        // Show confirmation before sealing
+        setShowCloseConfirm(true);
+    };
+
+    const handleConfirmClose = () => {
+        setShowCloseConfirm(false);
+        setShowSealAnimation(true);
+
+        // After seal animation, close the card
+        setTimeout(() => {
+            setShowSealAnimation(false);
+            setSelectedCard(null);
+        }, 2000);
+    };
+
+    const handleCancelClose = () => {
+        setShowCloseConfirm(false);
     };
 
     const toggleMusic = () => {
@@ -594,12 +656,16 @@ export default function CardCollectionViewer({
                                     {isOpened ? (
                                         // Opened card - show image preview
                                         <>
-                                            <Image
-                                                src={card.imageUrl}
-                                                alt={card.title}
-                                                fill
-                                                className="object-cover opacity-60"
-                                            />
+                                            {card.imageUrl ? (
+                                                <Image
+                                                    src={card.imageUrl}
+                                                    alt={card.title}
+                                                    fill
+                                                    className="object-cover opacity-60"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 bg-gray-200" />
+                                            )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
                                                 <LockOpen className="w-8 h-8 text-white mb-2" />
@@ -674,18 +740,42 @@ export default function CardCollectionViewer({
                             animate={{ scale: 1, y: 0 }}
                             exit={{ scale: 0.9, y: 50 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                            className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
                         >
+                            {/* Close X */}
+                            <button
+                                onClick={handleCloseCard}
+                                className="absolute top-3 right-3 z-20 bg-black/30 hover:bg-black/50 backdrop-blur-sm rounded-full p-1.5 transition-all"
+                                aria-label="Fechar carta"
+                            >
+                                <X className="w-4 h-4 text-white/80" />
+                            </button>
                             {/* Card Image */}
-                            <div className="relative h-64 md:h-80">
-                                <Image
-                                    src={selectedCard.imageUrl}
-                                    alt={selectedCard.title}
-                                    fill
-                                    className="object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <div className="absolute bottom-0 left-0 w-full p-6">
+                            {selectedCard.imageUrl ? (
+                                <div className="relative max-h-[50vh] overflow-hidden">
+                                    <img
+                                        src={selectedCard.imageUrl}
+                                        alt={selectedCard.title}
+                                        className="w-full max-h-[50vh] object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 w-full p-6">
+                                        <span 
+                                            className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
+                                            style={{ 
+                                                backgroundColor: themeColors.accentColor + '20',
+                                                color: themeColors.accentColor 
+                                            }}
+                                        >
+                                            {selectedCard.momentLabel}
+                                        </span>
+                                        <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                                            {selectedCard.title}
+                                        </h2>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="p-8 pb-4">
                                     <span 
                                         className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
                                         style={{ 
@@ -695,16 +785,16 @@ export default function CardCollectionViewer({
                                     >
                                         {selectedCard.momentLabel}
                                     </span>
-                                    <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                                    <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: themeColors.textColor }}>
                                         {selectedCard.title}
                                     </h2>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Card Message */}
                             <div className="p-8">
                                 <p className="text-xl md:text-2xl leading-relaxed text-gray-800 mb-6">
-                                    {selectedCard.message}
+                                    {selectedCard.message || selectedCard.messageText}
                                 </p>
 
                                 {!openedCards.has(selectedCard.id) && (
@@ -998,6 +1088,126 @@ export default function CardCollectionViewer({
                 )}
             </AnimatePresence>
 
+            {/* CLOSE CONFIRMATION DIALOG */}
+            <AnimatePresence>
+                {showCloseConfirm && selectedCard && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+                        onClick={handleCancelClose}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, y: 30 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.8, y: 30 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8"
+                        >
+                            <div className="text-center space-y-4">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: 0.15, type: "spring", stiffness: 200 }}
+                                    className="text-5xl"
+                                >
+                                    💌
+                                </motion.div>
+
+                                <h3 className="text-xl font-semibold" style={{ color: themeColors.textColor }}>
+                                    Fechar esta carta?
+                                </h3>
+
+                                <p className="text-sm leading-relaxed" style={{ color: themeColors.secondaryTextColor }}>
+                                    Ao fechar, esta carta será <strong>selada para sempre</strong>. Você não poderá abri-la novamente.
+                                </p>
+
+                                <p className="text-sm italic" style={{ color: themeColors.secondaryTextColor, opacity: 0.8 }}>
+                                    Certifique-se de que leu tudo e sentiu cada palavra deste momento especial.
+                                </p>
+
+                                <div className="flex flex-col gap-3 pt-2">
+                                    <Button
+                                        onClick={handleCancelClose}
+                                        variant="outline"
+                                        className="w-full py-3 rounded-full"
+                                    >
+                                        Voltar e ler mais uma vez
+                                    </Button>
+                                    <Button
+                                        onClick={handleConfirmClose}
+                                        className="w-full py-3 rounded-full"
+                                        style={{ backgroundColor: themeColors.accentColor, color: 'white' }}
+                                    >
+                                        Já li, pode selar 💝
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* SEAL ANIMATION */}
+            <AnimatePresence>
+                {showSealAnimation && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/90 backdrop-blur-md z-[70] flex items-center justify-center p-4"
+                    >
+                        <div className="text-center space-y-8">
+                            {/* Envelope closing animation */}
+                            <motion.div
+                                className="relative w-48 h-36 mx-auto"
+                            >
+                                {/* Envelope body */}
+                                <div
+                                    className="absolute inset-0 rounded-lg"
+                                    style={{ backgroundColor: themeColors.accentColor }}
+                                />
+
+                                {/* Envelope flap closing */}
+                                <motion.div
+                                    className="absolute top-0 left-0 right-0 origin-top"
+                                    style={{
+                                        height: '50%',
+                                        backgroundColor: themeColors.accentColorDark,
+                                        clipPath: 'polygon(0 0, 50% 100%, 100% 0)',
+                                    }}
+                                    initial={{ rotateX: -180 }}
+                                    animate={{ rotateX: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.3, ease: "easeInOut" }}
+                                />
+
+                                {/* Wax seal */}
+                                <motion.div
+                                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-10"
+                                    style={{ backgroundColor: '#c0392b' }}
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ delay: 1, type: "spring", stiffness: 300, damping: 15 }}
+                                >
+                                    <Heart className="w-7 h-7 text-white" />
+                                </motion.div>
+                            </motion.div>
+
+                            {/* Text */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 1.2 }}
+                                className="space-y-2"
+                            >
+                                <p className="text-white text-xl font-light">Carta selada</p>
+                                <p className="text-white/60 text-sm">Este momento ficará guardado para sempre ✨</p>
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
         </div>
     );

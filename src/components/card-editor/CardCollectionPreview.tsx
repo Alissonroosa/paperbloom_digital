@@ -302,12 +302,11 @@ export function CardCollectionPreview({
               >
                 {/* Card Image */}
                 {selectedCard.imageUrl && (
-                  <div className="relative h-48 md:h-64">
-                    <Image
+                  <div className="relative overflow-hidden">
+                    <img
                       src={selectedCard.imageUrl}
                       alt={selectedCard.title}
-                      fill
-                      className="object-cover"
+                      className="w-full max-h-[50vh] object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-0 left-0 w-full p-5">

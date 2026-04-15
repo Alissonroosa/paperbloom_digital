@@ -445,7 +445,7 @@ export function CardEditorStep() {
         
         {currentCard.imageUrl && !uploadState.isUploading ? (
           <div className="relative border-2 border-green-500 bg-green-50 rounded-lg p-4">
-            <div className="relative w-full h-48">
+            <div className="relative w-full aspect-[3/4]">
               <Image
                 src={currentCard.imageUrl}
                 alt="Foto da carta"
