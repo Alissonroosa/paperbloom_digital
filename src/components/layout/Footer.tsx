@@ -12,6 +12,9 @@ export function Footer() {
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
+                    <Link href="/politica-de-privacidade" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                        Privacidade
+                    </Link>
                     <Link href="https://wa.me/5551992698003" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
                         <Phone className="h-5 w-5" />
                         <span className="text-sm hidden sm:inline">Suporte</span>
