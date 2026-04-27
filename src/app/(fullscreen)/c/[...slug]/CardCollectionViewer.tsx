@@ -115,30 +115,17 @@ export default function CardCollectionViewer({
     const playerRef = useRef<any>(null);
     const playerContainerRef = useRef<HTMLDivElement>(null);
 
-    // Initialize opened cards from server data (cards that have status 'opened' in the database)
-    // This is the source of truth — localStorage is just a cache
+    // Initialize opened cards from server data (single source of truth).
+    // localStorage is only used as an optimistic cache for the post-click animation.
     useEffect(() => {
-        const serverOpened = new Set<string>();
-        rawCards.forEach(card => {
-            if (card.status === 'opened') {
-                serverOpened.add(card.id);
-            }
-        });
-        
-        // Also merge any localStorage data (in case the page was opened mid-animation)
-        const savedOpened = localStorage.getItem(`paperbloom-opened-cards-${collection.id}`);
-        if (savedOpened) {
-            try {
-                const parsed: string[] = JSON.parse(savedOpened);
-                parsed.forEach(id => serverOpened.add(id));
-            } catch (e) {
-                console.error('Failed to load opened cards from localStorage:', e);
-            }
-        }
-        
+        const serverOpened = new Set<string>(
+            rawCards.filter(c => c.status === 'opened').map(c => c.id)
+        );
         setOpenedCards(serverOpened);
-        // Sync back to localStorage
-        localStorage.setItem(`paperbloom-opened-cards-${collection.id}`, JSON.stringify(Array.from(serverOpened)));
+        localStorage.setItem(
+            `paperbloom-opened-cards-${collection.id}`,
+            JSON.stringify(Array.from(serverOpened))
+        );
     }, [collection.id, rawCards]);
 
     // Load YouTube IFrame API
