@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { priceService } from '@/services/PriceService';
 
-// Cache por 60 segundos para não sobrecarregar o banco
-export const revalidate = 60;
+// Sem cache estático — preços são dinâmicos e gerenciados pelo admin
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
