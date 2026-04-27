@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import { AnimatedEmoji } from './AnimatedEmoji';
 import { ProgressIndicator } from './ProgressIndicator';
+import { PriceBadge } from './PriceBadge';
 import { useInteractiveWizardContext } from '@/contexts/InteractiveWizardContext';
 import { DEFAULT_ANIMATION_CONFIG } from '@/types/interactive-wizard';
 
@@ -44,6 +45,10 @@ export interface FullscreenStepProps {
   showDemoLink?: boolean;
   /** URL for the demo link */
   demoLinkHref?: string;
+  /** Whether to show the persistent price badge below the subtitle (default: true) */
+  showPriceBadge?: boolean;
+  /** Optional context line shown next to the price (e.g., "Acesso para sempre") */
+  priceContextLine?: string;
   /** Additional CSS classes */
   className?: string;
 }
@@ -84,6 +89,8 @@ export function FullscreenStep({
   backLinkText = '← Voltar',
   showDemoLink = false,
   demoLinkHref,
+  showPriceBadge = true,
+  priceContextLine,
   className,
 }: FullscreenStepProps): JSX.Element {
   const { state, config, goToStep } = useInteractiveWizardContext();
@@ -126,10 +133,26 @@ export function FullscreenStep({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: delays[2] }}
-          className="text-center text-gray-600 mb-8 max-w-md"
+          className="text-center text-gray-600 mb-4 max-w-md"
         >
           {subtitle}
         </motion.p>
+      )}
+
+      {/* Persistent price badge with staggered animation */}
+      {showPriceBadge && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: delays[2] + 0.05 }}
+          className="mb-6"
+        >
+          <PriceBadge
+            productType={config.productType}
+            variant="compact"
+            contextLine={priceContextLine}
+          />
+        </motion.div>
       )}
 
       {/* Main content container with staggered animation */}

@@ -206,6 +206,7 @@ export default function CardCollectionPage() {
           card={selectedCard}
           isFirstOpen={isFirstOpen}
           onClose={handleCloseModal}
+          coverImageUrl={collection.coverImageUrl}
         />
       )}
 

@@ -109,6 +109,7 @@ export interface CardCollection {
   contactName: string | null;      // Nome para contato
   introMessage: string | null;     // Mensagem inicial personalizada
   youtubeVideoId: string | null;   // ID do vídeo do YouTube
+  coverImageUrl: string | null;    // Foto capa única (fallback nas cartas sem foto)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -148,6 +149,7 @@ export interface CardCollectionRow {
   contact_name: string | null;
   intro_message: string | null;
   youtube_video_id: string | null;
+  cover_image_url: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -318,6 +320,7 @@ export function rowToCardCollection(row: CardCollectionRow): CardCollection {
     contactName: row.contact_name,
     introMessage: row.intro_message,
     youtubeVideoId: row.youtube_video_id,
+    coverImageUrl: row.cover_image_url,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

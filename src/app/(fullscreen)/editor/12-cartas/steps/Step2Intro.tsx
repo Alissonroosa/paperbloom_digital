@@ -6,7 +6,7 @@ import { WizardNavigation } from '@/components/interactive-wizard/WizardNavigati
 import { useInteractiveWizardNavigation } from '@/contexts/InteractiveWizardContext';
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ChevronDown, ChevronUp, Search, Link as LinkIcon, Music, X } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronUp, Search, Link as LinkIcon, Music, X, Camera, Loader2 } from 'lucide-react';
 import { YouTubeSearch } from '@/components/interactive-wizard/YouTubeSearch';
 
 const MESSAGE_SUGGESTIONS = [
@@ -51,6 +51,9 @@ export function Step2Intro() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [musicMode, setMusicMode] = useState<'search' | 'link'>('search');
   const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
 
   // Sync with collection data
   useEffect(() => {
@@ -62,8 +65,54 @@ export function Step2Intro() {
         setVideoId(collection.youtubeVideoId);
         setYoutubeUrl(`https://www.youtube.com/watch?v=${collection.youtubeVideoId}`);
       }
+      if (collection.coverImageUrl) {
+        setCoverImageUrl(collection.coverImageUrl);
+      }
     }
   }, [collection]);
+
+  const handleCoverFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCoverError(null);
+
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setCoverError('Use uma imagem JPG, PNG ou WebP');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setCoverError('Imagem maior que 5MB. Tente uma menor.');
+      return;
+    }
+
+    setIsUploadingCover(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch('/api/upload/card-image', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) {
+        throw new Error('Falha no upload');
+      }
+      const data = await res.json();
+      setCoverImageUrl(data.url);
+    } catch (err) {
+      console.error('Cover upload failed:', err);
+      setCoverError('Não foi possível enviar a foto. Tente novamente.');
+    } finally {
+      setIsUploadingCover(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveCover = () => {
+    setCoverImageUrl(null);
+    setCoverError(null);
+  };
 
   // Extract YouTube video ID from URL
   const extractVideoId = (url: string): string | null => {
@@ -123,6 +172,7 @@ export function Step2Intro() {
       await updateCollection(collection.id, {
         introMessage: introMessage.trim() || null,
         youtubeVideoId: videoId,
+        coverImageUrl,
       });
       nextStep();
     } catch (error) {
@@ -134,21 +184,84 @@ export function Step2Intro() {
     prevStep();
   };
 
+  const recipientName = collection?.recipientName?.trim() || 'a pessoa';
+
   return (
     <FullscreenStep
       emoji="✨"
-      title="Personalize a experiência"
-      subtitle="Adicione uma mensagem de abertura e uma música especial"
+      title="A abertura do presente"
+      subtitle={`O que ${recipientName} vai ler e ouvir antes das 12 cartas`}
       showProgress={true}
       showBackLink={false}
       showDemoLink={true}
       demoLinkHref="/demo/card-collection"
     >
       <div className="w-full max-w-md mx-auto space-y-6">
+        {/* Cover Photo */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            📸 Foto da capa (opcional)
+          </label>
+
+          {coverImageUrl ? (
+            <div className="relative rounded-xl overflow-hidden border-2 border-purple-200 shadow-sm">
+              <img
+                src={coverImageUrl}
+                alt="Foto da capa"
+                className="w-full aspect-[3/4] object-cover bg-gray-100"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveCover}
+                className="absolute top-2 right-2 bg-white/95 hover:bg-white rounded-full p-2 shadow-md transition-all"
+                aria-label="Remover foto da capa"
+              >
+                <X size={16} className="text-gray-700" />
+              </button>
+            </div>
+          ) : (
+            <label
+              className={`flex flex-col items-center justify-center gap-2 w-full aspect-[3/4] rounded-xl border-2 border-dashed transition-all cursor-pointer ${
+                isUploadingCover
+                  ? 'border-purple-300 bg-purple-50/60 cursor-wait'
+                  : 'border-purple-200 bg-purple-50/40 hover:border-purple-400 hover:bg-purple-50'
+              }`}
+            >
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleCoverFileChange}
+                disabled={isUploadingCover}
+                className="hidden"
+              />
+              {isUploadingCover ? (
+                <>
+                  <Loader2 size={28} className="text-purple-500 animate-spin" />
+                  <p className="text-sm text-purple-700 font-medium">Enviando...</p>
+                </>
+              ) : (
+                <>
+                  <Camera size={28} className="text-purple-400" />
+                  <p className="text-sm text-purple-700 font-medium">Toque para escolher uma foto</p>
+                  <p className="text-xs text-gray-500 px-4 text-center">JPG, PNG ou WebP até 5MB</p>
+                </>
+              )}
+            </label>
+          )}
+
+          {coverError && (
+            <p className="text-sm text-red-600">{coverError}</p>
+          )}
+
+          <p className="text-xs text-gray-500">
+            Será usada como fundo das cartas que você não personalizar individualmente.
+          </p>
+        </div>
+
         {/* Intro Message */}
         <div className="space-y-2">
           <label htmlFor="introMessage" className="block text-sm font-medium text-gray-700">
-            💬 Mensagem de abertura (opcional)
+            💬 Mensagem para {recipientName} (opcional)
           </label>
           <textarea
             id="introMessage"
@@ -286,7 +399,7 @@ export function Step2Intro() {
           )}
 
           <p className="text-xs text-gray-500">
-            A música tocará quando as cartas forem abertas 🎶
+            A música tocará quando {recipientName} abrir cada carta 🎶
           </p>
         </div>
 

@@ -200,6 +200,10 @@ export class CardCollectionService {
       updates.push(`youtube_video_id = $${paramIndex++}`);
       values.push(data.youtubeVideoId);
     }
+    if (data.coverImageUrl !== undefined) {
+      updates.push(`cover_image_url = $${paramIndex++}`);
+      values.push(data.coverImageUrl);
+    }
     if (data.status !== undefined) {
       updates.push(`status = $${paramIndex++}`);
       values.push(data.status);

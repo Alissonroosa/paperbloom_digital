@@ -11,9 +11,10 @@ interface CardModalProps {
   card: CardType;
   isFirstOpen: boolean;
   onClose: () => void;
+  coverImageUrl?: string | null;
 }
 
-export function CardModal({ card, isFirstOpen, onClose }: CardModalProps) {
+export function CardModal({ card, isFirstOpen, onClose, coverImageUrl = null }: CardModalProps) {
   const [showContent, setShowContent] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
@@ -103,13 +104,18 @@ export function CardModal({ card, isFirstOpen, onClose }: CardModalProps) {
 
         {/* Content */}
         <div className={`p-8 space-y-6 ${isFirstOpen && !showContent ? 'opacity-0' : 'opacity-100 transition-opacity duration-1000'}`}>
-          {card.imageUrl && (
+          {(card.imageUrl ?? coverImageUrl) && (
             <div className="relative rounded-2xl overflow-hidden shadow-lg">
               <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-blue-600" aria-hidden="true" />
                 <span className="text-sm font-medium text-gray-700">Foto especial</span>
               </div>
-              <img src={card.imageUrl} alt="Foto da carta" className="w-full max-h-[50vh] object-cover" loading="lazy" />
+              <img
+                src={(card.imageUrl ?? coverImageUrl) as string}
+                alt="Foto da carta"
+                className="w-full max-h-[50vh] object-cover"
+                loading="lazy"
+              />
             </div>
           )}
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CardCollectionEditorProvider, useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { InteractiveWizardProvider, useInteractiveWizardContext } from '@/contexts/InteractiveWizardContext';
@@ -9,21 +9,62 @@ import { analytics } from '@/lib/analytics';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
+/**
+ * Error Boundary to catch runtime errors in the editor
+ */
+class EditorErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('[EditorErrorBoundary]', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-[100dvh] flex items-center justify-center p-8 bg-red-50">
+          <div className="max-w-lg bg-white rounded-xl shadow-lg p-6 space-y-4">
+            <h2 className="text-lg font-bold text-red-800">Erro no Editor</h2>
+            <pre className="text-xs text-red-700 bg-red-50 p-4 rounded overflow-auto max-h-60 whitespace-pre-wrap">
+              {this.state.error?.message}
+              {'\n\n'}
+              {this.state.error?.stack}
+            </pre>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm"
+            >
+              Recarregar
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // Step components
 import { Step1BasicInfo } from './steps/Step1BasicInfo';
 import { Step2Intro } from './steps/Step2Intro';
-import { Step3Cards1to4 } from './steps/Step3Cards1to4';
-import { Step4Cards5to8 } from './steps/Step4Cards5to8';
-import { Step5Cards9to12 } from './steps/Step5Cards9to12';
-import { Step6Contact } from './steps/Step6Contact';
+import { Step3AllCards } from './steps/Step3AllCards';
+import { Step4Preview } from './steps/Step4Preview';
 
 const STEP_NAMES = [
   'Informações Básicas',
   'Mensagem e Música',
-  'Momentos Difíceis',
-  'Momentos de Amor',
-  'Momentos Especiais',
-  'Dados para Envio',
+  'Suas 12 Cartas',
+  'Pré-visualização e Checkout',
 ];
 
 /**
@@ -95,7 +136,7 @@ function EditorContent() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
           >
-            <Step3Cards1to4 />
+            <Step3AllCards />
           </motion.div>
         )}
         {state.currentStep === 3 && (
@@ -106,29 +147,7 @@ function EditorContent() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
           >
-            <Step4Cards5to8 />
-          </motion.div>
-        )}
-        {state.currentStep === 4 && (
-          <motion.div
-            key="step5"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Step5Cards9to12 />
-          </motion.div>
-        )}
-        {state.currentStep === 5 && (
-          <motion.div
-            key="step6"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Step6Contact />
+            <Step4Preview />
           </motion.div>
         )}
       </AnimatePresence>
@@ -281,7 +300,9 @@ export default function Editor12CartasPage() {
           collectionId={collectionId}
           autoSaveEnabled={true}
         >
-          <EditorContent />
+          <EditorErrorBoundary>
+            <EditorContent />
+          </EditorErrorBoundary>
         </CardCollectionEditorProvider>
       )}
     </InteractiveWizardProvider>

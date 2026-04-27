@@ -5,6 +5,7 @@ import { FullscreenStep } from '@/components/interactive-wizard/FullscreenStep';
 import { WizardNavigation } from '@/components/interactive-wizard/WizardNavigation';
 import { useInteractiveWizardNavigation, useInteractiveWizardValidation } from '@/contexts/InteractiveWizardContext';
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
+import { PriceBadge } from '@/components/interactive-wizard/PriceBadge';
 import { motion } from 'framer-motion';
 
 /**
@@ -20,7 +21,6 @@ export function Step1BasicInfo() {
   const [senderName, setSenderName] = useState(collection?.senderName || '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Sync with collection data
   useEffect(() => {
     if (collection) {
       if (collection.recipientName && collection.recipientName !== 'Destinatário') {
@@ -53,7 +53,6 @@ export function Step1BasicInfo() {
     return isValid;
   };
 
-  // Validate on change
   useEffect(() => {
     if (recipientName || senderName) {
       validateFields();
@@ -81,26 +80,58 @@ export function Step1BasicInfo() {
     <FullscreenStep
       emoji="💌"
       title="Vamos criar algo especial!"
-      subtitle="12 cartas cheias de amor para momentos únicos"
+      subtitle="12 cartas cheias de amor para momentos únicos da pessoa que você ama"
       showProgress={true}
       showBackLink={true}
       backLinkHref="/"
       backLinkText="← Voltar"
       showDemoLink={true}
       demoLinkHref="/demo/card-collection"
+      showPriceBadge={false}
     >
       <div className="w-full max-w-md mx-auto space-y-6">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center text-gray-600 text-sm"
-        >
-          Imagine a pessoa amada abrindo uma carta especial em cada momento importante... 
-          Quando precisar de apoio, quando quiser celebrar, ou simplesmente quando sentir saudade. ✨
-        </motion.p>
 
-        {/* Recipient Name (Para:) */}
+        {/* How it works + trust block */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="rounded-xl border bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden"
+        >
+          {/* 3 bullets — como funciona */}
+          <div className="grid grid-cols-3 divide-x divide-gray-100 text-center">
+            <div className="px-3 py-4 space-y-1.5">
+              <div className="text-2xl">✍️</div>
+              <p className="text-xs font-semibold text-gray-700">Você personaliza</p>
+              <p className="text-[11px] text-gray-500 leading-tight">mensagem e foto em cada carta</p>
+            </div>
+            <div className="px-3 py-4 space-y-1.5">
+              <div className="text-2xl">🎁</div>
+              <p className="text-xs font-semibold text-gray-700">Você decide quando e como enviar</p>
+              <p className="text-[11px] text-gray-500 leading-tight">com QRCode ou link, no momento certo</p>
+            </div>
+            <div className="px-3 py-4 space-y-1.5">
+              <div className="text-2xl">💌</div>
+              <p className="text-xs font-semibold text-gray-700">12 momentos únicos</p>
+              <p className="text-[11px] text-gray-500 leading-tight">cada carta abre uma vez, para sempre</p>
+            </div>
+          </div>
+
+          {/* Social proof */}
+          <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-center gap-3 text-xs text-gray-500">
+            <span>⭐⭐⭐⭐⭐</span>
+            <span>+800 presentes entregues</span>
+            <span>·</span>
+            <span>🔒 Pagamento seguro</span>
+          </div>
+
+          {/* Price */}
+          <div className="px-5 py-3 border-t border-gray-100 flex justify-center">
+            <PriceBadge productType="card-collection" variant="compact" contextLine="Acesso para sempre" />
+          </div>
+        </motion.div>
+
+        {/* Recipient Name */}
         <div className="space-y-2">
           <label htmlFor="recipientName" className="block text-sm font-medium text-gray-700">
             💝 Para quem são essas cartas?
@@ -123,7 +154,7 @@ export function Step1BasicInfo() {
           )}
         </div>
 
-        {/* Sender Name (De:) */}
+        {/* Sender Name */}
         <div className="space-y-2">
           <label htmlFor="senderName" className="block text-sm font-medium text-gray-700">
             💜 E quem está enviando todo esse carinho?
@@ -152,7 +183,7 @@ export function Step1BasicInfo() {
           isLastStep={isLastStep}
           isLoading={isSaving}
           canProceed={canProceed}
-          nextLabel="Começar a criar →"
+          nextLabel="Criar o presente →"
         />
 
         <motion.p
