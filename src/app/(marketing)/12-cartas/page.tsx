@@ -542,7 +542,7 @@ export default function DozeCartasLP() {
               { step: "1", icon: Heart, title: "Personalize", description: "Adicione os nomes de quem envia e recebe" },
               { step: "2", icon: MessageSquare, title: "Escreva", description: "Personalize cada uma das 12 cartas com suas palavras" },
               { step: "3", icon: Image, title: "Adicione Mídia", description: "Inclua fotos e músicas do YouTube em cada carta" },
-              { step: "4", icon: Gift, title: "Presenteie", description: "Receba o QR Code e surpreenda quem você ama" },
+              { step: "4", icon: Gift, title: "Presenteie", description: "Acesse seu painel com link, QR Code e opções de envio por WhatsApp" },
             ].map((item, index) => (
               <motion.div
                 key={item.step}
@@ -635,8 +635,8 @@ export default function DozeCartasLP() {
               },
               {
                 icon: Gift,
-                title: "QR Code Exclusivo",
-                description: "Receba um QR Code para imprimir e presentear de forma física",
+                title: "Painel do Comprador",
+                description: "Acompanhe em tempo real quais cartas foram abertas, edite conteúdo, resete cartas e receba sugestões emocionais",
               },
             ].map((feature, index) => (
               <motion.div
@@ -668,6 +668,97 @@ export default function DozeCartasLP() {
             viewport={{ once: true }}
             className="mt-16 text-center"
           >
+            <Link href="/editor/12-cartas">
+              <Button
+                size="lg"
+                className="px-12 h-14 text-lg rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-1 transition-all"
+              >
+                Criar Minhas 12 Cartas
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Buyer Panel Section */}
+      <section className="py-24 bg-gradient-to-br from-primary/5 via-[#FFFAFA] to-primary/10">
+        <div className="container px-4 md:px-8 max-w-screen-xl mx-auto">
+          <div className="text-center mb-16">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-script text-2xl text-primary mb-2 block"
+            >
+              Exclusivo
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-3xl md:text-5xl font-serif font-bold text-text-main mb-4"
+            >
+              Seu Painel do Comprador
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-muted-foreground text-lg font-light max-w-2xl mx-auto"
+            >
+              Após a compra, você recebe acesso a um painel exclusivo para gerenciar e acompanhar o presente
+            </motion.p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {[
+              {
+                emoji: "📊",
+                title: "Acompanhamento em tempo real",
+                description: "Veja quais cartas foram abertas, com data e hora exata. Saiba quando a pessoa amada leu sua mensagem.",
+              },
+              {
+                emoji: "💡",
+                title: "Sugestões emocionais",
+                description: "Receba recomendações baseadas na última carta aberta. Ex: se abriu 'dia difícil', sugerimos conversar e fazer algo divertido juntos.",
+              },
+              {
+                emoji: "✏️",
+                title: "Edição a qualquer momento",
+                description: "Enquanto nenhuma carta foi aberta, você pode editar títulos e mensagens diretamente pelo painel, sem complicação.",
+              },
+              {
+                emoji: "🔄",
+                title: "Reset de cartas",
+                description: "Quer que a pessoa viva o momento de novo? Resete cartas já abertas para que possam ser abertas novamente.",
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-2xl border border-primary/10 p-6 hover:shadow-lg hover:border-primary/30 transition-all duration-300"
+              >
+                <span className="text-3xl mb-3 block">{item.emoji}</span>
+                <h3 className="text-lg font-bold text-text-main mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-12 text-center"
+          >
+            <p className="text-sm text-muted-foreground mb-6">
+              Tudo isso incluso no preço — sem assinatura, sem custo extra.
+            </p>
             <Link href="/editor/12-cartas">
               <Button
                 size="lg"
@@ -929,11 +1020,11 @@ export default function DozeCartasLP() {
             />
             <FAQItem
               question="Como a pessoa recebe as cartas?"
-              answer="Após o pagamento, você recebe um link único e um QR Code. Você pode enviar o link por WhatsApp, email, ou imprimir o QR Code para dar de presente físico. A pessoa acessa pelo celular e vê todas as 12 cartas."
+              answer="Após o pagamento, você acessa seu painel exclusivo com link, QR Code e sugestões de entrega. Pode enviar por WhatsApp com uma mensagem pronta, imprimir o QR Code para dar junto com um presente físico, ou simplesmente copiar o link. Pelo painel você também acompanha em tempo real quais cartas foram abertas."
             />
             <FAQItem
               question="O link expira?"
-              answer="Não! O link e as cartas ficam disponíveis para sempre. A pessoa pode acessar quantas vezes quiser para reler as cartas já abertas."
+              answer="Não! O link e as cartas ficam disponíveis para sempre. A pessoa pode acessar quantas vezes quiser para reler as cartas já abertas. Você também pode acessar seu painel a qualquer momento para acompanhar, editar e resetar cartas."
             />
           </motion.div>
 

@@ -400,6 +400,22 @@ export const analytics = {
   // ============================================
 
   /**
+   * Cópia do link de compartilhamento no painel
+   */
+  copyShareLink: (collectionId: string) => {
+    gtag('event', 'painel_copy_link', { collection_id: collectionId });
+    fbq('trackCustom', 'PainelCopyLink', { collection_id: collectionId });
+  },
+
+  /**
+   * Abertura do WhatsApp para compartilhamento no painel
+   */
+  openWhatsAppShare: (collectionId: string) => {
+    gtag('event', 'painel_whatsapp_share', { collection_id: collectionId });
+    fbq('trackCustom', 'PainelWhatsAppShare', { collection_id: collectionId });
+  },
+
+  /**
    * Abertura de carta
    */
   openCard: (collectionId: string, cardNumber: number) => {

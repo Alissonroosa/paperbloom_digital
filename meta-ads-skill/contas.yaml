@@ -1,0 +1,19 @@
+# ============================================================================
+# Meta Ads Paperbloom — Cadastro de Contas
+# ============================================================================
+
+clientes:
+
+  paperbloom:
+    nome: "Paper Bloom"
+    conta_anuncio: "act_656976393891358"
+    pagina_facebook: "571506852722178"
+    instagram_id: "17841472267896358"
+    instagram_username: "@paperbloomrs"
+    moeda: "BRL"
+    notas: |
+      Marca de presentes personalizados (fisica) e presentes digitais (digital).
+      Foco dos anuncios: produtos digitais.
+      Produtos: Mensagem Digital, 12 Cartas, Revelacao Virtual.
+      Paleta: #E6C2C2 (primary), #D4A5A5 (secondary), #FFFAFA (bg), #4A4A4A (texto).
+      Pixel do Meta: configurar antes de campanhas de conversao.

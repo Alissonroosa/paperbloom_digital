@@ -8,8 +8,7 @@ import { qrCodeService } from '@/services/QRCodeService';
 import { emailService } from '@/services/EmailService';
 import { validateStoredURLs } from '@/lib/utils';
 import { generateRevealSlug } from '@/types/gender-reveal';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { loadQRCodeAsDataUrl } from '@/lib/qr-utils';
 
 /**
  * Handle message payment processing
@@ -77,14 +76,33 @@ async function handleCardCollectionPayment(
   const qrCodeUrl = await qrCodeService.generate(fullUrl, collectionId);
   await cardCollectionService.updateQRCode(collectionId, qrCodeUrl, slug);
 
-  await sendCardCollectionEmail(payerEmail, collectionId, fullUrl, qrCodeUrl, {
-    recipientName: collection.recipientName,
-    senderName: collection.senderName,
-    contactEmail: collection.contactEmail,
-    contactName: collection.contactName,
-    metadataEmail: metadata.contact_email || metadata.contactEmail,
-    metadataName: metadata.contact_name || metadata.contactName,
-  });
+  // Idempotency check: if token already existed, skip email to avoid duplicate sends
+  const tokenAlreadyExisted = !!collection.dashboardToken;
+  const dashboardToken = await cardCollectionService.setDashboardToken(collectionId);
+
+  if (tokenAlreadyExisted) {
+    console.warn(`[Webhook] ⚠️ Dashboard token already existed for collection ${collectionId} — skipping email to avoid duplicate send`);
+  } else {
+    const contactEmail = payerEmail || metadata.contact_email || metadata.contactEmail || collection.contactEmail;
+    const contactName = metadata.contact_name || metadata.contactName || collection.contactName || collection.senderName;
+
+    if (contactEmail) {
+      const emailResult = await emailService.sendPaymentConfirmationEmail({
+        contactEmail,
+        contactName: contactName || '',
+        collectionId,
+        dashboardToken,
+      });
+
+      if (emailResult.success) {
+        console.log(`[Webhook] ✅ Payment confirmation email sent for collection ${collectionId}`);
+      } else {
+        console.error(`[Webhook] ❌ Failed to send payment confirmation email for ${collectionId}`, emailResult.error);
+      }
+    } else {
+      console.warn(`[Webhook] ⚠️ No email found for collection ${collectionId}`);
+    }
+  }
 
   console.log(`Successfully processed payment for card collection ${collectionId}`);
 }
@@ -157,10 +175,7 @@ async function sendQRCodeEmail(
   }
 ): Promise<void> {
   try {
-    const qrCodePath = path.join(process.cwd(), 'public', qrCodeUrl);
-    const qrCodeBuffer = await fs.readFile(qrCodePath);
-    const qrCodeBase64 = qrCodeBuffer.toString('base64');
-    const qrCodeDataUrl = `data:image/png;base64,${qrCodeBase64}`;
+    const qrCodeDataUrl = await loadQRCodeAsDataUrl(qrCodeUrl);
 
     const contactEmail = payerEmail || itemData.metadataEmail || itemData.contactEmail;
     const contactName = itemData.metadataName || itemData.contactName || itemData.senderName;
@@ -190,6 +205,8 @@ async function sendQRCodeEmail(
 
 /**
  * Send card collection email to customer
+ * @deprecated Use sendPaymentConfirmationEmail via emailService instead.
+ * Kept for reference — no longer called from handleCardCollectionPayment.
  */
 async function sendCardCollectionEmail(
   payerEmail: string | undefined,
@@ -206,10 +223,7 @@ async function sendCardCollectionEmail(
   }
 ): Promise<void> {
   try {
-    const qrCodePath = path.join(process.cwd(), 'public', qrCodeUrl);
-    const qrCodeBuffer = await fs.readFile(qrCodePath);
-    const qrCodeBase64 = qrCodeBuffer.toString('base64');
-    const qrCodeDataUrl = `data:image/png;base64,${qrCodeBase64}`;
+    const qrCodeDataUrl = await loadQRCodeAsDataUrl(qrCodeUrl);
 
     const contactEmail = payerEmail || collectionData.metadataEmail || collectionData.contactEmail;
     const contactName = collectionData.metadataName || collectionData.contactName || collectionData.senderName;
@@ -257,10 +271,7 @@ async function sendGenderRevealEmail(
   }
 ): Promise<void> {
   try {
-    const qrCodePath = path.join(process.cwd(), 'public', qrCodeUrl);
-    const qrCodeBuffer = await fs.readFile(qrCodePath);
-    const qrCodeBase64 = qrCodeBuffer.toString('base64');
-    const qrCodeDataUrl = `data:image/png;base64,${qrCodeBase64}`;
+    const qrCodeDataUrl = await loadQRCodeAsDataUrl(qrCodeUrl);
 
     const contactEmail = payerEmail || revealData.metadataEmail || revealData.contactEmail;
     const contactName = revealData.metadataName || revealData.contactName || revealData.dadName;

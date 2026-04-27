@@ -269,6 +269,152 @@ export const CARD_COLLECTION_EMAIL_TEMPLATE = {
 };
 
 /**
+ * Payment Confirmation email template — neutral, no recipient name, no QR code
+ */
+export const PAYMENT_CONFIRMATION_EMAIL_TEMPLATE = {
+  subject: 'Seu presente está pronto 💌',
+
+  html: (data: { panelUrl: string; recoverUrl: string }) => `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.7; color: #4A4A4A; margin: 0; padding: 0; background-color: #FFFAFA; }
+      .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+      .brand-bar { height: 6px; background: linear-gradient(90deg, #E6C2C2, #D4A5A5, #E6C2C2); }
+      .header { text-align: center; padding: 40px 30px 20px; }
+      .header .logo { font-family: 'Georgia', serif; font-size: 26px; color: #8B5F5F; letter-spacing: 1px; margin: 0; }
+      .header .tagline { font-size: 13px; color: #D4A5A5; margin: 6px 0 0; letter-spacing: 2px; text-transform: uppercase; }
+      .divider { width: 60px; height: 1px; background: #E6C2C2; margin: 0 auto; }
+      .content { padding: 36px 30px; text-align: center; }
+      .content h2 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 22px; font-weight: normal; margin: 0 0 16px; }
+      .content p { color: #4A4A4A; font-size: 15px; margin: 8px 0; }
+      .btn-wrap { margin: 32px 0 24px; }
+      .btn { display: inline-block; padding: 16px 40px; background: #D4A5A5; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 16px; font-family: 'Georgia', serif; letter-spacing: 0.5px; }
+      .footer { text-align: center; padding: 24px 30px 30px; border-top: 1px solid #f0e6e6; }
+      .footer .name { color: #8B5F5F; font-family: 'Georgia', serif; font-size: 15px; margin: 0 0 6px; }
+      .footer a { color: #D4A5A5; text-decoration: none; font-size: 13px; }
+      .footer .auto { font-size: 11px; color: #c4b0b0; margin-top: 12px; }
+      .footer .recover { font-size: 12px; color: #b0a0a0; margin-top: 10px; }
+      .footer .recover a { color: #b0a0a0; text-decoration: underline; }
+      @media only screen and (max-width: 600px) { .content { padding: 24px 20px; } }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="brand-bar"></div>
+      <div class="header">
+        <p class="logo">Paper Bloom</p>
+        <p class="tagline">Mensagens com emoção</p>
+      </div>
+      <div class="divider"></div>
+
+      <!-- Preheader (hidden) -->
+      <span style="display:none;font-size:1px;color:#ffffff;max-height:0;max-width:0;opacity:0;overflow:hidden;">Acesse seu painel para ver e organizar</span>
+
+      <div class="content">
+        <h2>Seu presente está pronto 💌</h2>
+        <p>Tudo certo! Acesse seu painel para visualizar e organizar o presente.</p>
+        <div class="btn-wrap">
+          <a href="${data.panelUrl}" class="btn">Acessar painel</a>
+        </div>
+        <p style="font-size:13px;color:#a09090;">Guarde este email — ele é seu acesso ao painel.</p>
+      </div>
+
+      <div class="footer">
+        <p class="name">Paper Bloom</p>
+        <p><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
+        <p class="auto">Este é um email automático. Por favor, não responda.</p>
+        <p class="recover"><a href="${data.recoverUrl}">Perdi meu acesso</a></p>
+      </div>
+    </div>
+  </body>
+</html>`,
+};
+
+/**
+ * Recover Access email template — lists all buyer panels for a given email
+ */
+export const RECOVER_ACCESS_EMAIL_TEMPLATE = {
+  subject: 'Seus painéis Paperbloom',
+
+  html: (data: {
+    email: string;
+    panels: Array<{ recipientName: string; createdAt: Date; dashboardToken: string }>;
+    baseUrl: string;
+  }) => {
+    const panelRows = data.panels
+      .map((p) => {
+        const date = p.createdAt.toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        });
+        const url = `${data.baseUrl}/painel/${p.dashboardToken}`;
+        return `
+        <tr>
+          <td style="padding: 14px 0; border-bottom: 1px solid #f0e6e6;">
+            <p style="margin: 0 0 4px; font-family: 'Georgia', serif; color: #8B5F5F; font-size: 15px;">Para <strong>${p.recipientName}</strong></p>
+            <p style="margin: 0 0 8px; font-size: 13px; color: #888;">Comprado em ${date}</p>
+            <a href="${url}" style="display: inline-block; padding: 10px 24px; background: #D4A5A5; color: #ffffff; text-decoration: none; border-radius: 50px; font-size: 14px; font-family: 'Georgia', serif;">Acessar painel</a>
+          </td>
+        </tr>`;
+      })
+      .join('');
+
+    return `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.7; color: #4A4A4A; margin: 0; padding: 0; background-color: #FFFAFA; }
+      .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+      .brand-bar { height: 6px; background: linear-gradient(90deg, #E6C2C2, #D4A5A5, #E6C2C2); }
+      .header { text-align: center; padding: 40px 30px 20px; }
+      .header .logo { font-family: 'Georgia', serif; font-size: 26px; color: #8B5F5F; letter-spacing: 1px; margin: 0; }
+      .header .tagline { font-size: 13px; color: #D4A5A5; margin: 6px 0 0; letter-spacing: 2px; text-transform: uppercase; }
+      .divider { width: 60px; height: 1px; background: #E6C2C2; margin: 0 auto; }
+      .content { padding: 30px; }
+      .content h2 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 20px; font-weight: normal; margin: 0 0 16px; text-align: center; }
+      .footer { text-align: center; padding: 24px 30px 30px; border-top: 1px solid #f0e6e6; }
+      .footer .name { color: #8B5F5F; font-family: 'Georgia', serif; font-size: 15px; margin: 0 0 6px; }
+      .footer a { color: #D4A5A5; text-decoration: none; font-size: 13px; }
+      .footer .auto { font-size: 11px; color: #c4b0b0; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="brand-bar"></div>
+      <div class="header">
+        <p class="logo">Paper Bloom</p>
+        <p class="tagline">Mensagens com emoção</p>
+      </div>
+      <div class="divider"></div>
+
+      <div class="content">
+        <h2>Seus painéis Paperbloom</h2>
+        <p style="font-size: 14px; color: #666; margin: 0 0 20px;">Encontramos as seguintes compras associadas ao seu email:</p>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tbody>
+            ${panelRows}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <p class="name">Paper Bloom</p>
+        <p><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
+        <p class="auto">Este é um email automático. Por favor, não responda.</p>
+      </div>
+    </div>
+  </body>
+</html>`;
+  },
+};
+
+/**
  * Email Service implementation using Resend
  * 
  * Requirement 13.1: Uses Resend API for all transactional emails
@@ -380,6 +526,8 @@ export class EmailService implements IEmailService {
   
   /**
    * Sends card collection email to recipient
+   * 
+   * @deprecated Use sendPaymentConfirmationEmail instead
    * 
    * Requirement 6.5: Sends email with link and QR code after payment
    * 
@@ -564,6 +712,156 @@ export class EmailService implements IEmailService {
     // All retries failed - throw last error
     throw lastError || new Error('Failed to send card collection email after retries');
   }
+
+  /**
+   * Sends neutral payment confirmation email to the buyer.
+   * Does not mention the recipient name, QR code, or direct card links.
+   * Includes a single CTA button pointing to the buyer's dashboard.
+   *
+   * @param data - Payment confirmation email data
+   * @returns Email send result
+   */
+  async sendPaymentConfirmationEmail(data: {
+    contactEmail: string;
+    contactName: string;
+    collectionId: string;
+    dashboardToken: string;
+  }): Promise<EmailSendResult> {
+    if (!this.validateConfig()) {
+      return { success: false, error: 'Email service not configured properly' };
+    }
+
+    console.log('[EmailService] Attempting to send payment confirmation email:', {
+      contactEmail: data.contactEmail,
+      collectionId: data.collectionId,
+      timestamp: new Date().toISOString(),
+    });
+
+    try {
+      const result = await this.sendPaymentConfirmationWithRetry(data, 3);
+
+      console.log('[EmailService] Payment confirmation email sent successfully:', {
+        messageId: result.messageId,
+        contactEmail: data.contactEmail,
+        timestamp: new Date().toISOString(),
+      });
+
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send email';
+
+      console.error('[EmailService] Payment confirmation email send failed:', {
+        error: errorMessage,
+        contactEmail: data.contactEmail,
+        timestamp: new Date().toISOString(),
+      });
+
+      return { success: false, error: errorMessage };
+    }
+  }
+
+  /**
+   * Sends payment confirmation email with retry logic and exponential backoff
+   */
+  private async sendPaymentConfirmationWithRetry(
+    data: {
+      contactEmail: string;
+      contactName: string;
+      collectionId: string;
+      dashboardToken: string;
+    },
+    maxRetries: number
+  ): Promise<EmailSendResult> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const panelUrl = `${baseUrl}/painel/${data.dashboardToken}`;
+    const recoverUrl = `${baseUrl}/recuperar-acesso`;
+
+    const html = PAYMENT_CONFIRMATION_EMAIL_TEMPLATE.html({ panelUrl, recoverUrl });
+
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`[EmailService] Payment confirmation send attempt ${attempt}/${maxRetries}`, {
+          contactEmail: data.contactEmail,
+        });
+
+        const result = await this.resend.emails.send({
+          from: `${this.config.fromName} <${this.config.fromEmail}>`,
+          to: data.contactEmail,
+          subject: PAYMENT_CONFIRMATION_EMAIL_TEMPLATE.subject,
+          html,
+        });
+
+        return { success: true, messageId: result.data?.id };
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error('Unknown error');
+
+        console.warn(`[EmailService] Payment confirmation attempt ${attempt}/${maxRetries} failed:`, {
+          error: lastError.message,
+          contactEmail: data.contactEmail,
+        });
+
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt - 1) * 1000;
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    throw lastError || new Error('Failed to send payment confirmation email after retries');
+  }
+
+  /**
+   * Sends recover-access email listing all buyer panels for a given email.
+   * If panels array is empty, no email is sent.
+   *
+   * @param email - Buyer's email address
+   * @param panels - List of panels to include in the email
+   * @returns Email send result
+   */
+  async sendRecoverAccessEmail(
+    email: string,
+    panels: Array<{
+      recipientName: string;
+      createdAt: Date;
+      dashboardToken: string;
+    }>
+  ): Promise<EmailSendResult> {
+    if (panels.length === 0) {
+      // Nothing to send — return silently
+      return { success: true };
+    }
+
+    if (!this.validateConfig()) {
+      return { success: false, error: 'Email service not configured properly' };
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+    const html = RECOVER_ACCESS_EMAIL_TEMPLATE.html({ email, panels, baseUrl });
+
+    try {
+      const result = await this.resend.emails.send({
+        from: `${this.config.fromName} <${this.config.fromEmail}>`,
+        to: email,
+        subject: RECOVER_ACCESS_EMAIL_TEMPLATE.subject,
+        html,
+      });
+
+      console.log('[EmailService] Recover access email sent successfully:', {
+        messageId: result.data?.id,
+        email,
+        panelCount: panels.length,
+      });
+
+      return { success: true, messageId: result.data?.id };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send email';
+      console.error('[EmailService] Recover access email send failed:', { error: errorMessage, email });
+      return { success: false, error: errorMessage };
+    }
+  }
 }
 
 /**
@@ -704,7 +1002,20 @@ export const emailService = {
   
   // Convenience methods that delegate to the singleton instance
   sendQRCodeEmail: (data: QRCodeEmailData) => emailService.instance.sendQRCodeEmail(data),
+  /**
+   * @deprecated Use sendPaymentConfirmationEmail instead
+   */
   sendCardCollectionEmail: (data: CardCollectionEmailData) => emailService.instance.sendCardCollectionEmail(data),
+  sendPaymentConfirmationEmail: (data: {
+    contactEmail: string;
+    contactName: string;
+    collectionId: string;
+    dashboardToken: string;
+  }) => emailService.instance.sendPaymentConfirmationEmail(data),
+  sendRecoverAccessEmail: (
+    email: string,
+    panels: Array<{ recipientName: string; createdAt: Date; dashboardToken: string }>
+  ) => emailService.instance.sendRecoverAccessEmail(email, panels),
   sendGenderRevealEmail: async (data: GenderRevealEmailData): Promise<EmailSendResult> => {
     const instance = emailService.instance;
     if (!instance.validateConfig()) {

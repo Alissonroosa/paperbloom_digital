@@ -65,9 +65,14 @@ function SuccessPageContent() {
             const checkResponse = await fetch(`/api/card-collections/${data.collectionId}`);
             if (checkResponse.ok) {
               const collectionData = await checkResponse.json();
-              if (collectionData.status === 'paid') {
+              if (collectionData.collection?.status === 'paid') {
                 console.log('✅ Webhook já processou a coleção');
-                router.push(`/delivery/c/${data.collectionId}`);
+                const dashboardToken = collectionData.collection?.dashboardToken;
+                if (dashboardToken) {
+                  router.replace('/painel/' + dashboardToken);
+                } else {
+                  router.replace(`/delivery/c/${data.collectionId}`);
+                }
                 return;
               }
             }

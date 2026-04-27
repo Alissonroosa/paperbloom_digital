@@ -346,6 +346,59 @@ export class CardService {
   }
 
   /**
+   * Reset a single card back to unopened status
+   * Clears opened_at and sets status back to 'unopened'
+   *
+   * @param cardId - Card UUID
+   * @returns Updated card
+   * @throws Error if card not found
+   */
+  async reset(cardId: string): Promise<Card> {
+    const query = `
+      UPDATE cards
+      SET status = 'unopened', opened_at = NULL, updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `;
+
+    try {
+      const result = await pool.query<CardRow>(query, [cardId]);
+
+      if (result.rows.length === 0) {
+        throw new Error(`Card with ID ${cardId} not found`);
+      }
+
+      return rowToCard(result.rows[0]);
+    } catch (error) {
+      console.error('Error resetting card:', error);
+      throw new Error(`Failed to reset card: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Reset all cards in a collection back to unopened status
+   *
+   * @param collectionId - Card collection UUID
+   * @returns Array of updated cards
+   */
+  async resetAllForCollection(collectionId: string): Promise<Card[]> {
+    const query = `
+      UPDATE cards
+      SET status = 'unopened', opened_at = NULL, updated_at = NOW()
+      WHERE collection_id = $1
+      RETURNING *
+    `;
+
+    try {
+      const result = await pool.query<CardRow>(query, [collectionId]);
+      return result.rows.map(row => rowToCard(row));
+    } catch (error) {
+      console.error('Error resetting all cards for collection:', error);
+      throw new Error(`Failed to reset cards: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
    * Check if a card can be opened
    * A card can only be opened if its status is 'unopened'
    * Requirements: 4.1, 4.3

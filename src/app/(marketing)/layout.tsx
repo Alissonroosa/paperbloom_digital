@@ -11,12 +11,13 @@ export default function MarketingLayout({
 }>) {
     const pathname = usePathname();
     const hideHeader = pathname === '/editor/mensagem' || pathname === '/editor/12-cartas';
+    const hideChromes = pathname.startsWith('/painel');
 
     return (
         <div className="flex flex-col min-h-screen">
-            {!hideHeader && <Header />}
+            {!hideHeader && !hideChromes && <Header />}
             <main className="flex-1">{children}</main>
-            <Footer />
+            {!hideChromes && <Footer />}
         </div>
     );
 }

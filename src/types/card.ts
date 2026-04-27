@@ -110,6 +110,7 @@ export interface CardCollection {
   introMessage: string | null;     // Mensagem inicial personalizada
   youtubeVideoId: string | null;   // ID do vídeo do YouTube
   coverImageUrl: string | null;    // Foto capa única (fallback nas cartas sem foto)
+  dashboardToken: string | null;   // Token único para acesso ao painel do comprador
   createdAt: Date;
   updatedAt: Date;
 }
@@ -150,6 +151,7 @@ export interface CardCollectionRow {
   intro_message: string | null;
   youtube_video_id: string | null;
   cover_image_url: string | null;
+  dashboard_token: string | null;  // Token único para acesso ao painel do comprador
   created_at: Date;
   updated_at: Date;
 }
@@ -321,6 +323,7 @@ export function rowToCardCollection(row: CardCollectionRow): CardCollection {
     introMessage: row.intro_message,
     youtubeVideoId: row.youtube_video_id,
     coverImageUrl: row.cover_image_url,
+    dashboardToken: row.dashboard_token,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

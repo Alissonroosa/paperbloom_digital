@@ -46,6 +46,27 @@ export async function PATCH(
 
     console.log('[API] PATCH /api/cards/[id] - Update data:', updateData);
 
+    // Card-lock guard: reject update if card has already been opened
+    const existingCard = await cardService.findById(params.id);
+    if (!existingCard) {
+      return NextResponse.json(
+        { error: { code: 'NOT_FOUND', message: 'Card not found' } },
+        { status: 404, headers }
+      );
+    }
+
+    if (existingCard.openedAt !== null) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'CARD_LOCKED',
+            message: 'Esta carta já foi aberta e não pode ser editada',
+          },
+        },
+        { status: 409, headers }
+      );
+    }
+
     // Update card
     const card = await cardService.update(params.id, updateData);
 

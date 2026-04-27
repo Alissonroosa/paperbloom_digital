@@ -38,12 +38,12 @@ Reduz 6 steps para 4 e elimina a maior parte do trabalho manual obrigatório.
 
 Pós-compra: cria loop emocional contínuo e estabelece base para crosssell.
 
-| ID | Spec | Resumo |
-|---|---|---|
-| 3.1 | email-compra-neutro | Email de compra visualmente neutro (Camada 1 de privacidade) + `/recuperar-acesso` |
-| 3.2 | dashboard-comprador-base | Dashboard com magic link sem expiração + preview + QR + link + recomendações |
-| 3.3 | dashboard-acoes-envio | Modalidades de entrega (agendar até 1 ano, enviar agora, máx 3 envios, cooldown 15min) + redirect MP → dashboard |
-| 3.4 | emails-marcos-emocionais | 4+1 emails de marco (1ª carta, metade, todas, encerramento, silêncio 7d) + crosssell de Mensagem Digital + timeline no dashboard |
+| ID | Spec | Status | Resumo |
+|---|---|---|---|
+| 3.1 | [email-compra-neutro](./07-email-compra-neutro/design.md) | 📝 Spec pronta | Email de compra visualmente neutro (assunto "Seu presente está pronto 💌") + `/recuperar-acesso` com rate limit |
+| 3.2 | [dashboard-comprador-base](./08-dashboard-comprador-base/design.md) | 📝 Spec pronta | `/painel/[token]` com magic link sem expiração + mapa visual das 12 cartas + preview + QR (download) + editar (até 1ª abertura) + reset individual/total + crosssell. Redirect 301 de `/delivery/c/[id]` |
+| 3.3 | [dashboard-acoes-envio](./09-dashboard-acoes-envio/design.md) | 📝 Spec pronta | Botão "Enviar para {Nome}" + modal com mensagem padrão + copiar link / abrir WhatsApp. Sem limite, sem cooldown, sem agendamento (V2) |
+| 3.4 | [emails-marcos-emocionais](./10-emails-marcos-emocionais/design.md) | 📝 Spec pronta | 3 emails de marco (1ª carta, metade, todas) disparados no `/api/cards/[id]/open` + crosssell Mensagem Digital + timeline visual no painel. Idempotente via tabela de marcos. Sem cron — emails de encerramento/silêncio movidos para V2 |
 
 ## Backlog (MVP 2)
 
@@ -55,6 +55,11 @@ Decisões explicitamente adiadas para uma segunda iteração após validação d
 - Login com senha
 - Calendário completo de campanhas sazonais (Dia dos Namorados, Dia das Mães etc.)
 - Upsell automatizado dentro do dashboard (banners, popups)
+- **3.5 — Agendamento de envios** (escolher data/hora futura, lembrete por email, cancelar/editar agendamento)
+- **Emails de encerramento e silêncio** (E4 e E5 da Spec 3.4 — precisam de cron job)
+- Mensagem padrão de WhatsApp editável pelo comprador
+- Email automático para o destinatário (alternativa ao WhatsApp manual)
+- Opt-out granular de emails de marco
 
 ## Princípios de execução
 

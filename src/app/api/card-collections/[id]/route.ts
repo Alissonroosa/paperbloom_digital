@@ -171,6 +171,27 @@ export async function PATCH(
       body,
     });
 
+    // Content-lock guard: reject changes to content fields if any card has been opened
+    const CONTENT_FIELDS = ['coverImageUrl', 'introMessage', 'youtubeVideoId', 'recipientName', 'senderName'];
+    const hasContentField = CONTENT_FIELDS.some(field => body[field] !== undefined);
+
+    if (hasContentField) {
+      const cards = await cardService.findByCollectionId(id);
+      const hasOpenedCard = cards.some(c => c.openedAt !== null);
+
+      if (hasOpenedCard) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'CONTENT_LOCKED',
+              message: 'Conteúdo trancado — primeira carta já foi aberta',
+            },
+          },
+          { status: 409, headers }
+        );
+      }
+    }
+
     // Update collection
     const collection = await cardCollectionService.update(id, body);
 

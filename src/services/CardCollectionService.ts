@@ -337,6 +337,98 @@ export class CardCollectionService {
       throw new Error(`Failed to find card collection: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
+
+  /**
+   * Find a card collection by its dashboard token
+   * Used for buyer panel access
+   *
+   * @param token - Dashboard token (UUID v4)
+   * @returns Card collection if found, null otherwise
+   */
+  async findByDashboardToken(token: string): Promise<CardCollection | null> {
+    const query = `
+      SELECT * FROM card_collections
+      WHERE dashboard_token = $1
+    `;
+
+    try {
+      const result = await pool.query<CardCollectionRow>(query, [token]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      return rowToCardCollection(result.rows[0]);
+    } catch (error) {
+      console.error('Error finding card collection by dashboard token:', error);
+      throw new Error(`Failed to find card collection: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Set (or retrieve existing) dashboard token for a card collection.
+   * Idempotent: if a token already exists, returns it without overwriting.
+   *
+   * @param id - Card collection UUID
+   * @param token - Optional token to set; if omitted a new UUID v4 is generated
+   * @returns The dashboard token (existing or newly created)
+   */
+  async setDashboardToken(id: string, token?: string): Promise<string> {
+    // First check if a token already exists
+    const existing = await this.findById(id);
+    if (!existing) {
+      throw new Error(`Card collection with ID ${id} not found`);
+    }
+
+    if (existing.dashboardToken) {
+      return existing.dashboardToken;
+    }
+
+    const newToken = token || randomUUID();
+
+    const query = `
+      UPDATE card_collections
+      SET dashboard_token = $1, updated_at = NOW()
+      WHERE id = $2
+      RETURNING dashboard_token
+    `;
+
+    try {
+      const result = await pool.query<{ dashboard_token: string }>(query, [newToken, id]);
+
+      if (result.rows.length === 0) {
+        throw new Error(`Card collection with ID ${id} not found`);
+      }
+
+      return result.rows[0].dashboard_token;
+    } catch (error) {
+      console.error('Error setting dashboard token:', error);
+      throw new Error(`Failed to set dashboard token: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Find all paid card collections associated with a contact email
+   * Used for the "recover access" flow
+   *
+   * @param email - Contact email address
+   * @returns Array of paid card collections for that email
+   */
+  async findByContactEmail(email: string): Promise<CardCollection[]> {
+    const query = `
+      SELECT * FROM card_collections
+      WHERE contact_email = $1 AND status = 'paid'
+      ORDER BY created_at DESC
+    `;
+
+    try {
+      const result = await pool.query<CardCollectionRow>(query, [email]);
+      return result.rows.map(rowToCardCollection);
+    } catch (error) {
+      console.error('Error finding card collections by contact email:', error);
+      throw new Error(`Failed to find card collections: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
 }
 
 // Export singleton instance
