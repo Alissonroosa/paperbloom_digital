@@ -1,16 +1,20 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
-import { Sparkles, Heart, Calendar, Baby, ChevronDown, Gift, Palette, QrCode, ArrowRight } from "lucide-react"
+import { Sparkles, Heart, Calendar, Baby, ChevronDown, Gift, Palette, QrCode, ArrowRight, ShoppingBag, Download } from "lucide-react"
 import { motion } from "framer-motion"
 import { GiftCardPreview } from "@/components/ui/GiftCardPreview"
-import { ProductSelector } from "@/components/products/ProductSelector"
 import { RosePetals } from "@/components/effects/RosePetals"
 import { useState } from "react"
+import { catalogService } from "@/services/CatalogService"
 
 export default function Home() {
+  const activeCollection = catalogService.getActiveCollection();
+  const lojaProducts = catalogService.getAllProducts().slice(0, 4);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section - Generic, brand-focused */}
@@ -45,8 +49,8 @@ export default function Home() {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-text-main mb-6 leading-tight"
           >
-            Presentes Digitais <br />
-            que <span className="text-primary/90 italic">Emocionam de Verdade</span>
+            Presentes que <br />
+            <span className="text-primary/90 italic">Emocionam de Verdade</span>
           </motion.h1>
 
           <motion.p
@@ -55,28 +59,24 @@ export default function Home() {
             transition={{ delay: 0.6, duration: 0.8 }}
             className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed font-light"
           >
-            Crie experiências únicas com fotos, músicas e mensagens personalizadas.
-            Mensagens digitais, coleções de cartas ou revelações interativas — escolha o presente perfeito.
+            Experiências digitais interativas ou presentes personalizados artesanais.
+            Escolha o caminho perfeito para emocionar quem você ama.
           </motion.p>
 
-          {/* Mini product highlights */}
+          {/* Chips dos dois universos */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.8 }}
-            className="flex flex-wrap justify-center gap-4 mb-10"
+            className="flex flex-wrap justify-center gap-3 mb-10"
           >
-            <Link href="/mensagem-digital" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
-              <Heart className="w-4 h-4 text-primary" />
-              Mensagem Digital
+            <Link href="#universos" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
+              <Sparkles className="w-4 h-4 text-primary" />
+              Experiências Digitais
             </Link>
-            <Link href="/12-cartas" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
-              <Calendar className="w-4 h-4 text-primary" />
-              12 Cartas
-            </Link>
-            <Link href="/revelacao-virtual" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
-              <Baby className="w-4 h-4 text-primary" />
-              Revelação Virtual
+            <Link href="#universos" className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-primary/15 rounded-full px-5 py-2.5 text-sm font-medium text-text-main/80 hover:border-primary/40 hover:shadow-md transition-all duration-300">
+              <ShoppingBag className="w-4 h-4 text-primary" />
+              Loja Paper Bloom
             </Link>
           </motion.div>
 
@@ -86,9 +86,9 @@ export default function Home() {
             transition={{ delay: 1, duration: 0.8 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Link href="#products">
+            <Link href="#universos">
               <Button size="lg" className="w-full sm:w-auto text-lg px-10 h-14 rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1">
-                Escolher Meu Presente
+                Explorar Presentes
               </Button>
             </Link>
           </motion.div>
@@ -130,47 +130,319 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Product Selection Section - RIGHT AFTER HERO */}
-      <section id="products" className="py-24 bg-white relative">
-        <ProductSelector />
-      </section>
-
-      {/* How it Works - Generic for all products */}
-      <section id="how-it-works" className="py-24 bg-[#FFFAFA]">
+      {/* Dois Universos — RIGHT AFTER HERO */}
+      <section id="universos" className="py-24 bg-white relative">
         <div className="container px-4 md:px-8 max-w-screen-xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-5xl font-serif font-bold text-text-main mb-6">
-              Como Funciona
+          <div className="text-center mb-16">
+            <span className="font-script text-3xl md:text-4xl text-primary mb-3 block">
+              Dois caminhos
+            </span>
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-text-main mb-4">
+              O presente perfeito, do seu jeito
             </h2>
-            <p className="text-muted-foreground text-lg font-light">
-              Três passos simples para qualquer presente.
+            <p className="text-muted-foreground text-lg font-light max-w-2xl mx-auto">
+              Crie uma experiência online interativa ou encomende um presente personalizado na nossa loja.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center relative">
-            {/* Connecting Line (Desktop) */}
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-primary/20 -z-10" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
 
-            <div className="flex flex-col items-center space-y-6 group">
-              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Palette className="w-10 h-10 text-primary" />
+            {/* CARD ESQUERDA — Experiências Digitais */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.7 }}
+              className="bg-gradient-to-br from-primary/5 to-transparent rounded-3xl p-6 md:p-8 border-2 border-primary/15 hover:border-primary/30 transition-all duration-300 flex flex-col"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-primary/15 rounded-full p-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Experiências Digitais
+                </span>
               </div>
-              <h3 className="text-2xl font-bold text-text-main">Escolha e Personalize</h3>
-              <p className="text-muted-foreground leading-relaxed">Selecione o tipo de presente e adicione suas fotos, mensagens e músicas favoritas.</p>
+              <h3 className="text-2xl md:text-3xl font-serif font-bold text-text-main mb-2">
+                Crie online, entregue por QR Code ou link
+              </h3>
+              <p className="text-sm text-muted-foreground mb-6 font-light">
+                Experiências interativas com fotos, música e mensagens. Teste antes de pagar e entregue na hora.
+              </p>
+
+              {/* 3 cards expandidos das experiências */}
+              <div className="flex flex-col gap-3 mb-6 flex-1">
+                <Link
+                  href="/mensagem-digital"
+                  className="flex items-start gap-4 bg-white rounded-xl p-4 border border-primary/10 hover:border-primary/30 hover:shadow-md transition-all group"
+                >
+                  <div className="bg-primary/10 rounded-xl p-3 group-hover:bg-primary/20 transition-colors shrink-0">
+                    <Heart className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="text-sm font-bold text-text-main">Mensagem Digital</p>
+                      <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
+                      Uma página inesquecível com foto, mensagem e música que toca quando ela abre.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">7 fotos</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">Música YouTube</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">QR Code</span>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/12-cartas"
+                  className="flex items-start gap-4 bg-white rounded-xl p-4 border border-primary/10 hover:border-primary/30 hover:shadow-md transition-all group"
+                >
+                  <div className="bg-primary/10 rounded-xl p-3 group-hover:bg-primary/20 transition-colors shrink-0">
+                    <Calendar className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="text-sm font-bold text-text-main">12 Cartas</p>
+                      <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
+                      12 mensagens lacradas — uma por mês, com foto e música em cada uma. O presente que dura o ano inteiro.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">12 momentos</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">Abertura mensal</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">Templates</span>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/revelacao-virtual"
+                  className="flex items-start gap-4 bg-white rounded-xl p-4 border border-primary/10 hover:border-primary/30 hover:shadow-md transition-all group"
+                >
+                  <div className="bg-primary/10 rounded-xl p-3 group-hover:bg-primary/20 transition-colors shrink-0">
+                    <Baby className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="text-sm font-bold text-text-main">Revelação Virtual</p>
+                      <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
+                      Convidados votam menino ou menina pelo celular. Dashboard ao vivo e revelação animada no grande momento.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">Votação ao vivo</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">5 fotos</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">Mensagens</span>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+
+              <Link href="/experiencias">
+                <Button variant="primary" size="lg" className="w-full">
+                  Ver todas as experiências
+                </Button>
+              </Link>
+            </motion.div>
+
+            {/* CARD DIREITA — Loja Paper Bloom */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.7 }}
+              className="bg-gradient-to-br from-primary/5 to-transparent rounded-3xl p-6 md:p-8 border-2 border-primary/15 hover:border-primary/30 transition-all duration-300 flex flex-col"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-primary/15 rounded-full p-2">
+                  <ShoppingBag className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Loja Paper Bloom
+                </span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-serif font-bold text-text-main mb-2">
+                Presentes físicos + artes digitais
+              </h3>
+              <p className="text-sm text-muted-foreground mb-6 font-light">
+                Produtos artesanais personalizados pelo WhatsApp ou artes digitais para imprimir em casa.
+              </p>
+
+              {/* Preview de produtos da loja */}
+              {lojaProducts.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mb-6 flex-1">
+                  {lojaProducts.map((product) => (
+                    <Link
+                      key={product.id}
+                      href={`/loja/${product.slug}`}
+                      className="group block bg-white rounded-xl overflow-hidden border border-primary/10 hover:border-primary/30 hover:shadow-md transition-all"
+                    >
+                      <div className="relative aspect-[4/3] bg-[#FFFAFA]">
+                        {product.images[0] ? (
+                          <Image
+                            src={product.images[0]}
+                            alt={product.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 1024px) 50vw, 25vw"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="font-script text-3xl text-primary/40">🌸</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs font-semibold text-text-main truncate">{product.title}</p>
+                        {product.physical?.priceFormatted && (
+                          <p className="text-xs text-muted-foreground">{product.physical.priceFormatted}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Banner coleção ativa */}
+              {activeCollection && (
+                <Link
+                  href={`/loja/colecao/${activeCollection.slug}`}
+                  className="flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-xl px-3 py-2 mb-3 hover:bg-primary/15 transition-colors"
+                >
+                  <span>🌸</span>
+                  <span className="text-xs text-text-main flex-1">
+                    Coleção <strong>{activeCollection.title.replace(/^Coleção /i, '')}</strong> está no ar
+                  </span>
+                  <ArrowRight size={14} className="text-primary" />
+                </Link>
+              )}
+
+              <Link href="/loja">
+                <Button variant="primary" size="lg" className="w-full">
+                  Ver loja completa
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works - Dois fluxos lado a lado */}
+      <section id="how-it-works" className="py-24 bg-[#FFFAFA]">
+        <div className="container px-4 md:px-8 max-w-screen-xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-text-main mb-4">
+              Como Funciona
+            </h2>
+            <p className="text-muted-foreground text-lg font-light">
+              Cada universo tem seu jeito. Os dois são simples.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+
+            {/* Fluxo 1 — Experiências Digitais */}
+            <div className="bg-white rounded-3xl p-6 md:p-10 border-2 border-primary/15 shadow-sm">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="bg-primary/15 rounded-full p-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Experiências Digitais
+                </span>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Palette className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-text-main mb-1">1. Personalize online</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Use o editor para adicionar fotos, mensagem e música. Sem precisar criar conta.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Gift className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-text-main mb-1">2. Visualize antes de pagar</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Veja exatamente como vai ficar. Só paga quando estiver 100% satisfeito.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <QrCode className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-text-main mb-1">3. Receba QR Code e link</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Por email, na hora. Compartilhe digitalmente ou imprima em um cartão.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col items-center space-y-6 group">
-              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Gift className="w-10 h-10 text-primary" />
+
+            {/* Fluxo 2 — Loja Paper Bloom */}
+            <div className="bg-white rounded-3xl p-6 md:p-10 border-2 border-primary/15 shadow-sm">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="bg-primary/15 rounded-full p-2">
+                  <ShoppingBag className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                  Loja Paper Bloom
+                </span>
               </div>
-              <h3 className="text-2xl font-bold text-text-main">Visualize e Pague</h3>
-              <p className="text-muted-foreground leading-relaxed">Veja o resultado antes de pagar. Só finalize quando estiver 100% satisfeito.</p>
-            </div>
-            <div className="flex flex-col items-center space-y-6 group">
-              <div className="w-24 h-24 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <QrCode className="w-10 h-10 text-primary" />
+
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <ShoppingBag className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-text-main mb-1">1. Escolha o produto</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Físico personalizado pelo WhatsApp ou arte digital editável no Canva.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Palette className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-text-main mb-1">2. Combine a personalização</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      No WhatsApp combinamos nomes, fotos e mensagens. Você aprova a prévia antes de imprimir.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Gift className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-text-main mb-1">3. Receba em casa ou por email</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Pagamento Mercado Pago, envio rastreado pelo Mercado Envios. Arte digital chega no email na hora.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-text-main">Presenteie</h3>
-              <p className="text-muted-foreground leading-relaxed">Receba um QR Code exclusivo para enviar digitalmente ou imprimir em um cartão.</p>
             </div>
           </div>
         </div>
@@ -301,59 +573,75 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Column 1 */}
-            <div className="space-y-4">
-              <FAQItem
-                question="O que é o Paper Bloom?"
-                answer="Paper Bloom é uma plataforma de presentes digitais personalizados. Você cria experiências únicas com fotos, músicas e mensagens que a pessoa acessa pelo celular através de um QR Code exclusivo. Temos diferentes tipos de presentes: Mensagem Digital, 12 Cartas e Revelação Virtual."
-              />
-              <FAQItem
-                question="Qual a diferença entre Mensagem Digital e 12 Cartas?"
-                answer="A Mensagem Digital é uma página única com foto, música e mensagem — perfeita para momentos especiais. Já as 12 Cartas são uma coleção de 12 mensagens que podem ser abertas ao longo do tempo, cada uma com sua própria foto e música. É como um calendário de emoções!"
-              />
-              <FAQItem
-                question="Como funciona a Revelação Virtual?"
-                answer="Você cria uma página interativa onde seus convidados podem votar se acham que é menino ou menina. Todos acompanham a votação em tempo real e, no momento certo, a revelação acontece de forma emocionante com animações e a resposta final."
-              />
-              <FAQItem
-                question="Preciso pagar antes de criar?"
-                answer="Não! Você pode criar e visualizar seu presente completamente grátis. Só paga quando estiver 100% satisfeito e quiser gerar o QR Code final para enviar."
-              />
-              <FAQItem
-                question="Posso usar qualquer música?"
-                answer="Sim! Você pode usar qualquer música do YouTube. Basta copiar o link da música e colar no editor. A música vai tocar automaticamente quando a pessoa abrir seu presente."
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Coluna 1 — Experiências Digitais */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h3 className="text-sm font-bold uppercase tracking-widest text-primary">
+                  Experiências Digitais
+                </h3>
+              </div>
+              <div className="space-y-3">
+                <FAQItem
+                  question="O que são as experiências digitais?"
+                  answer="São presentes online que a pessoa acessa pelo celular via QR Code ou link. Temos três opções: Mensagem Digital (uma página com foto, mensagem e música), 12 Cartas (12 mensagens lacradas, uma por mês) e Revelação Virtual (votação interativa do sexo do bebê)."
+                />
+                <FAQItem
+                  question="Qual a diferença entre Mensagem Digital e 12 Cartas?"
+                  answer="A Mensagem Digital é uma página única — ideal para momentos especiais. As 12 Cartas são uma coleção de 12 mensagens lacradas que podem ser abertas ao longo do ano, cada uma com sua foto e música. É como um calendário de emoções."
+                />
+                <FAQItem
+                  question="Preciso pagar antes de criar?"
+                  answer="Não! Você cria e visualiza seu presente completamente grátis. Só paga quando estiver 100% satisfeito e quiser gerar o QR Code final."
+                />
+                <FAQItem
+                  question="Posso usar qualquer música?"
+                  answer="Sim. Qualquer música do YouTube. Basta colar o link no editor — toca automaticamente quando a pessoa abrir o presente."
+                />
+                <FAQItem
+                  question="O QR Code expira?"
+                  answer="Não. Seu QR Code e o presente ficam disponíveis para sempre. A pessoa pode acessar quantas vezes quiser."
+                />
+              </div>
             </div>
 
-            {/* Column 2 */}
-            <div className="space-y-4">
-              <FAQItem
-                question="O QR Code expira?"
-                answer="Não! Seu QR Code e presente ficam disponíveis para sempre. A pessoa pode acessar quantas vezes quiser, quando quiser."
-              />
-              <FAQItem
-                question="Como recebo meu presente após o pagamento?"
-                answer="Após a confirmação do pagamento, você receberá um link e um QR Code por e-mail para acessar e compartilhar seu presente personalizado."
-              />
-              <FAQItem
-                question="Como faço para imprimir o QR Code?"
-                answer="Depois de criar seu presente, você recebe o QR Code em alta qualidade. Pode imprimir em casa, em uma gráfica, ou até mesmo em um cartão especial. Também enviamos por email para facilitar."
-              />
-              <FAQItem
-                question="É seguro? Meus dados estão protegidos?"
-                answer="Sim! Usamos criptografia de ponta e servidores seguros. Suas fotos e mensagens são privadas e só podem ser acessadas por quem tem o link único."
-              />
-              <FAQItem
-                question="Funciona em qualquer celular?"
-                answer="Sim! Funciona em qualquer smartphone com câmera (iPhone, Android, etc). Não precisa baixar nenhum aplicativo, basta escanear o QR Code."
-              />
+            {/* Coluna 2 — Loja Paper Bloom */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <ShoppingBag className="w-5 h-5 text-primary" />
+                <h3 className="text-sm font-bold uppercase tracking-widest text-primary">
+                  Loja Paper Bloom
+                </h3>
+              </div>
+              <div className="space-y-3">
+                <FAQItem
+                  question="O que é a Loja Paper Bloom?"
+                  answer="Nossa loja de presentes personalizados — produtos físicos artesanais (jogos, quadros, canecas, livros) e artes digitais editáveis no Canva. Alguns produtos têm as duas versões: você escolhe se quer receber em casa ou baixar para imprimir."
+                />
+                <FAQItem
+                  question="Como funciona a compra pelo WhatsApp?"
+                  answer="Você clica em 'Encomendar no WhatsApp' no produto e cai numa conversa com nossa equipe com a mensagem já pronta. Combinamos a personalização (nomes, fotos, mensagens), enviamos uma prévia para aprovação e um link de pagamento seguro pelo Mercado Pago."
+                />
+                <FAQItem
+                  question="Como é o pagamento e a entrega física?"
+                  answer="Pagamento Mercado Pago — PIX, boleto ou cartão em até 12× sem juros. Envio pelo Mercado Envios com código de rastreio. Produção em 5-10 dias úteis + frete (3 a 10 dias dependendo do CEP)."
+                />
+                <FAQItem
+                  question="O que é a 'Arte Digital' que aparece em alguns produtos?"
+                  answer="É uma versão digital editável no Canva por um preço menor. Você compra direto no site, recebe o link por email em até 5 minutos, abre no Canva como modelo editável e imprime onde quiser."
+                />
+                <FAQItem
+                  question="Vocês fazem troca?"
+                  answer="Como tudo é personalizado, não fazemos trocas. Mas se houver erro nosso (impressão, qualidade), refazemos sem custo. Por isso enviamos sempre a prévia da arte para aprovação antes de imprimir."
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA - Generic */}
+      {/* CTA - Dois caminhos */}
       <section className="py-32 bg-primary/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
         <div className="container px-4 md:px-8 text-center max-w-4xl mx-auto relative z-10">
@@ -363,14 +651,23 @@ export default function Home() {
                 Pronto para emocionar?
               </h2>
               <p className="text-xl text-muted-foreground mb-8 font-light max-w-xl mx-auto md:mx-0">
-                Escolha o presente perfeito e surpreenda quem você ama.
-                Teste gratuitamente antes de pagar.
+                Escolha o caminho perfeito para presentear quem você ama —
+                online em minutos ou um produto artesanal entregue em casa.
               </p>
-              <Link href="#products">
-                <Button size="lg" className="px-12 h-14 text-lg rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-1 transition-all duration-300">
-                  Escolher Meu Presente
-                </Button>
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                <Link href="/experiencias">
+                  <Button size="lg" className="w-full sm:w-auto px-8 h-14 text-base rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-1 transition-all duration-300 gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    Criar Experiência Digital
+                  </Button>
+                </Link>
+                <Link href={activeCollection ? `/loja/colecao/${activeCollection.slug}` : '/loja'}>
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 h-14 text-base rounded-full hover:-translate-y-1 transition-all duration-300 gap-2 bg-white border-2 border-primary/20 hover:border-primary/40">
+                    <ShoppingBag className="w-5 h-5" />
+                    Visitar a Loja
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             <div className="flex-1 w-full max-w-md">

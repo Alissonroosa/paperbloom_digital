@@ -444,6 +444,108 @@ export const analytics = {
       ...context
     })
   },
+
+  // ============================================
+  // EVENTOS DA LOJA — CATÁLOGO DE ARTES DIGITAIS
+  // ============================================
+
+  /**
+   * Visualização do catálogo da loja (/loja)
+   */
+  viewLojaCatalog: () => {
+    if (!shouldTrack('view_loja_catalog')) return
+
+    gtag('event', 'view_item_list', {
+      item_list_name: 'Loja Paper Bloom — Artes Digitais',
+    })
+
+    fbq('track', 'ViewContent', {
+      content_type: 'product_group',
+      content_name: 'Loja Paper Bloom — Dia dos Namorados 2026',
+    })
+  },
+
+  /**
+   * Visualização de produto individual (/loja/[slug])
+   * Mapeia para Meta ViewContent
+   */
+  viewLojaProduct: (slug: string) => {
+    if (!shouldTrack(`view_loja_product_${slug}`)) return
+
+    gtag('event', 'view_item', {
+      item_list_name: 'Loja Paper Bloom',
+      items: [{ item_id: slug, item_name: slug }],
+    })
+
+    fbq('track', 'ViewContent', {
+      content_type: 'product',
+      content_ids: [slug],
+      content_name: slug,
+    })
+  },
+
+  /**
+   * Clique no botão de checkout WhatsApp (produto físico)
+   * Mapeia para Meta InitiateCheckout com source 'whatsapp'
+   */
+  clickWhatsAppCheckout: (slug: string) => {
+    gtag('event', 'begin_checkout', {
+      items: [{ item_id: slug, item_name: slug }],
+      checkout_source: 'whatsapp',
+    })
+
+    fbq('track', 'InitiateCheckout', {
+      content_ids: [slug],
+      content_type: 'product',
+      num_items: 1,
+    })
+
+    fbq('trackCustom', 'WhatsAppCheckout', { slug })
+  },
+
+  /**
+   * Clique no botão de checkout de arte digital
+   * Mapeia para Meta InitiateCheckout com source 'art'
+   */
+  clickArtCheckout: (slug: string) => {
+    gtag('event', 'begin_checkout', {
+      items: [{ item_id: slug, item_name: slug }],
+      checkout_source: 'art_digital',
+    })
+
+    fbq('track', 'InitiateCheckout', {
+      content_ids: [slug],
+      content_type: 'product',
+      num_items: 1,
+    })
+
+    fbq('trackCustom', 'ArtCheckout', { slug })
+  },
+
+  /**
+   * Compra de arte digital concluída — disparado na /loja/sucesso/[orderId]
+   * Usa shouldTrack para idempotência (recarregar a página não dispara de novo)
+   */
+  purchaseArt: (orderId: string, amountInCents: number) => {
+    if (!shouldTrack(`purchase_art_${orderId}`)) return
+
+    const value = amountInCents / 100
+
+    gtag('event', 'purchase', {
+      transaction_id: orderId,
+      value,
+      currency: 'BRL',
+    })
+
+    fbq('track', 'Purchase', {
+      value,
+      currency: 'BRL',
+      content_ids: [orderId],
+      content_type: 'product',
+    })
+
+    console.log('[Analytics] purchaseArt tracked:', { orderId, value })
+  },
 }
 
 // ============================================

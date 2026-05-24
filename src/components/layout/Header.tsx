@@ -5,19 +5,28 @@ import Image from "next/image"
 import { Button } from "@/components/ui/Button"
 import { useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
-import { Heart, Calendar, Baby, ChevronDown } from "lucide-react"
+import { Heart, Calendar, Baby, ChevronDown, ShoppingBag } from "lucide-react"
+import { catalogService } from "@/services/CatalogService"
 
-const PRODUCTS = [
+const EXPERIENCIAS = [
     { name: "Mensagem Digital", href: "/mensagem-digital", icon: Heart, description: "Foto, música e mensagem" },
     { name: "12 Cartas", href: "/12-cartas", icon: Calendar, description: "12 momentos inesquecíveis" },
     { name: "Revelação Virtual", href: "/revelacao-virtual", icon: Baby, description: "Menino ou menina?" },
 ]
 
+// Enquanto há coleção sazonal ativa, o botão "Loja" leva direto para ela.
+// Quando não houver, cai no catálogo geral /loja.
+function getLojaHref(): string {
+    const active = catalogService.getActiveCollection();
+    return active ? `/loja/colecao/${active.slug}` : '/loja';
+}
+
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false)
-    const [productsOpen, setProductsOpen] = useState(false)
+    const [experienciasOpen, setExperienciasOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const lojaHref = getLojaHref()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -29,11 +38,11 @@ export function Header() {
 
     const handleMouseEnter = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current)
-        setProductsOpen(true)
+        setExperienciasOpen(true)
     }
 
     const handleMouseLeave = () => {
-        timeoutRef.current = setTimeout(() => setProductsOpen(false), 200)
+        timeoutRef.current = setTimeout(() => setExperienciasOpen(false), 200)
     }
 
     return (
@@ -74,7 +83,7 @@ export function Header() {
                         Como Funciona
                     </Link>
 
-                    {/* Products Dropdown */}
+                    {/* Experiências Dropdown */}
                     <div
                         ref={dropdownRef}
                         className="relative"
@@ -83,12 +92,12 @@ export function Header() {
                     >
                         <button
                             className="flex items-center gap-1 text-text-main/80 hover:text-primary transition-colors"
-                            onClick={() => setProductsOpen(!productsOpen)}
+                            onClick={() => setExperienciasOpen(!experienciasOpen)}
                         >
-                            Produtos
+                            Experiências
                             <ChevronDown className={cn(
                                 "w-3.5 h-3.5 transition-transform duration-200",
-                                productsOpen && "rotate-180"
+                                experienciasOpen && "rotate-180"
                             )} />
                         </button>
 
@@ -96,19 +105,19 @@ export function Header() {
                         <div
                             className={cn(
                                 "absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 rounded-2xl border border-white/30 bg-white/95 backdrop-blur-xl shadow-xl shadow-black/10 overflow-hidden transition-all duration-200 origin-top",
-                                productsOpen
+                                experienciasOpen
                                     ? "opacity-100 scale-100 pointer-events-auto"
                                     : "opacity-0 scale-95 pointer-events-none"
                             )}
                         >
                             <div className="p-2">
-                                {PRODUCTS.map((product) => {
-                                    const Icon = product.icon
+                                {EXPERIENCIAS.map((experiencia) => {
+                                    const Icon = experiencia.icon
                                     return (
                                         <Link
-                                            key={product.href}
-                                            href={product.href}
-                                            onClick={() => setProductsOpen(false)}
+                                            key={experiencia.href}
+                                            href={experiencia.href}
+                                            onClick={() => setExperienciasOpen(false)}
                                             className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-primary/5 transition-colors group"
                                         >
                                             <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
@@ -116,10 +125,10 @@ export function Header() {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-text-main group-hover:text-primary transition-colors">
-                                                    {product.name}
+                                                    {experiencia.name}
                                                 </p>
                                                 <p className="text-xs text-muted-foreground">
-                                                    {product.description}
+                                                    {experiencia.description}
                                                 </p>
                                             </div>
                                         </Link>
@@ -128,18 +137,27 @@ export function Header() {
                             </div>
                             <div className="border-t border-primary/10 p-2">
                                 <Link
-                                    href="/produtos"
-                                    onClick={() => setProductsOpen(false)}
+                                    href="/experiencias"
+                                    onClick={() => setExperienciasOpen(false)}
                                     className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
                                 >
-                                    Ver todos os produtos
+                                    Ver todas as experiências
                                 </Link>
                             </div>
                         </div>
                     </div>
+
+                    {/* Loja — direciona para coleção ativa enquanto houver */}
+                    <Link
+                        href={lojaHref}
+                        className="flex items-center gap-1.5 text-text-main/80 hover:text-primary transition-colors"
+                    >
+                        <ShoppingBag className="w-4 h-4" />
+                        Loja
+                    </Link>
                 </nav>
                 <div className="flex items-center gap-4">
-                    <Link href="/produtos">
+                    <Link href="/experiencias">
                         <Button
                             variant={isScrolled ? "primary" : "outline"}
                             size="sm"

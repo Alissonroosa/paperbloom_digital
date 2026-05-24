@@ -6,20 +6,18 @@ import { usePrices } from "@/hooks/usePrices"
 import { useEffect } from "react"
 import { analytics } from "@/lib/analytics"
 
-export default function ProdutosPage() {
+export default function ExperienciasPage() {
   const { prices, loading } = usePrices();
 
-  // Track: Visualização da página de produtos
+  // Track: Visualização da página de experiências (mantém event name p/ continuidade analytics)
   useEffect(() => {
     analytics.viewProductsPage()
   }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FFFAFA] to-white">
-      {/* Header with back button */}
-
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
+      <section className="pt-28 md:pt-32 pb-16 md:pb-24">
         <div className="container px-4 md:px-8 max-w-screen-xl mx-auto">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -79,7 +77,7 @@ export default function ProdutosPage() {
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-text-main text-center mb-12">
               Compare as opções
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {/* Mensagem Digital */}
               <div className="bg-white rounded-2xl p-8 border-2 border-primary/10 hover:border-primary/30 transition-all duration-300 hover:shadow-xl">

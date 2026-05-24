@@ -9,6 +9,10 @@
 
 import { Resend } from 'resend';
 import { env } from '@/lib/env';
+import { ART_DELIVERY_EMAIL_TEMPLATE } from './email-templates/art-delivery';
+import type { ArtDeliveryEmailData } from './email-templates/art-delivery';
+import { ART_RECOVERY_EMAIL_TEMPLATE } from './email-templates/art-recovery';
+import type { ArtRecoveryEmailData } from './email-templates/art-recovery';
 
 /**
  * QR Code email data structure
@@ -57,6 +61,8 @@ export interface ResendConfig {
 export interface IEmailService {
   sendQRCodeEmail(data: QRCodeEmailData): Promise<EmailSendResult>;
   sendCardCollectionEmail(data: CardCollectionEmailData): Promise<EmailSendResult>;
+  sendArtDeliveryEmail(data: ArtDeliveryEmailData): Promise<EmailSendResult>;
+  sendArtRecoveryEmail(data: ArtRecoveryEmailData): Promise<EmailSendResult>;
   validateConfig(): boolean;
 }
 
@@ -862,6 +868,81 @@ export class EmailService implements IEmailService {
       return { success: false, error: errorMessage };
     }
   }
+
+  /**
+   * Sends art delivery email after digital art purchase.
+   * Includes Canva template URL, license text and recovery link.
+   */
+  async sendArtDeliveryEmail(data: ArtDeliveryEmailData): Promise<EmailSendResult> {
+    if (!this.validateConfig()) {
+      return { success: false, error: 'Email service not configured properly' };
+    }
+
+    console.log('[EmailService] Attempting to send art delivery email:', {
+      recipientEmail: data.recipientEmail,
+      productTitle: data.productTitle,
+      timestamp: new Date().toISOString(),
+    });
+
+    let lastError: Error | null = null;
+    const maxRetries = 3;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await this.resend.emails.send({
+          from: `${this.config.fromName} <${this.config.fromEmail}>`,
+          to: data.recipientEmail,
+          subject: ART_DELIVERY_EMAIL_TEMPLATE.subject(data.productTitle),
+          html: ART_DELIVERY_EMAIL_TEMPLATE.html(data),
+        });
+        return { success: true, messageId: result.data?.id };
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error('Unknown error');
+        if (attempt < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt - 1) * 1000));
+        }
+      }
+    }
+
+    return { success: false, error: lastError?.message || 'Failed to send art delivery email' };
+  }
+
+  /**
+   * Sends art recovery email with all purchased arts for the given email.
+   */
+  async sendArtRecoveryEmail(data: ArtRecoveryEmailData): Promise<EmailSendResult> {
+    if (!this.validateConfig()) {
+      return { success: false, error: 'Email service not configured properly' };
+    }
+
+    console.log('[EmailService] Attempting to send art recovery email:', {
+      recipientEmail: data.recipientEmail,
+      orderCount: data.orders.length,
+      timestamp: new Date().toISOString(),
+    });
+
+    let lastError: Error | null = null;
+    const maxRetries = 3;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await this.resend.emails.send({
+          from: `${this.config.fromName} <${this.config.fromEmail}>`,
+          to: data.recipientEmail,
+          subject: ART_RECOVERY_EMAIL_TEMPLATE.subject(),
+          html: ART_RECOVERY_EMAIL_TEMPLATE.html(data),
+        });
+        return { success: true, messageId: result.data?.id };
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error('Unknown error');
+        if (attempt < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt - 1) * 1000));
+        }
+      }
+    }
+
+    return { success: false, error: lastError?.message || 'Failed to send art recovery email' };
+  }
 }
 
 /**
@@ -1044,4 +1125,119 @@ export const emailService = {
     }
   },
   validateConfig: () => emailService.instance.validateConfig(),
+
+  /**
+   * Sends art delivery email after digital art purchase.
+   * Includes Canva template URL and license text.
+   */
+  sendArtDeliveryEmail: async (data: ArtDeliveryEmailData): Promise<EmailSendResult> => {
+    const instance = emailService.instance;
+    if (!instance.validateConfig()) {
+      return { success: false, error: 'Email service not configured properly' };
+    }
+
+    console.log('[EmailService] Attempting to send art delivery email:', {
+      recipientEmail: data.recipientEmail,
+      productTitle: data.productTitle,
+      timestamp: new Date().toISOString(),
+    });
+
+    let lastError: Error | null = null;
+    const maxRetries = 3;
+    const resend = (instance as unknown as { resend: Resend }).resend;
+    const config = (instance as unknown as { config: { fromName: string; fromEmail: string } }).config;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`[EmailService] Art delivery send attempt ${attempt}/${maxRetries}`, {
+          recipientEmail: data.recipientEmail,
+        });
+
+        const result = await resend.emails.send({
+          from: `${config.fromName} <${config.fromEmail}>`,
+          to: data.recipientEmail,
+          subject: ART_DELIVERY_EMAIL_TEMPLATE.subject(data.productTitle),
+          html: ART_DELIVERY_EMAIL_TEMPLATE.html(data),
+        });
+
+        console.log('[EmailService] Art delivery email sent:', {
+          messageId: result.data?.id,
+          recipientEmail: data.recipientEmail,
+        });
+
+        return { success: true, messageId: result.data?.id };
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error('Unknown error');
+        console.warn(`[EmailService] Art delivery attempt ${attempt}/${maxRetries} failed:`, {
+          error: lastError.message,
+          recipientEmail: data.recipientEmail,
+        });
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt - 1) * 1000;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    const errorMessage = lastError?.message || 'Failed to send art delivery email';
+    console.error('[EmailService] Art delivery email failed after retries:', { recipientEmail: data.recipientEmail });
+    return { success: false, error: errorMessage };
+  },
+
+  /**
+   * Sends art recovery email with all purchased arts for the given email.
+   */
+  sendArtRecoveryEmail: async (data: ArtRecoveryEmailData): Promise<EmailSendResult> => {
+    const instance = emailService.instance;
+    if (!instance.validateConfig()) {
+      return { success: false, error: 'Email service not configured properly' };
+    }
+
+    console.log('[EmailService] Attempting to send art recovery email:', {
+      recipientEmail: data.recipientEmail,
+      orderCount: data.orders.length,
+      timestamp: new Date().toISOString(),
+    });
+
+    let lastError: Error | null = null;
+    const maxRetries = 3;
+    const resend = (instance as unknown as { resend: Resend }).resend;
+    const config = (instance as unknown as { config: { fromName: string; fromEmail: string } }).config;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`[EmailService] Art recovery send attempt ${attempt}/${maxRetries}`, {
+          recipientEmail: data.recipientEmail,
+        });
+
+        const result = await resend.emails.send({
+          from: `${config.fromName} <${config.fromEmail}>`,
+          to: data.recipientEmail,
+          subject: ART_RECOVERY_EMAIL_TEMPLATE.subject(),
+          html: ART_RECOVERY_EMAIL_TEMPLATE.html(data),
+        });
+
+        console.log('[EmailService] Art recovery email sent:', {
+          messageId: result.data?.id,
+          recipientEmail: data.recipientEmail,
+        });
+
+        return { success: true, messageId: result.data?.id };
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error('Unknown error');
+        console.warn(`[EmailService] Art recovery attempt ${attempt}/${maxRetries} failed:`, {
+          error: lastError.message,
+          recipientEmail: data.recipientEmail,
+        });
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt - 1) * 1000;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    const errorMessage = lastError?.message || 'Failed to send art recovery email';
+    console.error('[EmailService] Art recovery email failed after retries:', { recipientEmail: data.recipientEmail });
+    return { success: false, error: errorMessage };
+  },
 };

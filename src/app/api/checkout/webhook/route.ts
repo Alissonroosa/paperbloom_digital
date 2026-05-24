@@ -6,6 +6,8 @@ import { genderRevealService } from '@/services/GenderRevealService';
 import { slugService } from '@/services/SlugService';
 import { qrCodeService } from '@/services/QRCodeService';
 import { emailService } from '@/services/EmailService';
+import { digitalArtOrderService } from '@/services/DigitalArtOrderService';
+import { catalogService } from '@/services/CatalogService';
 import { validateStoredURLs } from '@/lib/utils';
 import { generateRevealSlug } from '@/types/gender-reveal';
 import { loadQRCodeAsDataUrl } from '@/lib/qr-utils';
@@ -154,6 +156,59 @@ async function handleGenderRevealPayment(
   });
 
   console.log(`Successfully processed payment for gender reveal ${revealId}`);
+}
+
+/**
+ * Handle digital art payment processing
+ * Idempotent: no-op if order already paid.
+ */
+async function handleDigitalArtPayment(
+  paymentId: number,
+  metadata: Record<string, string>,
+  payerEmail: string | undefined
+): Promise<void> {
+  const orderId = metadata.order_id || metadata.orderId;
+  if (!orderId) throw new Error('Order ID not found in digital-art payment metadata');
+
+  // Idempotência: se já existe com status paid, no-op
+  const existingByPayment = await digitalArtOrderService.findByMpPaymentId(String(paymentId));
+  if (existingByPayment && existingByPayment.status === 'paid') {
+    console.log(`[Webhook] ⚠️ Digital art order already paid (mp_payment_id: ${paymentId}) — skipping`);
+    return;
+  }
+
+  const order = await digitalArtOrderService.findById(orderId);
+  if (!order) throw new Error(`Digital art order not found for ID: ${orderId}`);
+
+  await digitalArtOrderService.markAsPaid(orderId, String(paymentId));
+
+  const product = catalogService.getProductBySlug(order.product_slug);
+  if (!product?.art?.canvaTemplateUrl) {
+    console.error(`[Webhook] ❌ Product ${order.product_slug} has no canvaTemplateUrl — cannot send email`);
+    return;
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const recoveryUrl = `${baseUrl}/loja/recuperar-arte`;
+
+  const emailResult = await emailService.sendArtDeliveryEmail({
+    recipientEmail: payerEmail || order.email,
+    productTitle: order.product_title,
+    canvaUrl: product.art.canvaTemplateUrl,
+    canvaLabel: product.art.canvaTemplateLabel,
+    canvaUrlSecondary: product.art.canvaTemplateUrlSecondary,
+    canvaLabelSecondary: product.art.canvaTemplateLabelSecondary,
+    recoveryUrl,
+    licenseText: product.art.licenseText,
+  });
+
+  if (emailResult.success) {
+    console.log(`[Webhook] ✅ Art delivery email sent for order ${orderId}`);
+  } else {
+    console.error(`[Webhook] ❌ Failed to send art delivery email for ${orderId}:`, emailResult.error);
+  }
+
+  console.log(`Successfully processed digital art payment for order ${orderId}`);
 }
 
 /**
@@ -338,7 +393,20 @@ export async function POST(request: NextRequest) {
     const payment = await mercadoPagoService.getPayment(data.id);
     console.log(`[Webhook] Payment ${payment.id} status: ${payment.status}`);
 
-    // Only process approved payments
+    // Only process approved payments (or handle refunds)
+    if (payment.status === 'refunded') {
+      const metadata = payment.metadata;
+      const productType = metadata.product_type || metadata.productType || 'message';
+      console.log(`[Webhook] Processing refund for ${productType} payment ${payment.id}`);
+      if (productType === 'digital-art') {
+        await digitalArtOrderService.markAsRefunded(String(payment.id));
+        console.log(`[Webhook] ✅ Digital art order marked as refunded (mp_payment_id: ${payment.id})`);
+      } else {
+        console.warn(`[Webhook] ⚠️ Refund received for ${productType} payment ${payment.id} — ação manual necessária`);
+      }
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
     if (payment.status !== 'approved') {
       console.log(`[Webhook] Payment ${payment.id} not approved (status: ${payment.status}), skipping`);
       return NextResponse.json({ received: true }, { status: 200 });
@@ -355,6 +423,8 @@ export async function POST(request: NextRequest) {
         await handleGenderRevealPayment(payment.id, metadata, payment.payer.email);
       } else if (productType === 'card-collection') {
         await handleCardCollectionPayment(payment.id, metadata, payment.payer.email);
+      } else if (productType === 'digital-art') {
+        await handleDigitalArtPayment(payment.id, metadata, payment.payer.email);
       } else {
         await handleMessagePayment(payment.id, metadata, payment.payer.email);
       }

@@ -116,6 +116,77 @@ export class MercadoPagoService {
   }
 
   /**
+   * Create a Mercado Pago Checkout Pro preference for a digital art order.
+   * Back URLs redirect to /loja/sucesso/[orderId] on success/pending and /loja on failure.
+   */
+  async createCheckoutSessionForArt(
+    orderId: string,
+    options: {
+      artTitle: string;
+      priceInCents: number;
+      payerEmail: string;
+      payerName?: string;
+    }
+  ): Promise<{ preferenceId: string; url: string }> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+
+    const { artTitle, priceInCents, payerEmail, payerName } = options;
+
+    try {
+      const preferenceBody: Record<string, unknown> = {
+        items: [
+          {
+            id: orderId,
+            title: artTitle,
+            description: 'Arte digital para download via Canva',
+            quantity: 1,
+            unit_price: priceInCents / 100,
+            currency_id: 'BRL',
+          },
+        ],
+        metadata: {
+          productType: 'digital-art',
+          orderId,
+        },
+        statement_descriptor: 'PAPERBLOOM',
+        payer: {
+          email: payerEmail,
+          name: payerName || undefined,
+        },
+      };
+
+      if (!isLocalhost) {
+        preferenceBody.back_urls = {
+          success: `${baseUrl}/loja/sucesso/${orderId}`,
+          failure: `${baseUrl}/loja`,
+          pending: `${baseUrl}/loja/sucesso/${orderId}`,
+        };
+        preferenceBody.auto_return = 'approved';
+        preferenceBody.notification_url = `${baseUrl}/api/checkout/webhook`;
+      }
+
+      const result = await this.preference.create({
+        body: preferenceBody as Parameters<Preference['create']>[0]['body'],
+      });
+
+      if (!result.id || !result.init_point) {
+        throw new Error('Failed to create art preference: missing ID or URL');
+      }
+
+      return {
+        preferenceId: result.id,
+        url: result.init_point,
+      };
+    } catch (error) {
+      console.error('Error creating art checkout preference:', error);
+      throw new Error(
+        `Failed to create art checkout: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+
+  /**
    * Get payment details by ID
    */
   async getPayment(paymentId: string | number): Promise<{

@@ -56,9 +56,69 @@ async function verifySchema() {
         console.log(`  - ${con.conname}: ${type}`);
       });
       
-      console.log('\n✓ Database schema verification complete');
+      console.log('\n✓ Messages table verification complete');
     } else {
       console.error('✗ Messages table does not exist');
+      process.exit(1);
+    }
+
+    console.log('\n----------------------------------------\n');
+
+    // Check if digital_art_orders table exists
+    const tableCheckArt = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'digital_art_orders'
+      );
+    `);
+    
+    if (tableCheckArt.rows[0].exists) {
+      console.log('✓ Digital Art Orders table exists');
+      
+      // Get table columns
+      const columns = await pool.query(`
+        SELECT column_name, data_type, is_nullable, column_default
+        FROM information_schema.columns
+        WHERE table_name = 'digital_art_orders'
+        ORDER BY ordinal_position;
+      `);
+      
+      console.log('\nTable columns:');
+      columns.rows.forEach(col => {
+        console.log(`  - ${col.column_name}: ${col.data_type} ${col.is_nullable === 'NO' ? 'NOT NULL' : 'NULL'}`);
+      });
+      
+      // Get indexes
+      const indexes = await pool.query(`
+        SELECT indexname, indexdef
+        FROM pg_indexes
+        WHERE tablename = 'digital_art_orders';
+      `);
+      
+      console.log('\nIndexes:');
+      indexes.rows.forEach(idx => {
+        console.log(`  - ${idx.indexname}`);
+      });
+      
+      // Get constraints
+      const constraints = await pool.query(`
+        SELECT conname, contype
+        FROM pg_constraint
+        WHERE conrelid = 'digital_art_orders'::regclass;
+      `);
+      
+      console.log('\nConstraints:');
+      constraints.rows.forEach(con => {
+        const type = con.contype === 'p' ? 'PRIMARY KEY' : 
+                     con.contype === 'u' ? 'UNIQUE' : 
+                     con.contype === 'c' ? 'CHECK' : con.contype;
+        console.log(`  - ${con.conname}: ${type}`);
+      });
+      
+      console.log('\n✓ Database schema verification complete');
+    } else {
+      console.error('✗ digital_art_orders table does not exist');
       process.exit(1);
     }
   } catch (error) {

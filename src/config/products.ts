@@ -41,10 +41,10 @@ export const PRODUCTS: Record<string, Product> = {
   },
 };
 
-export type ProductType = keyof typeof PRODUCTS;
+export type ProductType = keyof typeof PRODUCTS | 'digital-art';
 
 export function getProduct(type: ProductType): Product {
-  const product = PRODUCTS[type];
+  const product = PRODUCTS[type as keyof typeof PRODUCTS];
   if (!product) {
     throw new Error(`Unknown product type: ${type}`);
   }
