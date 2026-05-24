@@ -157,7 +157,7 @@ export function Header() {
                     </Link>
                 </nav>
                 <div className="flex items-center gap-4">
-                    <Link href="/experiencias">
+                    <Link href="/escolher-presente">
                         <Button
                             variant={isScrolled ? "primary" : "outline"}
                             size="sm"
@@ -166,7 +166,7 @@ export function Header() {
                                 !isScrolled && "bg-white/50 hover:bg-white border-primary/20 text-primary hover:text-primary-dark backdrop-blur-sm"
                             )}
                         >
-                            Criar Presente
+                            Quero meu presente
                         </Button>
                     </Link>
                 </div>
