@@ -9,6 +9,9 @@ interface SuccessClientProps {
   email: string;
   productTitle: string;
   canvaTemplateUrl: string;
+  canvaTemplateLabel?: string;
+  canvaTemplateUrlSecondary?: string;
+  canvaTemplateLabelSecondary?: string;
   licenseText: string;
   amountCents: number;
 }
@@ -18,6 +21,9 @@ export function SuccessClient({
   email,
   productTitle,
   canvaTemplateUrl,
+  canvaTemplateLabel,
+  canvaTemplateUrlSecondary,
+  canvaTemplateLabelSecondary,
   licenseText,
   amountCents,
 }: SuccessClientProps) {
@@ -56,11 +62,24 @@ export function SuccessClient({
           href={canvaTemplateUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block w-full max-w-sm px-8 py-4 rounded-full text-white text-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg mb-4"
+          className="inline-block w-full max-w-sm px-8 py-4 rounded-full text-white text-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg mb-3"
           style={{ background: 'linear-gradient(135deg, #D4A5A5, #8B5F5F)' }}
         >
-          🎨 Abrir no Canva agora
+          🎨 {canvaTemplateLabel ?? 'Abrir no Canva agora'}
         </a>
+
+        {/* CTA secundário (ex: Livro com capa + miolo) */}
+        {canvaTemplateUrlSecondary && (
+          <a
+            href={canvaTemplateUrlSecondary}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block w-full max-w-sm px-8 py-4 rounded-full text-white text-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg mb-4"
+            style={{ background: '#8B5F5F' }}
+          >
+            🎨 {canvaTemplateLabelSecondary ?? 'Abrir arquivo 2 no Canva'}
+          </a>
+        )}
 
         <p className="text-xs text-[#a09090] mb-10">
           Ao clicar, o Canva criará uma cópia editável exclusiva para você.

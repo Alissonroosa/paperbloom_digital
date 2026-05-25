@@ -94,6 +94,9 @@ export default async function LojaSuccessPage({ params }: PageProps) {
       email={order.email}
       productTitle={order.product_title}
       canvaTemplateUrl={product.art.canvaTemplateUrl}
+      canvaTemplateLabel={product.art.canvaTemplateLabel}
+      canvaTemplateUrlSecondary={product.art.canvaTemplateUrlSecondary}
+      canvaTemplateLabelSecondary={product.art.canvaTemplateLabelSecondary}
       licenseText={product.art.licenseText}
       amountCents={order.amount_cents}
     />
