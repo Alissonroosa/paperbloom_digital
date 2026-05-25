@@ -13,7 +13,7 @@ export interface ArtRecoveryEmailData {
 }
 
 export const ART_RECOVERY_EMAIL_TEMPLATE = {
-  subject: () => 'Seus links Paper Bloom 🌸',
+  subject: () => 'Recuperação dos seus arquivos Paper Bloom',
 
   html: (data: ArtRecoveryEmailData) => {
     const orderRows = data.orders

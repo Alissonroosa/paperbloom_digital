@@ -53,9 +53,18 @@ export function SuccessClient({
         </p>
 
         {/* Email */}
-        <p className="text-sm text-muted-foreground mb-10">
+        <p className="text-sm text-muted-foreground mb-3">
           📩 Enviamos o link para <strong>{email}</strong> — verifique a caixa de entrada e o spam.
         </p>
+
+        {/* Dica anti-promoções */}
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-8 text-left">
+          <p className="text-xs text-amber-900 leading-relaxed">
+            <strong>💡 Dica:</strong> se o email cair na aba <strong>Promoções</strong> do Gmail,
+            arraste para a aba <strong>Principal</strong>. Assim você recebe nossas próximas
+            atualizações direto na caixa de entrada.
+          </p>
+        </div>
 
         {/* CTA principal */}
         <a

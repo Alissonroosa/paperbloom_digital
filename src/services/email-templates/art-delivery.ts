@@ -16,7 +16,7 @@ export interface ArtDeliveryEmailData {
 }
 
 export const ART_DELIVERY_EMAIL_TEMPLATE = {
-  subject: (productTitle: string) => `Sua arte chegou! 🌸 ${productTitle}`,
+  subject: (productTitle: string) => `Sua arte digital de "${productTitle}" está pronta`,
 
   html: (data: ArtDeliveryEmailData) => `<!DOCTYPE html>
 <html>
