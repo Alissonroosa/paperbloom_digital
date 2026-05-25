@@ -799,7 +799,15 @@ export class EmailService implements IEmailService {
           html,
         });
 
-        return { success: true, messageId: result.data?.id };
+        if (result.error) {
+          console.error('[EmailService] Resend REJECTED payment confirmation:', JSON.stringify(result.error));
+          throw new Error(`Resend rejected: ${result.error.message || JSON.stringify(result.error)}`);
+        }
+        if (!result.data?.id) {
+          throw new Error('Resend returned no messageId — treating as failure');
+        }
+
+        return { success: true, messageId: result.data.id };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
 
@@ -855,13 +863,21 @@ export class EmailService implements IEmailService {
         html,
       });
 
+      if (result.error) {
+        console.error('[EmailService] Resend REJECTED recover access:', JSON.stringify(result.error));
+        throw new Error(`Resend rejected: ${result.error.message || JSON.stringify(result.error)}`);
+      }
+      if (!result.data?.id) {
+        throw new Error('Resend returned no messageId — treating as failure');
+      }
+
       console.log('[EmailService] Recover access email sent successfully:', {
-        messageId: result.data?.id,
+        messageId: result.data.id,
         email,
         panelCount: panels.length,
       });
 
-      return { success: true, messageId: result.data?.id };
+      return { success: true, messageId: result.data.id };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send email';
       console.error('[EmailService] Recover access email send failed:', { error: errorMessage, email });
@@ -895,7 +911,14 @@ export class EmailService implements IEmailService {
           subject: ART_DELIVERY_EMAIL_TEMPLATE.subject(data.productTitle),
           html: ART_DELIVERY_EMAIL_TEMPLATE.html(data),
         });
-        return { success: true, messageId: result.data?.id };
+        if (result.error) {
+          console.error('[EmailService] Resend REJECTED art delivery (class):', JSON.stringify(result.error));
+          throw new Error(`Resend rejected: ${result.error.message || JSON.stringify(result.error)}`);
+        }
+        if (!result.data?.id) {
+          throw new Error('Resend returned no messageId — treating as failure');
+        }
+        return { success: true, messageId: result.data.id };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
         if (attempt < maxRetries) {
@@ -932,7 +955,14 @@ export class EmailService implements IEmailService {
           subject: ART_RECOVERY_EMAIL_TEMPLATE.subject(),
           html: ART_RECOVERY_EMAIL_TEMPLATE.html(data),
         });
-        return { success: true, messageId: result.data?.id };
+        if (result.error) {
+          console.error('[EmailService] Resend REJECTED art recovery (class):', JSON.stringify(result.error));
+          throw new Error(`Resend rejected: ${result.error.message || JSON.stringify(result.error)}`);
+        }
+        if (!result.data?.id) {
+          throw new Error('Resend returned no messageId — treating as failure');
+        }
+        return { success: true, messageId: result.data.id };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
         if (attempt < maxRetries) {
@@ -1117,8 +1147,16 @@ export const emailService = {
           },
         ],
       });
-      
-      return { success: true, messageId: result.data?.id };
+
+      if (result.error) {
+        console.error('[EmailService] Resend REJECTED gender reveal:', JSON.stringify(result.error));
+        return { success: false, error: result.error.message || JSON.stringify(result.error) };
+      }
+      if (!result.data?.id) {
+        return { success: false, error: 'Resend returned no messageId' };
+      }
+
+      return { success: true, messageId: result.data.id };
     } catch (error) {
       console.error('[EmailService] Gender reveal email failed:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
@@ -1160,12 +1198,22 @@ export const emailService = {
           html: ART_DELIVERY_EMAIL_TEMPLATE.html(data),
         });
 
+        if (result.error) {
+          console.error('[EmailService] Resend REJECTED art delivery:', JSON.stringify(result.error));
+          throw new Error(`Resend rejected: ${result.error.message || JSON.stringify(result.error)}`);
+        }
+
+        if (!result.data?.id) {
+          console.error('[EmailService] Resend returned no messageId for art delivery:', JSON.stringify(result));
+          throw new Error('Resend returned no messageId — treating as failure');
+        }
+
         console.log('[EmailService] Art delivery email sent:', {
-          messageId: result.data?.id,
+          messageId: result.data.id,
           recipientEmail: data.recipientEmail,
         });
 
-        return { success: true, messageId: result.data?.id };
+        return { success: true, messageId: result.data.id };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
         console.warn(`[EmailService] Art delivery attempt ${attempt}/${maxRetries} failed:`, {
@@ -1217,12 +1265,22 @@ export const emailService = {
           html: ART_RECOVERY_EMAIL_TEMPLATE.html(data),
         });
 
+        if (result.error) {
+          console.error('[EmailService] Resend REJECTED art recovery:', JSON.stringify(result.error));
+          throw new Error(`Resend rejected: ${result.error.message || JSON.stringify(result.error)}`);
+        }
+
+        if (!result.data?.id) {
+          console.error('[EmailService] Resend returned no messageId for art recovery:', JSON.stringify(result));
+          throw new Error('Resend returned no messageId — treating as failure');
+        }
+
         console.log('[EmailService] Art recovery email sent:', {
-          messageId: result.data?.id,
+          messageId: result.data.id,
           recipientEmail: data.recipientEmail,
         });
 
-        return { success: true, messageId: result.data?.id };
+        return { success: true, messageId: result.data.id };
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Unknown error');
         console.warn(`[EmailService] Art recovery attempt ${attempt}/${maxRetries} failed:`, {
