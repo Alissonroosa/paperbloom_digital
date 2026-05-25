@@ -131,16 +131,8 @@ export const analytics = {
         quantity: 1
       }]
     })
-    
-    fbq('track', 'InitiateCheckout', {
-      content_name: product.name,
-      content_ids: [product.type],
-      value: product.price,
-      currency: 'BRL',
-      num_items: 1
-    })
-    
-    // Evento customizado
+
+    // Evento customizado — InitiateCheckout padrão só dispara em initiatePayment
     fbq('trackCustom', 'StartEditor', {
       product_type: product.type,
       product_name: product.name
@@ -217,6 +209,14 @@ export const analytics = {
       }]
     })
     
+    fbq('track', 'InitiateCheckout', {
+      content_name: product.name,
+      content_ids: [itemId],
+      value: product.price,
+      currency: 'BRL',
+      num_items: 1
+    })
+
     fbq('track', 'AddPaymentInfo', {
       content_name: product.name,
       content_ids: [itemId],
