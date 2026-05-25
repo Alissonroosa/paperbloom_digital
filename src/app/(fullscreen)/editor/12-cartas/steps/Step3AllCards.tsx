@@ -73,8 +73,7 @@ export function Step3AllCards() {
       subtitle="Toque em um grupo para ver e personalizar as cartas — ou siga direto"
       showProgress={true}
       showBackLink={false}
-      showDemoLink={true}
-      demoLinkHref="/demo/card-collection"
+      showPriceBadge={false}
     >
       <div className="w-full max-w-2xl mx-auto space-y-4">
         <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center space-y-1">

@@ -118,7 +118,11 @@ export function YouTubeSearch({ onSelect }: YouTubeSearchProps) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 type="button"
-                onClick={() => onSelect(result.videoId, result.title)}
+                onClick={() => {
+                  onSelect(result.videoId, result.title);
+                  setResults([]);
+                  setHasSearched(false);
+                }}
                 className="w-full flex items-center gap-3 p-2.5 rounded-xl border-2 border-gray-100 hover:border-pink-300 hover:bg-pink-50 transition-all text-left group"
               >
                 {result.thumbnail ? (

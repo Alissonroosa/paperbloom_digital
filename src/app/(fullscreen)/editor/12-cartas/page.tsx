@@ -9,6 +9,36 @@ import { analytics } from '@/lib/analytics';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
+const SUPPORT_WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER || '5551992698003';
+const SUPPORT_WHATSAPP_MESSAGE =
+  'Olá! Estou criando minhas 12 cartas no editor da Paper Bloom e tenho uma dúvida.';
+const LOGO_WHATSAPP = 'https://imagem.paperbloom.com.br/loja/assets/whatsapp.svg';
+
+function WhatsAppHelpButton() {
+  const url = `https://wa.me/${SUPPORT_WHATSAPP_PHONE}?text=${encodeURIComponent(SUPPORT_WHATSAPP_MESSAGE)}`;
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Dúvidas de como fazer? Chama no WhatsApp"
+      className="fixed bottom-4 left-4 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-medium text-white shadow-lg ring-1 ring-black/5 transition-all hover:scale-105 hover:bg-[#1FB855] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#25D366]"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={LOGO_WHATSAPP}
+        alt=""
+        className="h-5 w-5"
+        style={{ filter: 'brightness(0) invert(1)' }}
+        aria-hidden="true"
+      />
+      <span className="hidden sm:inline">Dúvidas? Chama no WhatsApp</span>
+      <span className="sr-only sm:hidden">Dúvidas? Chama no WhatsApp</span>
+    </a>
+  );
+}
+
 /**
  * Error Boundary to catch runtime errors in the editor
  */
@@ -151,6 +181,7 @@ function EditorContent() {
           </motion.div>
         )}
       </AnimatePresence>
+      <WhatsAppHelpButton />
     </div>
   );
 }
