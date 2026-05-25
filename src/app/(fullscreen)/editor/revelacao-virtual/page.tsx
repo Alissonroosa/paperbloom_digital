@@ -14,7 +14,7 @@ const STEP_NAMES = ['Informações do Bebê', 'Informações dos Pais', 'Fotos',
 function EditorContent() {
   const { currentStep } = useGenderRevealEditor();
   const hasTrackedStart = useRef(false);
-  const lastTrackedStep = useRef(0);
+  const lastTrackedStep = useRef<number | null>(null);
 
   // Track: Início do editor
   useEffect(() => {
@@ -24,8 +24,12 @@ function EditorContent() {
     }
   }, []);
 
-  // Track: Mudança de step
+  // Track: Mudança real de step (não dispara no mount — startEditor já cobre)
   useEffect(() => {
+    if (lastTrackedStep.current === null) {
+      lastTrackedStep.current = currentStep;
+      return;
+    }
     if (currentStep !== lastTrackedStep.current) {
       analytics.editorStep('gender-reveal', currentStep, STEP_NAMES[currentStep - 1] || `Step ${currentStep}`);
       lastTrackedStep.current = currentStep;

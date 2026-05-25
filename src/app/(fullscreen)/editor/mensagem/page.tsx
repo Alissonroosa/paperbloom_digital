@@ -39,7 +39,7 @@ const STEP_NAMES = [
 function EditorContent() {
   const { state } = useInteractiveWizardContext();
   const hasTrackedStart = useRef(false);
-  const lastTrackedStep = useRef(-1);
+  const lastTrackedStep = useRef<number | null>(null);
 
   // Track: Início do editor
   useEffect(() => {
@@ -49,8 +49,12 @@ function EditorContent() {
     }
   }, []);
 
-  // Track: Mudança de step
+  // Track: Mudança real de step (não dispara no mount — startEditor já cobre)
   useEffect(() => {
+    if (lastTrackedStep.current === null) {
+      lastTrackedStep.current = state.currentStep;
+      return;
+    }
     if (state.currentStep !== lastTrackedStep.current) {
       analytics.editorStep(
         'message',
