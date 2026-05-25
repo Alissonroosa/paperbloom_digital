@@ -40,8 +40,8 @@ function HowItWorksCard({
 
 export default function CollectionClientPage({ collection, products }: CollectionClientPageProps) {
   useEffect(() => {
-    analytics.viewLojaCatalog();
-  }, []);
+    analytics.viewLojaCollection(collection.slug, collection.title);
+  }, [collection.slug, collection.title]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FFFAFA] to-white">

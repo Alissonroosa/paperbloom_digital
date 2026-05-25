@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
 import { analytics } from '@/lib/analytics';
+import { parsePriceFormatted } from '@/lib/loja-utils';
 import type { CatalogProduct } from '@/types/catalog';
 import ArtPurchaseButton from './ArtPurchaseButton';
 
@@ -30,7 +31,11 @@ export default function ProductCard({ product }: ProductCardProps) {
     e.stopPropagation();
     if (!product.physical) return;
 
-    analytics.clickWhatsAppCheckout(product.slug);
+    analytics.clickWhatsAppCheckout({
+      slug: product.slug,
+      title: product.title,
+      value: parsePriceFormatted(product.physical.priceFormatted),
+    });
 
     const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER || '';
     const encodedMessage = encodeURIComponent(product.physical.whatsappMessage);
@@ -145,6 +150,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     productSlug={product.slug}
                     productTitle={product.title}
                     priceFormatted={product.art.priceFormatted}
+                    priceInCents={product.art.priceInCents}
                     size="sm"
                     label="Comprar"
                   />

@@ -21,6 +21,8 @@ interface ArtPurchaseButtonProps {
   productSlug: string;
   productTitle: string;
   priceFormatted: string;
+  /** Preço em centavos — usado para analytics (value real do evento). */
+  priceInCents?: number;
   /** Tamanho do botão de disparo. Default 'lg' para PDP. */
   size?: 'sm' | 'default' | 'lg';
   /** Texto customizado do botão (default: "Comprar arte digital — R$ X") */
@@ -33,6 +35,7 @@ export default function ArtPurchaseButton({
   productSlug,
   productTitle,
   priceFormatted,
+  priceInCents,
   size = 'lg',
   label,
 }: ArtPurchaseButtonProps) {
@@ -64,7 +67,11 @@ export default function ArtPurchaseButton({
     setErrorMessage('');
 
     // Tracking antes do redirect
-    analytics.clickArtCheckout(productSlug);
+    analytics.clickArtCheckout({
+      slug: productSlug,
+      title: productTitle,
+      value: priceInCents ? priceInCents / 100 : 0,
+    });
 
     try {
       const response = await fetch('/api/checkout/digital-art/create-session', {

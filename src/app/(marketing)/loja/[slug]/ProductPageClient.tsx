@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, ShieldCheck, Truck, Mail, Package, ArrowLeft } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
+import { getProductValueForAnalytics, parsePriceFormatted } from '@/lib/loja-utils';
 import type { CatalogCollection, CatalogProduct } from '@/types/catalog';
 import ProductGallery from '@/components/loja/ProductGallery';
 import ArtPurchaseButton from '@/components/loja/ArtPurchaseButton';
@@ -26,8 +27,13 @@ const LOGO_WHATSAPP = 'https://imagem.paperbloom.com.br/loja/assets/whatsapp.svg
 
 export default function ProductPageClient({ product, collection }: ProductPageClientProps) {
   useEffect(() => {
-    analytics.viewLojaProduct(product.slug);
-  }, [product.slug]);
+    analytics.viewLojaProduct({
+      slug: product.slug,
+      title: product.title,
+      type: product.type,
+      value: getProductValueForAnalytics(product),
+    });
+  }, [product]);
 
   const hasArt = !!product.art;
   const hasPhysical = product.type === 'physical_only' || product.type === 'both';
@@ -36,7 +42,11 @@ export default function ProductPageClient({ product, collection }: ProductPageCl
 
   const handleWhatsAppClick = () => {
     if (!product.physical) return;
-    analytics.clickWhatsAppCheckout(product.slug);
+    analytics.clickWhatsAppCheckout({
+      slug: product.slug,
+      title: product.title,
+      value: parsePriceFormatted(product.physical.priceFormatted),
+    });
 
     const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER || '';
     const encodedMessage = encodeURIComponent(product.physical.whatsappMessage);
@@ -152,6 +162,7 @@ export default function ProductPageClient({ product, collection }: ProductPageCl
                       productSlug={product.slug}
                       productTitle={product.title}
                       priceFormatted={product.art.priceFormatted}
+                      priceInCents={product.art.priceInCents}
                     />
 
                     <div className="flex items-center justify-center gap-2 mt-2">

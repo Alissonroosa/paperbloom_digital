@@ -92,6 +92,7 @@ export default async function LojaSuccessPage({ params }: PageProps) {
     <SuccessClient
       orderId={order.id}
       email={order.email}
+      productSlug={order.product_slug}
       productTitle={order.product_title}
       canvaTemplateUrl={product.art.canvaTemplateUrl}
       canvaTemplateLabel={product.art.canvaTemplateLabel}

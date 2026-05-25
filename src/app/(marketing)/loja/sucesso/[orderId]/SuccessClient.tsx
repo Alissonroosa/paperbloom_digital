@@ -7,6 +7,7 @@ import analytics from '@/lib/analytics';
 interface SuccessClientProps {
   orderId: string;
   email: string;
+  productSlug: string;
   productTitle: string;
   canvaTemplateUrl: string;
   canvaTemplateLabel?: string;
@@ -19,6 +20,7 @@ interface SuccessClientProps {
 export function SuccessClient({
   orderId,
   email,
+  productSlug,
   productTitle,
   canvaTemplateUrl,
   canvaTemplateLabel,
@@ -28,8 +30,8 @@ export function SuccessClient({
   amountCents,
 }: SuccessClientProps) {
   useEffect(() => {
-    analytics.purchaseArt(orderId, amountCents);
-  }, [orderId, amountCents]);
+    analytics.purchaseArt(orderId, { slug: productSlug, title: productTitle }, amountCents);
+  }, [orderId, productSlug, productTitle, amountCents]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FFFAFA] to-white flex items-center justify-center py-16 px-4">

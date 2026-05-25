@@ -6,6 +6,7 @@
  * destacada, sem distrações, para o cliente escolher o caminho.
  */
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -23,11 +24,16 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { catalogService } from '@/services/CatalogService'
+import { analytics } from '@/lib/analytics'
 
 export default function EscolherPresentePage() {
   const activeCollection = catalogService.getActiveCollection()
   const lojaProducts = catalogService.getAllProducts().slice(0, 4)
   const lojaHref = activeCollection ? `/loja/colecao/${activeCollection.slug}` : '/loja'
+
+  useEffect(() => {
+    analytics.viewEscolherPresente()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FFFAFA] to-white">

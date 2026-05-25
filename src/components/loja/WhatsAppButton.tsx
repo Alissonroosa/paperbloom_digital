@@ -13,6 +13,8 @@ import { analytics } from '@/lib/analytics';
 
 interface WhatsAppButtonProps {
   productSlug: string;
+  productTitle?: string;
+  productValue?: number;
   whatsappMessage: string;
   label?: string;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -20,6 +22,8 @@ interface WhatsAppButtonProps {
 
 export default function WhatsAppButton({
   productSlug,
+  productTitle,
+  productValue,
   whatsappMessage,
   label = 'Comprar pelo WhatsApp',
   variant = 'outline',
@@ -28,7 +32,11 @@ export default function WhatsAppButton({
 
   const handleClick = () => {
     // Tracking antes do redirect
-    analytics.clickWhatsAppCheckout(productSlug);
+    analytics.clickWhatsAppCheckout({
+      slug: productSlug,
+      title: productTitle ?? productSlug,
+      value: productValue ?? 0,
+    });
 
     const encodedMessage = encodeURIComponent(whatsappMessage);
     const url = phone

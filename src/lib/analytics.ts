@@ -446,105 +446,190 @@ export const analytics = {
   },
 
   // ============================================
-  // EVENTOS DA LOJA — CATÁLOGO DE ARTES DIGITAIS
+  // EVENTOS DA LOJA — CATÁLOGO PAPER BLOOM
   // ============================================
 
   /**
-   * Visualização do catálogo da loja (/loja)
+   * Visualização do catálogo geral da loja (/loja)
+   * Eventos genéricos — sem coleção específica.
    */
   viewLojaCatalog: () => {
     if (!shouldTrack('view_loja_catalog')) return
 
     gtag('event', 'view_item_list', {
-      item_list_name: 'Loja Paper Bloom — Artes Digitais',
+      item_list_id: 'loja_geral',
+      item_list_name: 'Loja Paper Bloom',
     })
 
     fbq('track', 'ViewContent', {
       content_type: 'product_group',
-      content_name: 'Loja Paper Bloom — Dia dos Namorados 2026',
+      content_category: 'loja',
+      content_name: 'Loja Paper Bloom',
+    })
+  },
+
+  /**
+   * Visualização de uma coleção sazonal (/loja/colecao/[slug])
+   * Evento separado de viewLojaCatalog para isolar performance de campanhas sazonais.
+   */
+  viewLojaCollection: (slug: string, title: string) => {
+    if (!shouldTrack(`view_loja_collection_${slug}`)) return
+
+    gtag('event', 'view_item_list', {
+      item_list_id: `colecao_${slug}`,
+      item_list_name: title,
+    })
+
+    fbq('track', 'ViewContent', {
+      content_type: 'product_group',
+      content_category: 'colecao',
+      content_ids: [slug],
+      content_name: title,
+    })
+  },
+
+  /**
+   * Visualização da página intermediária /escolher-presente
+   * CTA principal do Header — útil pra medir conversão Home → Escolher → Loja/Experiências.
+   */
+  viewEscolherPresente: () => {
+    if (!shouldTrack('view_escolher_presente')) return
+
+    gtag('event', 'select_promotion', {
+      promotion_id: 'escolher_presente',
+      promotion_name: 'Escolher Presente — Hub',
+    })
+
+    fbq('track', 'ViewContent', {
+      content_type: 'landing_page',
+      content_name: 'Escolher Presente',
     })
   },
 
   /**
    * Visualização de produto individual (/loja/[slug])
-   * Mapeia para Meta ViewContent
    */
-  viewLojaProduct: (slug: string) => {
-    if (!shouldTrack(`view_loja_product_${slug}`)) return
+  viewLojaProduct: (info: { slug: string; title: string; type: 'art_only' | 'physical_only' | 'both'; value: number }) => {
+    if (!shouldTrack(`view_loja_product_${info.slug}`)) return
 
     gtag('event', 'view_item', {
-      item_list_name: 'Loja Paper Bloom',
-      items: [{ item_id: slug, item_name: slug }],
+      currency: 'BRL',
+      value: info.value,
+      items: [{
+        item_id: info.slug,
+        item_name: info.title,
+        item_category: 'loja',
+        item_variant: info.type,
+        price: info.value,
+        quantity: 1,
+      }],
     })
 
     fbq('track', 'ViewContent', {
       content_type: 'product',
-      content_ids: [slug],
-      content_name: slug,
+      content_ids: [info.slug],
+      content_name: info.title,
+      content_category: info.type,
+      value: info.value,
+      currency: 'BRL',
     })
   },
 
   /**
    * Clique no botão de checkout WhatsApp (produto físico)
-   * Mapeia para Meta InitiateCheckout com source 'whatsapp'
    */
-  clickWhatsAppCheckout: (slug: string) => {
+  clickWhatsAppCheckout: (info: { slug: string; title: string; value: number }) => {
     gtag('event', 'begin_checkout', {
-      items: [{ item_id: slug, item_name: slug }],
+      currency: 'BRL',
+      value: info.value,
+      items: [{
+        item_id: info.slug,
+        item_name: info.title,
+        price: info.value,
+        quantity: 1,
+      }],
       checkout_source: 'whatsapp',
     })
 
     fbq('track', 'InitiateCheckout', {
-      content_ids: [slug],
+      content_ids: [info.slug],
+      content_name: info.title,
       content_type: 'product',
+      value: info.value,
+      currency: 'BRL',
       num_items: 1,
     })
 
-    fbq('trackCustom', 'WhatsAppCheckout', { slug })
+    fbq('trackCustom', 'WhatsAppCheckout', { slug: info.slug, title: info.title })
   },
 
   /**
    * Clique no botão de checkout de arte digital
-   * Mapeia para Meta InitiateCheckout com source 'art'
    */
-  clickArtCheckout: (slug: string) => {
+  clickArtCheckout: (info: { slug: string; title: string; value: number }) => {
     gtag('event', 'begin_checkout', {
-      items: [{ item_id: slug, item_name: slug }],
+      currency: 'BRL',
+      value: info.value,
+      items: [{
+        item_id: info.slug,
+        item_name: info.title,
+        price: info.value,
+        quantity: 1,
+      }],
       checkout_source: 'art_digital',
     })
 
     fbq('track', 'InitiateCheckout', {
-      content_ids: [slug],
+      content_ids: [info.slug],
+      content_name: info.title,
       content_type: 'product',
+      value: info.value,
+      currency: 'BRL',
       num_items: 1,
     })
 
-    fbq('trackCustom', 'ArtCheckout', { slug })
+    fbq('trackCustom', 'ArtCheckout', { slug: info.slug, title: info.title })
   },
 
   /**
    * Compra de arte digital concluída — disparado na /loja/sucesso/[orderId]
-   * Usa shouldTrack para idempotência (recarregar a página não dispara de novo)
+   * Idempotente: recarregar a página não dispara de novo.
    */
-  purchaseArt: (orderId: string, amountInCents: number) => {
+  purchaseArt: (
+    orderId: string,
+    product: { slug: string; title: string },
+    amountInCents: number
+  ) => {
     if (!shouldTrack(`purchase_art_${orderId}`)) return
 
     const value = amountInCents / 100
 
     gtag('event', 'purchase', {
       transaction_id: orderId,
-      value,
       currency: 'BRL',
+      value,
+      items: [{
+        item_id: product.slug,
+        item_name: product.title,
+        price: value,
+        quantity: 1,
+      }],
     })
 
     fbq('track', 'Purchase', {
+      content_ids: [product.slug],
+      content_name: product.title,
+      content_type: 'product',
       value,
       currency: 'BRL',
-      content_ids: [orderId],
-      content_type: 'product',
+      num_items: 1,
     })
 
-    console.log('[Analytics] purchaseArt tracked:', { orderId, value })
+    console.log('[Analytics] purchaseArt tracked:', {
+      orderId,
+      product: product.title,
+      value,
+    })
   },
 }
 
