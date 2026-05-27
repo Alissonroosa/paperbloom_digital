@@ -2,8 +2,10 @@
 
 /**
  * ProductGallery — Galeria de imagens do produto
- * - Mobile: carrossel com swipe (estado interno)
- * - Desktop: grid 2x2 (primeira imagem maior)
+ * - Imagem principal com navegação por setas e indicadores
+ * - Thumbnails: scroll horizontal, suporta até 8 imagens
+ * - Para 4 ou menos: thumbnails preenchem a largura sem scroll
+ * - Para 5-8: scroll horizontal com scrollbar oculta
  * Lazy loading via next/image.
  */
 
@@ -83,28 +85,35 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
         )}
       </div>
 
-      {/* Thumbnails — exibidos apenas quando há mais de 1 imagem */}
+      {/* Thumbnails — exibidos apenas quando há mais de 1 imagem, até 8 fotos com scroll horizontal */}
       {images.length > 1 && (
-        <div className="grid grid-cols-4 gap-2">
-          {images.slice(0, 4).map((src, i) => (
+        <div
+          className="flex gap-2 overflow-x-auto pb-1"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
+          {images.slice(0, 8).map((src, i) => (
             <button
               key={i}
               id={`gallery-thumb-${i}`}
               onClick={() => setActiveIndex(i)}
               aria-label={`Ver imagem ${i + 1}`}
-              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+              className={`relative flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                 i === activeIndex
                   ? 'border-primary shadow-md'
                   : 'border-primary/10 hover:border-primary/30'
               }`}
+              style={{ width: `calc((100% - ${Math.min(images.length, 8) - 1} * 0.5rem) / ${Math.min(images.length, 4)})` }}
             >
-              <Image
-                src={src}
-                alt={`${title} — miniatura ${i + 1}`}
-                fill
-                className="object-cover"
-                sizes="25vw"
-              />
+              <div className="relative aspect-square w-full">
+                <Image
+                  src={src}
+                  alt={`${title} — miniatura ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="25vw"
+                />
+              </div>
             </button>
           ))}
         </div>

@@ -108,7 +108,7 @@
       "physical": {
         "whatsappMessage": "Olá! Gostaria de encomendar a Caixa Explosão com Caneca Personalizada (R$ 60,00) para o Dia dos Namorados. Podem me ajudar com a personalização?",
         "label": "Encomendar pelo WhatsApp",
-        "productionTime": "7 dias úteis",
+        "productionTime": "3 dias úteis",
         "priceFormatted": "R$ 60,00"
       },
       "badge": "Mais pedido",
@@ -125,24 +125,29 @@
       "physical": {
         "whatsappMessage": "Olá! Tenho interesse no Quadro + Experiência Digital com 12 Cartas (R$ 55,00). Podem me passar os detalhes da personalização?",
         "label": "Encomendar pelo WhatsApp",
-        "productionTime": "5-7 dias úteis",
+        "productionTime": "3 dias úteis",
         "priceFormatted": "R$ 55,00"
       },
       "badge": "Físico + Digital",
-      "active": true
+      "active": false
     },
     {
       "id": "quadro-netflix-006",
-      "slug": "quadro-estilo-netflix-personalizado",
-      "title": "Quadro Estilo Netflix Personalizado",
-      "shortDescription": "A história de vocês no formato da série mais assistida do mundo. Foto do casal, título, sinopse e avaliação — tudo personalizado.",
-      "longDescription": "O Quadro Estilo Netflix transforma a história do casal em um poster de série exclusivo. Com o layout da plataforma mais famosa do mundo, o quadro traz a foto dos dois como capa da série, o nome do casal como título, uma sinopse personalizada com a história deles, avaliação em corações e o botão 'Assistir'.\n\nDisponível com ou sem moldura. Um presente que combina humor, afeto e personalização de um jeito que ninguém vai esquecer.\n\nValores: sem moldura R$ 39,00 · com moldura R$ 59,00. Combine no WhatsApp.",
-      "images": [],
+      "slug": "quadro-personalizado",
+      "title": "Quadro Personalizado",
+      "shortDescription": "Quadro personalizado com moldura preta ou branca, apresentação em vidro e acetato. Diferentes artes disponíveis — ou criamos uma exclusiva para você.",
+      "longDescription": "O Quadro Personalizado é um presente elegante e atemporal. Disponível com moldura preta ou branca, com apresentação em vidro e acetato para um acabamento premium.\n\nContamos com diferentes artes prontas para personalizar com as fotos e informações do casal. E se nenhuma agradar, criamos uma arte exclusiva sob encomenda — basta nos contar a ideia pelo WhatsApp.\n\nValores: sem moldura R$ 39,00 · com moldura R$ 59,00. Combine no WhatsApp.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/quadro-personalizado/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/quadro-personalizado/foto-3.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/quadro-personalizado/foto-4.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/quadro-personalizado/foto-1.jpg"
+      ],
       "type": "physical_only",
       "physical": {
-        "whatsappMessage": "Olá! Tenho interesse no Quadro Estilo Netflix Personalizado (a partir de R$ 39,00). Podem me passar mais detalhes?",
+        "whatsappMessage": "Olá! Tenho interesse no Quadro Personalizado (a partir de R$ 39,00). Podem me passar mais detalhes?",
         "label": "Encomendar pelo WhatsApp",
-        "productionTime": "5 dias úteis",
+        "productionTime": "3 dias úteis",
         "priceFormatted": "A partir de R$ 39,00"
       },
       "badge": "Viral",
@@ -164,7 +169,7 @@
       "physical": {
         "whatsappMessage": "Olá! Tenho interesse no Quadro com 9 Polaroids + Fio de Fada (a partir de R$ 45,00). Podem me ajudar com a encomenda?",
         "label": "Encomendar pelo WhatsApp",
-        "productionTime": "7 dias úteis",
+        "productionTime": "3 dias úteis",
         "priceFormatted": "A partir de R$ 45,00"
       },
       "badge": "Mais vendido",
@@ -174,14 +179,18 @@
       "id": "caneca-romance-008",
       "slug": "caneca-personalizada-romance",
       "title": "Caneca Personalizada — Edição Romance",
-      "shortDescription": "Caneca com mensagem exclusiva do casal e arte criada especialmente para vocês. Acompanha caixinha personalizada.",
-      "longDescription": "A Caneca Personalizada Edição Romance traz uma arte exclusiva com mensagens e ilustrações que contam a história do casal. Não é uma caneca genérica — cada peça é criada com frases e elementos que representam o relacionamento dos dois.\n\nPerfeita para o café da manhã juntos ou para ter sempre por perto. Acompanha caixinha personalizada para presente.\n\nValores: só com mensagem R$ 35,00 · com foto do casal R$ 39,00. Combine no WhatsApp.",
-      "images": [],
+      "shortDescription": "Caneca personalizada em diferentes cores e modelos. Escolha uma arte pronta ou criamos uma exclusiva para vocês. Acompanha caixinha.",
+      "longDescription": "A Caneca Personalizada Edição Romance traz uma arte exclusiva com mensagens e ilustrações que contam a história do casal. Disponível em diferentes cores e modelos para combinar com o estilo de vocês.\n\nEscolha entre as artes prontas ou, se preferir, criamos uma arte totalmente personalizada sob encomenda — basta nos contar a ideia pelo WhatsApp.\n\nPerfeita para o café da manhã juntos ou para ter sempre por perto. Acompanha caixinha personalizada para presente.\n\nValores: só com mensagem R$ 35,00 · com foto do casal R$ 39,00. Combine no WhatsApp.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/caneca-personalizada-romance/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/caneca-personalizada-romance/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/caneca-personalizada-romance/foto-3.jpg"
+      ],
       "type": "physical_only",
       "physical": {
         "whatsappMessage": "Olá! Tenho interesse na Caneca Personalizada — Edição Romance (a partir de R$ 35,00). Podem me ajudar com a personalização?",
         "label": "Encomendar pelo WhatsApp",
-        "productionTime": "5 dias úteis",
+        "productionTime": "3 dias úteis",
         "priceFormatted": "A partir de R$ 35,00"
       },
       "active": true
@@ -211,10 +220,181 @@
       "physical": {
         "whatsappMessage": "Olá! Tenho interesse no Livro Nossas Memórias personalizado (Básico R$ 89,00 ou Premium R$ 149,00). Podem me passar mais detalhes?",
         "label": "Encomendar versão impressa",
-        "productionTime": "10 dias úteis",
+        "productionTime": "7 dias úteis",
         "priceFormatted": "A partir de R$ 89,00"
       },
       "badge": "Novidade 2026",
+      "active": true
+    },
+    {
+      "id": "10-motivos-010",
+      "slug": "10-motivos-para-te-amar",
+      "title": "10 Motivos para Te Amar",
+      "shortDescription": "Mini álbum artesanal com 10 cartas personalizadas. Cada carta traz uma foto e um motivo para amar. Capa com laminação holográfica.",
+      "longDescription": "O 10 Motivos para Te Amar é um mini álbum artesanal em formato de chaveiro com 10 cartas personalizadas — cada uma traz uma foto do casal e um motivo escrito à mão ou impresso para amar o parceiro.\n\nImpresso em papel fotográfico 180g, com capa e contracapa em laminação holográfica que brilha de verdade. Cada carta é plastificada com polaseal para garantir durabilidade e resistência.\n\nUm presente compacto, emocionante e feito para carregar no dia a dia.\n\nLicença pessoal: uso exclusivo para fins pessoais e não comerciais. A arte não pode ser revendida ou redistribuída.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/10-motivos-para-te-amar/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/10-motivos-para-te-amar/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/10-motivos-para-te-amar/foto-3.jpg"
+      ],
+      "type": "both",
+      "art": {
+        "priceInCents": 490,
+        "priceFormatted": "R$ 4,90",
+        "canvaTemplateUrl": "https://canva.link/wd0fri3mgz2zsrv",
+        "licenseText": "Licença pessoal — uso exclusivo pessoal e não comercial. Proibida a revenda ou redistribuição."
+      },
+      "physical": {
+        "whatsappMessage": "Olá! Tenho interesse no 10 Motivos para Te Amar personalizado (R$ 19,90). Podem me ajudar com a encomenda?",
+        "label": "Encomendar versão impressa",
+        "productionTime": "3-5 dias úteis",
+        "priceFormatted": "R$ 19,90"
+      },
+      "badge": "Novidade 2026",
+      "active": true
+    },
+    {
+      "id": "caixinha-polaroides-011",
+      "slug": "caixinha-com-polaroides",
+      "title": "Caixinha com Polaroides Personalizadas",
+      "shortDescription": "Caixinha artesanal com polaroides impressas em papel fotográfico. Disponível com 10, 15 ou 30 fotos. Um presente cheio de memórias.",
+      "longDescription": "A Caixinha com Polaroides é um presente delicado e cheio de significado. Cada polaroide é impressa em papel fotográfico 180g com as fotos do casal, e vem organizada dentro de uma caixinha artesanal feita em papel offset 180g.\n\nDisponível em 3 tamanhos:\n• Caixinha com 10 polaroides — R$ 15,90\n• Caixinha com 15 polaroides — R$ 19,90\n• Caixinha com 30 polaroides — R$ 29,90\n\nPerfeita para guardar os melhores momentos juntos em um formato que cabe na palma da mão.\n\nLicença pessoal: uso exclusivo para fins pessoais e não comerciais. A arte não pode ser revendida ou redistribuída.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/caixinha-com-polaroides/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/caixinha-com-polaroides/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/caixinha-com-polaroides/foto-3.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/caixinha-com-polaroides/foto-4.jpg"
+      ],
+      "type": "both",
+      "art": {
+        "priceInCents": 490,
+        "priceFormatted": "R$ 4,90",
+        "canvaTemplateUrl": "https://canva.link/3s5v6a4yzxfn02p",
+        "licenseText": "Licença pessoal — uso exclusivo pessoal e não comercial. Proibida a revenda ou redistribuição."
+      },
+      "physical": {
+        "whatsappMessage": "Olá! Tenho interesse na Caixinha com Polaroides (a partir de R$ 15,90). Podem me ajudar com a encomenda?",
+        "label": "Encomendar versão impressa",
+        "productionTime": "3-5 dias úteis",
+        "priceFormatted": "A partir de R$ 15,90"
+      },
+      "badge": "Novidade 2026",
+      "active": true
+    },
+    {
+      "id": "foto-imas-012",
+      "slug": "foto-imas-personalizados",
+      "title": "Foto Ímãs Personalizados",
+      "shortDescription": "Mini fotos com ímã para geladeira ou quadros magnéticos. De 4 a 6 cm, com laminação à escolha: brilhosa, fosca ou holográfica.",
+      "longDescription": "Os Foto Ímãs Personalizados transformam as melhores fotos do casal em mini ímãs decorativos. Cada peça é impressa em folha fotográfica adesiva 115g sobre base de papel roller, com laminação à escolha do cliente — brilhosa, fosca ou holográfica.\n\nDisponíveis em tamanhos de 4 a 6 cm, são perfeitos para decorar a geladeira, quadros magnéticos ou qualquer superfície metálica. Um presente prático, fofo e cheio de personalidade.\n\nProdução artesanal com acabamento premium.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/foto-imas-personalizados/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/foto-imas-personalizados/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/foto-imas-personalizados/foto-3.jpg"
+      ],
+      "type": "physical_only",
+      "physical": {
+        "whatsappMessage": "Olá! Tenho interesse nos Foto Ímãs Personalizados (a partir de R$ 10,90). Podem me ajudar com a encomenda?",
+        "label": "Encomendar pelo WhatsApp",
+        "productionTime": "3-5 dias úteis",
+        "priceFormatted": "A partir de R$ 10,90"
+      },
+      "badge": "Novidade 2026",
+      "active": true
+    },
+    {
+      "id": "vales-amor-013",
+      "slug": "vales-do-amor",
+      "title": "Vales do Amor — 12 Cupons Românticos",
+      "shortDescription": "Caixinha com 12 cupons para resgatar momentos especiais a dois. Disponível na versão Romântica ou HOT — você escolhe na personalização.",
+      "longDescription": "Os Vales do Amor são 12 cupons personalizados que o casal pode resgatar ao longo do relacionamento — cada vale traz uma experiência ou mimo especial, como um jantar surpresa, uma noite de filme ou um café da manhã na cama.\n\nDisponível em duas versões:\n• Versão Romântica — cupons carinhosos e afetivos\n• Versão HOT +18 — cupons ousados e picantes\n\nO cliente escolhe a versão desejada após a compra, no momento da personalização.\n\nImpressos em papel texturizado 180g com acabamento artesanal, os vales vêm organizados dentro de uma caixinha de papel offset 180g decorada e pronta para presentear.\n\nUm presente que se transforma em vários ao longo do tempo. Valor: R$ 15,90.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/vales-do-amor/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/vales-do-amor/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/vales-do-amor/foto-3.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/vales-do-amor/foto-4.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/vales-do-amor/foto-5.jpg"
+      ],
+      "type": "physical_only",
+      "physical": {
+        "whatsappMessage": "Olá! Tenho interesse nos Vales do Amor — 12 Cupons (R$ 15,90). Gostaria da versão [Romântica / HOT]. Podem me ajudar?",
+        "label": "Encomendar pelo WhatsApp",
+        "productionTime": "3-5 dias úteis",
+        "priceFormatted": "R$ 15,90"
+      },
+      "badge": "2 Versões",
+      "active": true
+    },
+    {
+      "id": "kit-caixa-envelope-014",
+      "slug": "kit-caixa-envelope",
+      "title": "Kit Presente Caixa Envelope — Dia dos Namorados",
+      "shortDescription": "Caixa envelope personalizada recheada com bebidas, doces e produtos Paper Bloom. 10 opções de kit para todos os gostos.",
+      "longDescription": "O Kit Caixa Envelope é o presente completo para o Dia dos Namorados. Uma caixa no formato envelope, personalizada e recheada com uma combinação especial de bebidas, doces e produtos artesanais Paper Bloom.\n\nSão 10 opções de kits com combinações variadas que incluem:\n• Mini champagne, cervejas Stella ou Coca-Cola Zero\n• Taças com bombons, barras de chocolate e bolinhos Bauducco\n• Jogos exclusivos: Verdade ou Beijo Inferno, Baralho Personalizado\n• Caixinha com Polaroides, Foto Ímãs e Vales do Amor\n\nCada kit é montado com carinho e entregue pronto para presentear. Consulte as opções e valores pelo WhatsApp.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-envelope/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-envelope/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-envelope/foto-3.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-envelope/foto-4.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-envelope/foto-5.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-envelope/foto-6.jpg"
+      ],
+      "type": "physical_only",
+      "physical": {
+        "whatsappMessage": "Olá! Tenho interesse no Kit Caixa Envelope para o Dia dos Namorados (a partir de R$ 119,90). Podem me passar as opções?",
+        "label": "Ver opções pelo WhatsApp",
+        "productionTime": "3-5 dias úteis",
+        "priceFormatted": "A partir de R$ 119,90"
+      },
+      "badge": "Kit Presente",
+      "active": true
+    },
+    {
+      "id": "kit-caixa-mdf-015",
+      "slug": "kit-caixa-mdf",
+      "title": "Kit Presente Caixa MDF — Dia dos Namorados",
+      "shortDescription": "Caixa de MDF personalizada com bebidas, doces e jogos Paper Bloom. 10 combinações para surpreender. O kit mais completo do catálogo.",
+      "longDescription": "O Kit Caixa MDF é a opção premium dos presentes de Dia dos Namorados. Uma caixa de MDF resistente e elegante, personalizada com o nome do casal, recheada com uma combinação exclusiva de bebidas, guloseimas e produtos artesanais Paper Bloom.\n\nSão 10 opções de kits com combinações que incluem:\n• Vinhos 375ml, mini champagne, cervejas Stella ou Coca-Cola Zero\n• Taças com bombom, barras de chocolate, Doritos e bolinhos Bauducco\n• Jogos: Verdade ou Beijo Romance, VB Inferno, Baralho Personalizado\n• Caixinha com Polaroides, Foto Ímãs, Vales do Amor e 10 Motivos\n\nA caixa de MDF pode ser reutilizada como porta-joias, porta-trecos ou decoração. Consulte as opções pelo WhatsApp.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-mdf/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-mdf/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-mdf/foto-3.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-mdf/foto-4.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-mdf/foto-5.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-caixa-mdf/foto-6.jpg"
+      ],
+      "type": "physical_only",
+      "physical": {
+        "whatsappMessage": "Olá! Tenho interesse no Kit Caixa MDF para o Dia dos Namorados (a partir de R$ 129,90). Podem me passar as opções?",
+        "label": "Ver opções pelo WhatsApp",
+        "productionTime": "3-5 dias úteis",
+        "priceFormatted": "A partir de R$ 129,90"
+      },
+      "badge": "Premium",
+      "active": true
+    },
+    {
+      "id": "kit-cesta-coracao-016",
+      "slug": "kit-cesta-coracao",
+      "title": "Kit Cesta Coração — Dia dos Namorados",
+      "shortDescription": "Cesta em formato de coração com bebidas, doces e jogos personalizados. 10 opções românticas prontas para presentear.",
+      "longDescription": "O Kit Cesta Coração traz o presente dentro de uma cesta em formato de coração — o embrulho já é parte do encanto. São 10 opções de kits montados com combinações de bebidas, doces e produtos artesanais Paper Bloom.\n\nAs opções incluem:\n• Vinho 375ml com taça e bombons + Jogo VB Inferno, VB Romance ou Baralho Personalizado\n• Mini champagne com taças, bombons, chocolate + Vales do Amor\n• Coca-Cola Zero com Doritos, chocolate, 10 Motivos e Vale do Amor\n\nCada cesta é montada com cuidado e entregue pronta para surpreender. Consulte as opções pelo WhatsApp.",
+      "images": [
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-1.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-2.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-3.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-4.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-5.jpg",
+        "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-6.jpg"
+      ],
+      "type": "physical_only",
+      "physical": {
+        "whatsappMessage": "Olá! Tenho interesse no Kit Cesta Coração para o Dia dos Namorados (a partir de R$ 99,90). Podem me passar as opções?",
+        "label": "Ver opções pelo WhatsApp",
+        "productionTime": "3-5 dias úteis",
+        "priceFormatted": "A partir de R$ 99,90"
+      },
+      "badge": "Romântico",
       "active": true
     }
   ]
