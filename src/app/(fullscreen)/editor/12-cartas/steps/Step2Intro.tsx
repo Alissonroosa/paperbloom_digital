@@ -15,28 +15,28 @@ import { YouTubeSearch } from '@/components/interactive-wizard/YouTubeSearch';
 
 const MESSAGE_SUGGESTIONS = [
   {
-    label: '💕 Para o amor',
-    text: 'Preparei essas cartas com todo o meu amor para você. Cada uma guarda um pedacinho do que sinto, e espero que ao abrir cada uma, você sinta o quanto é especial para mim.',
+    label: '💕 Romântico',
+    text: 'Preparei essas cartas com todo o meu amor por você. Cada uma guarda um pedacinho do que sinto, e quero que sinta, em cada palavra, o quanto você é importante pra mim.',
   },
   {
-    label: '🎂 Aniversário',
-    text: 'Hoje é o seu dia e eu queria celebrar de um jeito diferente. Essas 12 cartas representam 12 razões pelas quais você faz minha vida mais bonita. Feliz aniversário!',
+    label: '🌹 Apaixonado',
+    text: 'Não dá pra colocar em uma só carta tudo que você é pra mim. Por isso escrevi 12 — uma pra cada momento em que você me lembra por que te amo tanto.',
   },
   {
-    label: '👩‍👧 Para a mãe',
-    text: 'Mãe, palavras nunca serão suficientes para expressar tudo que você significa para mim. Mas tentei colocar um pouquinho desse amor em cada uma dessas cartas. Obrigado por tudo.',
+    label: '✨ Aniversário de namoro',
+    text: 'Mais um ciclo nosso, meu amor. Essas 12 cartas são uma forma de dizer o que às vezes esqueço de falar todos os dias: que escolher você é a melhor coisa da minha vida.',
   },
   {
-    label: '👨‍👧 Para o pai',
-    text: 'Pai, você sempre foi meu exemplo e meu porto seguro. Escrevi essas cartas pensando em tudo que aprendi com você e em como sou grato por ter você na minha vida.',
+    label: '🎂 Aniversário do amor',
+    text: 'Hoje é o seu dia e eu queria celebrar de um jeito diferente. Essas 12 cartas são 12 razões pelas quais você faz minha vida mais leve, mais bonita e mais feliz. Feliz aniversário, meu amor.',
   },
   {
-    label: '👫 Para a amizade',
-    text: 'Amizades como a nossa são raras e preciosas. Escrevi essas cartas para te lembrar o quanto você é importante para mim e o quanto nossa amizade significa.',
+    label: '💘 Surpresa fofa',
+    text: 'Sem motivo nenhum, só porque te amo. Abre uma de cada vez, no seu tempo. Cada uma é um pedacinho do que sinto por você.',
   },
   {
-    label: '🎓 Formatura',
-    text: 'Você chegou até aqui com muito esforço e dedicação! Essas cartas são uma forma de celebrar cada conquista sua e te lembrar de que estou aqui, orgulhoso(a) de você.',
+    label: '💍 Saudade / distância',
+    text: 'Mesmo de longe, meu coração tá perto. Essas cartas são pra te lembrar, em cada momento, que distância nenhuma diminui o que sinto por você.',
   },
 ];
 
@@ -261,7 +261,7 @@ export function Step2Intro() {
     <FullscreenStep
       emoji="✨"
       title="A abertura do presente"
-      subtitle={`O que ${recipientName} vai ler e ouvir antes das 12 cartas`}
+      subtitle={`O clima que ${recipientName} vai sentir ao abrir o link`}
       showProgress={true}
       showBackLink={false}
       showPriceBadge={false}
@@ -272,6 +272,9 @@ export function Step2Intro() {
           <label className="block text-sm font-medium text-gray-700">
             🎵 Música de fundo (opcional)
           </label>
+          <p className="text-xs text-gray-500 -mt-1">
+            Toca em loop durante toda a experiência das 12 cartas. Escolha a música de vocês.
+          </p>
 
           {/* Mode Toggle */}
           <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
@@ -366,21 +369,21 @@ export function Step2Intro() {
             </motion.div>
           )}
 
-          <p className="text-xs text-gray-500">
-            A música tocará quando {recipientName} abrir cada carta 🎶
-          </p>
         </div>
 
         {/* Intro Message */}
         <div className="space-y-2">
           <label htmlFor="introMessage" className="block text-sm font-medium text-gray-700">
-            💬 Mensagem para {recipientName} (opcional)
+            💬 Mensagem de abertura (opcional)
           </label>
+          <p className="text-xs text-gray-500">
+            Aparece antes das 12 cartas, como uma carta de apresentação. É a primeira coisa que {recipientName} vai ler.
+          </p>
           <textarea
             id="introMessage"
             value={introMessage}
             onChange={(e) => setIntroMessage(e.target.value)}
-            placeholder="Ex: Preparei essas cartas com muito carinho para você. Cada uma foi escrita pensando em momentos especiais..."
+            placeholder="Ex: Meu amor, preparei essas 12 cartas pensando em cada momento que vivemos juntos..."
             rows={4}
             maxLength={500}
             className="w-full px-4 py-3 rounded-xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all resize-none"
@@ -434,14 +437,17 @@ export function Step2Intro() {
         {/* Cover Photo */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            📸 Foto da capa (opcional)
+            📸 Foto coringa (opcional)
           </label>
+          <p className="text-xs text-gray-500 -mt-1">
+            Será usada em todas as cartas que você não personalizar com foto. Uma foto especial de vocês funciona lindo aqui.
+          </p>
 
           {coverImageUrl ? (
             <div className="flex items-center gap-3 rounded-xl border-2 border-purple-200 bg-white p-3 shadow-sm">
               <img
                 src={coverImageUrl}
-                alt="Foto da capa"
+                alt="Foto coringa"
                 className="w-20 aspect-[3/4] object-cover rounded-lg bg-gray-100 shrink-0"
               />
               <div className="flex-1 flex flex-col gap-1.5 min-w-0">
@@ -499,7 +505,7 @@ export function Step2Intro() {
               ) : (
                 <>
                   <Camera size={20} className="text-purple-400" />
-                  <p className="text-sm text-purple-700 font-medium">Escolher foto da capa</p>
+                  <p className="text-sm text-purple-700 font-medium">Escolher foto coringa</p>
                 </>
               )}
             </label>
@@ -509,8 +515,8 @@ export function Step2Intro() {
             <p className="text-sm text-red-600">{coverError}</p>
           )}
 
-          <p className="text-xs text-gray-500">
-            Será usada como fundo das cartas que você não personalizar individualmente. JPG, PNG ou WebP até 5MB.
+          <p className="text-xs text-gray-400">
+            JPG, PNG ou WebP até 5MB.
           </p>
         </div>
 
@@ -521,7 +527,7 @@ export function Step2Intro() {
           isLastStep={isLastStep}
           isLoading={isSaving}
           canProceed={!urlError}
-          nextLabel="Continuar →"
+          nextLabel="Ver como ficou ✨"
         />
 
         <motion.p
@@ -530,7 +536,7 @@ export function Step2Intro() {
           transition={{ delay: 0.9 }}
           className="text-xs text-gray-400 text-center"
         >
-          Pode pular se preferir ir direto para as cartas 😊
+          Tudo opcional — pode seguir direto pra ver como ficou 😊
         </motion.p>
       </div>
 
@@ -551,7 +557,7 @@ export function Step2Intro() {
               <div className="px-5 py-4 border-b border-gray-200">
                 <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
                   <CropIcon size={16} className="text-purple-500" />
-                  Ajustar foto da capa
+                  Ajustar foto coringa
                 </h3>
                 <p className="text-xs text-gray-500 mt-0.5">
                   Arraste para posicionar · pinça/scroll para zoom

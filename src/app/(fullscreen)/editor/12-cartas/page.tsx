@@ -89,12 +89,14 @@ import { Step1BasicInfo } from './steps/Step1BasicInfo';
 import { Step2Intro } from './steps/Step2Intro';
 import { Step3AllCards } from './steps/Step3AllCards';
 import { Step4Preview } from './steps/Step4Preview';
+import { Step5Checkout } from './steps/Step5Checkout';
 
 const STEP_NAMES = [
   'Informações Básicas',
-  'Mensagem e Música',
   'Suas 12 Cartas',
-  'Pré-visualização e Checkout',
+  'Capa, Mensagem e Música',
+  'Pré-visualização',
+  'Finalizar',
 ];
 
 /**
@@ -159,7 +161,7 @@ function EditorContent() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
           >
-            <Step2Intro />
+            <Step3AllCards />
           </motion.div>
         )}
         {state.currentStep === 2 && (
@@ -170,7 +172,7 @@ function EditorContent() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
           >
-            <Step3AllCards />
+            <Step2Intro />
           </motion.div>
         )}
         {state.currentStep === 3 && (
@@ -182,6 +184,17 @@ function EditorContent() {
             transition={{ duration: 0.3 }}
           >
             <Step4Preview />
+          </motion.div>
+        )}
+        {state.currentStep === 4 && (
+          <motion.div
+            key="step5"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Step5Checkout />
           </motion.div>
         )}
       </AnimatePresence>

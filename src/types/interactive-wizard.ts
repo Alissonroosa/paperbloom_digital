@@ -169,28 +169,28 @@ export interface ValidationConfig {
 /**
  * Configuration for the 12 Cartas (Card Collection) product
  *
- * 4 steps:
+ * 5 steps:
  * 1. Informações Básicas - De/Para (💌)
- * 2. Mensagem Inicial + Música + Foto Capa (✨)
- * 3. Suas 12 Cartas - grid agrupado por categoria (💌)
- * 4. Pré-visualização e Checkout (✨)
- *
- * @see Requirements 4.1, 4.3, 4.7
+ * 2. Suas 12 Cartas - grid agrupado por categoria (💝)
+ * 3. Capa, Mensagem e Música (✨)
+ * 4. Pré-visualização (👀)
+ * 5. Finalizar - MiniHero + Checkout (💳)
  */
 export const CARD_COLLECTION_CONFIG: InteractiveWizardConfig = {
-  totalSteps: 4,
+  totalSteps: 5,
   stepLabels: [
     'Informações Básicas',
-    'Mensagem e Música',
     'Suas 12 Cartas',
-    'Pré-visualização e Checkout',
+    'Capa, Mensagem e Música',
+    'Pré-visualização',
+    'Finalizar',
   ],
   gradientColors: {
     from: 'purple-50',
     via: 'white',
     to: 'pink-50',
   },
-  themeEmojis: ['💌', '✨', '💌', '✨'],
+  themeEmojis: ['💌', '💝', '✨', '👀', '💳'],
   productType: 'card-collection',
   autoSaveKey: 'card-collection-editor',
   autoSaveDebounceMs: 2000,

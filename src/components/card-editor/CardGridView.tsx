@@ -48,8 +48,8 @@ export const CardGridView = React.memo(function CardGridView({
   return (
     <div
       className={cn(
-        'grid gap-4 sm:gap-6',
-        'grid-cols-1 sm:grid-cols-2',
+        'grid gap-4',
+        'grid-cols-1',
         'animate-in fade-in duration-300',
         className
       )}

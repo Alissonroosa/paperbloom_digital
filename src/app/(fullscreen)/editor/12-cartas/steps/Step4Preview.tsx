@@ -7,12 +7,9 @@ import { FullscreenStep } from '@/components/interactive-wizard/FullscreenStep';
 import { WizardNavigation } from '@/components/interactive-wizard/WizardNavigation';
 import {
   useInteractiveWizardNavigation,
-  useInteractiveWizardValidation,
-  useInteractiveWizardAutoSave,
 } from '@/contexts/InteractiveWizardContext';
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { PriceBadge } from '@/components/interactive-wizard/PriceBadge';
-import { analytics } from '@/lib/analytics';
 import { Card as CardType } from '@/types/card';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -65,9 +62,10 @@ interface PreviewModalProps {
   cards: CardType[];
   onClose: () => void;
   onCardOpened: () => void;
+  onBackToEdit?: () => void;
 }
 
-function PreviewModal({ collection, cards, onClose, onCardOpened }: PreviewModalProps) {
+function PreviewModal({ collection, cards, onClose, onCardOpened, onBackToEdit }: PreviewModalProps) {
   const [stage, setStage] = useState<ModalStage>('grid');
   const [targetCard, setTargetCard] = useState<CardType | null>(null);
   const [hasOpened, setHasOpened] = useState(false);
@@ -162,20 +160,34 @@ function PreviewModal({ collection, cards, onClose, onCardOpened }: PreviewModal
 
       {/* Preview banner */}
       <div
-        className="text-white text-center py-2.5 px-4 text-sm font-medium sticky top-0 z-[110] flex items-center justify-center gap-3 shadow-md"
+        className="text-white py-2.5 px-3 text-sm font-medium sticky top-0 z-[110] flex items-center justify-between gap-2 shadow-md"
         style={{ backgroundColor: accentDark }}
       >
+        {onBackToEdit ? (
+          <button
+            onClick={onBackToEdit}
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 transition-colors text-xs font-medium"
+            aria-label="Voltar para editar"
+          >
+            <ArrowLeft size={14} />
+            <span className="hidden sm:inline">Voltar pra editar</span>
+            <span className="sm:hidden">Editar</span>
+          </button>
+        ) : (
+          <button
+            onClick={onClose}
+            className="p-1.5 hover:bg-white/20 rounded-full transition-colors"
+            aria-label="Fechar pré-visualização"
+          >
+            <ArrowLeft size={18} />
+          </button>
+        )}
+        <span className="text-xs sm:text-sm text-center flex-1 truncate px-2">
+          👀 É assim que {recipientName} vai ver
+        </span>
         <button
           onClick={onClose}
-          className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white/20 rounded-full transition-colors"
-          aria-label="Fechar pré-visualização"
-        >
-          <ArrowLeft size={18} />
-        </button>
-        <span>👀 Pré-visualização — é assim que {recipientName} vai ver</span>
-        <button
-          onClick={onClose}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white/20 rounded-full transition-colors"
+          className="p-1.5 hover:bg-white/20 rounded-full transition-colors"
           aria-label="Fechar"
         >
           <X size={18} />
@@ -211,6 +223,30 @@ function PreviewModal({ collection, cards, onClose, onCardOpened }: PreviewModal
             </p>
           </motion.div>
 
+          {!hasOpened && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mx-auto mb-6 max-w-md rounded-2xl border-2 border-dashed px-5 py-4 text-center"
+              style={{ borderColor: accent, backgroundColor: accent + '15' }}
+            >
+              <motion.div
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                className="text-2xl mb-1"
+              >
+                👇
+              </motion.div>
+              <p className="text-base font-semibold" style={{ color: accentDark }}>
+                Toque na Carta 1 para experimentar
+              </p>
+              <p className="text-xs mt-1" style={{ color: textSecondary }}>
+                Sinta a emoção que {recipientName} vai sentir
+              </p>
+            </motion.div>
+          )}
+
           {/* Card grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
             {sortedCards.map((card, index) => {
@@ -223,15 +259,35 @@ function PreviewModal({ collection, cards, onClose, onCardOpened }: PreviewModal
                   key={card.id}
                   type="button"
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  animate={
+                    isClickable
+                      ? {
+                          opacity: 1,
+                          y: 0,
+                          boxShadow: [
+                            `0 0 0 0px ${accent}80`,
+                            `0 0 0 10px ${accent}00`,
+                            `0 0 0 0px ${accent}80`,
+                          ],
+                        }
+                      : { opacity: 1, y: 0 }
+                  }
+                  transition={
+                    isClickable
+                      ? {
+                          opacity: { delay: index * 0.05 },
+                          y: { delay: index * 0.05 },
+                          boxShadow: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' },
+                        }
+                      : { delay: index * 0.05 }
+                  }
                   onClick={() => handleCardClick(card)}
                   disabled={isOpenedCard}
                   className={`
                     aspect-[3/4] relative rounded-2xl overflow-hidden shadow-lg
                     transition-all duration-300 group text-left
                     ${isClickable
-                      ? 'hover:shadow-2xl hover:scale-[1.03] cursor-pointer ring-2 ring-offset-2'
+                      ? 'hover:shadow-2xl hover:scale-[1.03] cursor-pointer ring-4 ring-offset-2'
                       : isOpenedCard
                         ? 'cursor-default'
                         : 'cursor-pointer hover:shadow-xl'
@@ -291,31 +347,34 @@ function PreviewModal({ collection, cards, onClose, onCardOpened }: PreviewModal
                       {/* Pulsing "Toque para abrir" label on card 1 */}
                       {isClickable && (
                         <motion.span
-                          animate={{ opacity: [0.5, 1, 0.5] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                          className="mt-3 text-xs font-semibold px-3 py-1 rounded-full"
-                          style={{ backgroundColor: accent + '30', color: accentDark }}
+                          animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.04, 1] }}
+                          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+                          className="mt-3 text-xs font-bold px-3 py-1.5 rounded-full shadow-md"
+                          style={{ backgroundColor: accentDark, color: 'white' }}
                         >
-                          Toque para abrir ✨
+                          👉 Toque aqui ✨
                         </motion.span>
                       )}
                     </div>
+                  )}
+
+                  {/* "Comece aqui" badge on card 1 */}
+                  {isClickable && (
+                    <motion.div
+                      initial={{ scale: 0, rotate: -15 }}
+                      animate={{ scale: 1, rotate: -8 }}
+                      transition={{ delay: 0.6, type: 'spring', stiffness: 300 }}
+                      className="absolute -top-2 -right-2 z-20 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-lg"
+                      style={{ backgroundColor: accentDark, color: 'white' }}
+                    >
+                      COMECE AQUI
+                    </motion.div>
                   )}
                 </motion.button>
               );
             })}
           </div>
 
-          {!hasOpened && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center text-sm font-medium"
-              style={{ color: textSecondary }}
-            >
-              👆 Toque na <strong>Carta 1</strong> para experimentar como {recipientName} vai ver
-            </motion.p>
-          )}
         </div>
       )}
 
@@ -746,11 +805,11 @@ function PreviewModal({ collection, cards, onClose, onCardOpened }: PreviewModal
                 className="w-full py-4 px-6 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.99] transition-all text-sm"
                 style={{ backgroundColor: accentDark, color: 'white' }}
               >
-                💌 Presentear {recipientName.length > 20 ? recipientName.slice(0, 20) + '…' : recipientName} agora
+                💌 Liberar as 11 cartas para {recipientName.length > 20 ? recipientName.slice(0, 20) + '…' : recipientName}
               </button>
 
               <p className="text-center text-[11px]" style={{ color: textSecondary }}>
-                Entrega instantânea · Sem assinatura · Cancele quando quiser
+                Entrega instantânea · Sem assinatura · Você decide quando enviar
               </p>
             </div>
           </motion.div>
@@ -768,273 +827,82 @@ function PreviewModal({ collection, cards, onClose, onCardOpened }: PreviewModal
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Step 4 — Preview + Checkout
+// Step 4 — Preview only (no form/checkout). Auto-advances after preview closes.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function Step4Preview() {
-  const { prevStep, isFirstStep, isLastStep } = useInteractiveWizardNavigation();
-  const { setStepValidation } = useInteractiveWizardValidation();
-  const { clearDraft } = useInteractiveWizardAutoSave();
-  const {
-    collection,
-    cards,
-    updateCollection,
-    canProceedToCheckout,
-    clearLocalStorage,
-    isSaving,
-  } = useCardCollectionEditor();
+  const { nextStep, prevStep } = useInteractiveWizardNavigation();
+  const { collection, cards } = useCardCollectionEditor();
 
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  // Modal abre automaticamente ao entrar no step — sem clique intermediário
+  const [showPreviewModal, setShowPreviewModal] = useState(true);
   const [hasOpenedPreview, setHasOpenedPreview] = useState(false);
-  const checkoutRef = useRef<HTMLDivElement>(null);
+  const hasAutoAdvanced = useRef(false);
 
   const recipientName = collection?.recipientName?.trim() || 'a pessoa';
-  const senderName = collection?.senderName?.trim() || 'Alguém especial';
-  const truncatedName = recipientName.length > 30 ? recipientName.slice(0, 30) + '…' : recipientName;
-
-  useEffect(() => {
-    if (collection) {
-      setContactName(collection.contactName || '');
-      setContactEmail(collection.contactEmail || '');
-    }
-  }, [collection]);
-
-  // Scroll to checkout after closing preview modal
-  useEffect(() => {
-    if (hasOpenedPreview && !showPreviewModal && checkoutRef.current) {
-      setTimeout(() => {
-        checkoutRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 300);
-    }
-  }, [hasOpenedPreview, showPreviewModal]);
-
-  const validateFields = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    if (!contactName.trim()) {
-      newErrors.contactName = 'Nome é obrigatório';
-    } else if (contactName.length > 100) {
-      newErrors.contactName = 'Nome deve ter no máximo 100 caracteres';
-    }
-    if (!contactEmail.trim()) {
-      newErrors.contactEmail = 'Email é obrigatório';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
-      newErrors.contactEmail = 'Email inválido';
-    }
-    setErrors(newErrors);
-    const isValid = Object.keys(newErrors).length === 0;
-    setStepValidation(3, { isValid, errors: newErrors });
-    return isValid;
-  };
-
-  useEffect(() => {
-    if (contactName || contactEmail) validateFields();
-  }, [contactName, contactEmail]);
 
   const handleClosePreview = () => {
     setShowPreviewModal(false);
+  };
+
+  const handleBackToEdit = () => {
+    setShowPreviewModal(false);
+    // pequena espera pra animação fechar antes de navegar
+    setTimeout(() => prevStep(), 150);
   };
 
   const handleCardOpened = () => {
     setHasOpenedPreview(true);
   };
 
-  const handleFinalize = async () => {
-    if (!validateFields() || !collection) return;
-
-    analytics.completeEditor('card-collection');
-    analytics.initiatePayment('card-collection', collection.id);
-    setIsCheckingOut(true);
-
-    try {
-      await updateCollection(collection.id, {
-        contactName: contactName.trim(),
-        contactEmail: contactEmail.trim(),
-      });
-
-      const response = await fetch('/api/checkout/card-collection', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ collectionId: collection.id }),
-      });
-
-      if (!response.ok) throw new Error('Falha ao criar checkout');
-
-      const { url } = await response.json();
-      clearLocalStorage();
-      clearDraft();
-      window.location.href = url;
-    } catch (err) {
-      console.error('Failed to create checkout:', err);
-      analytics.error('checkout_error', 'Falha ao criar checkout', {
-        productType: 'card-collection',
-        collectionId: collection.id,
-      });
-      alert('Erro ao processar pagamento. Tente novamente.');
-      setIsCheckingOut(false);
+  // Auto-avança pro checkout depois que abriu carta e fechou o modal
+  useEffect(() => {
+    if (hasOpenedPreview && !showPreviewModal && !hasAutoAdvanced.current) {
+      hasAutoAdvanced.current = true;
+      const timer = setTimeout(() => nextStep(), 400);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [hasOpenedPreview, showPreviewModal, nextStep]);
 
-  const canCheckout =
-    !errors.contactName &&
-    !errors.contactEmail &&
-    !!contactName.trim() &&
-    !!contactEmail.trim() &&
-    canProceedToCheckout();
-
+  // Se o usuário fechou o preview sem abrir nenhuma carta (e não houve auto-advance),
+  // mostra um CTA pra reabrir o preview ou voltar pra editar
   return (
     <>
       <FullscreenStep
-        emoji="✨"
-        title={`Quase lá!`}
-        subtitle={`Veja como ${recipientName} vai receber o presente`}
+        emoji="👀"
+        title="Pré-visualização"
+        subtitle={`É assim que ${recipientName} vai receber o presente`}
         showProgress={true}
         showBackLink={false}
         showPriceBadge={false}
       >
         <div className="w-full max-w-md mx-auto space-y-6">
-          {/* Preview CTA */}
           <motion.button
             type="button"
             onClick={() => setShowPreviewModal(true)}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="w-full group relative overflow-hidden rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6 text-center hover:border-purple-400 hover:shadow-lg transition-all"
+            transition={{ delay: 0.15 }}
+            className="w-full group relative overflow-hidden rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-8 text-center hover:border-purple-400 hover:shadow-xl transition-all"
           >
-            <div className="space-y-3">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform">
-                <Eye className="w-7 h-7 text-white" aria-hidden="true" />
+            <div className="space-y-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform">
+                <Eye className="w-8 h-8 text-white" aria-hidden="true" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">
-                {hasOpenedPreview ? 'Ver novamente' : 'Ver como vai ficar'}
+              <h3 className="text-xl font-bold text-gray-900">
+                Ver como ficou
               </h3>
-              <p className="text-sm text-gray-600">
-                Experiência completa — idêntica ao que {recipientName} vai receber
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Abra a 1ª carta e sinta a emoção ✨
               </p>
-              {!hasOpenedPreview && (
-                <p className="text-xs text-purple-600 font-medium">
-                  Abra a 1ª carta e sinta a emoção ✨
-                </p>
-              )}
             </div>
           </motion.button>
 
-          {hasOpenedPreview && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-green-50 border border-green-200 rounded-xl p-4 text-center"
-            >
-              <p className="text-sm text-green-800 font-medium">
-                ✅ Agora libere as 11 cartas restantes para {recipientName}!
-              </p>
-            </motion.div>
-          )}
-
-          {/* Checkout form */}
-          <div ref={checkoutRef} className="space-y-4 border-t border-gray-200 pt-5">
-            <div className="space-y-2">
-              <label htmlFor="contactName" className="block text-sm font-medium text-gray-700">
-                👤 Seu nome completo
-              </label>
-              <input
-                id="contactName"
-                type="text"
-                value={contactName}
-                onChange={e => setContactName(e.target.value)}
-                placeholder="Ex: João da Silva"
-                maxLength={100}
-                className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-pink-300 ${
-                  errors.contactName ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-pink-400'
-                }`}
-              />
-              {errors.contactName && <p className="text-sm text-red-600">{errors.contactName}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">
-                📩 Seu email (você recebe o acesso aqui)
-              </label>
-              <input
-                id="contactEmail"
-                type="email"
-                value={contactEmail}
-                onChange={e => setContactEmail(e.target.value)}
-                placeholder="seu@email.com"
-                className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-pink-300 ${
-                  errors.contactEmail ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-pink-400'
-                }`}
-              />
-              {errors.contactEmail && <p className="text-sm text-red-600">{errors.contactEmail}</p>}
-              <p className="text-xs text-gray-500">
-                Você gerencia tudo pelo painel. {recipientName} só recebe quando você decidir.
-              </p>
-            </div>
-
-            {/* How it works + trust bullets */}
-            <div className="rounded-xl border bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden">
-              <div className="px-5 pt-4 pb-2 border-b border-gray-100">
-                <h3 className="font-semibold text-sm text-center text-gray-800">
-                  ✨ Presente para {recipientName}
-                </h3>
-                <p className="text-xs text-center text-gray-500 mt-0.5">
-                  De: {senderName}, com carinho
-                </p>
-              </div>
-
-              {/* 3 bullets — como funciona */}
-              <div className="grid grid-cols-3 divide-x divide-gray-100 text-center">
-                <div className="px-3 py-4 space-y-1.5">
-                  <div className="text-2xl">📩</div>
-                  <p className="text-xs font-semibold text-gray-700">Você recebe o link</p>
-                  <p className="text-[11px] text-gray-500 leading-tight">no seu email, na hora</p>
-                </div>
-                <div className="px-3 py-4 space-y-1.5">
-                  <div className="text-2xl">🎁</div>
-                  <p className="text-xs font-semibold text-gray-700">Você decide quando enviar</p>
-                  <p className="text-[11px] text-gray-500 leading-tight">{recipientName} não recebe nada agora</p>
-                </div>
-                <div className="px-3 py-4 space-y-1.5">
-                  <div className="text-2xl">💌</div>
-                  <p className="text-xs font-semibold text-gray-700">12 cartas desbloqueadas</p>
-                  <p className="text-[11px] text-gray-500 leading-tight">acesso para sempre</p>
-                </div>
-              </div>
-
-              {/* Social proof */}
-              <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-center gap-3 text-xs text-gray-500">
-                <span>⭐⭐⭐⭐⭐</span>
-                <span>+800 presentes entregues</span>
-                <span>·</span>
-                <span>🔒 Pagamento seguro</span>
-              </div>
-
-              {/* Price */}
-              <div className="px-5 py-3 border-t border-gray-100 flex justify-center">
-                <PriceBadge productType="card-collection" variant="compact" contextLine="Acesso para sempre" />
-              </div>
-            </div>
-
-            {!canProceedToCheckout() && (
-              <p className="text-sm text-amber-600 text-center bg-amber-50 p-3 rounded-lg">
-                ⚠️ Complete todas as cartas antes de finalizar
-              </p>
-            )}
-
-            <WizardNavigation
-              onPrev={prevStep}
-              onFinalize={handleFinalize}
-              isFirstStep={isFirstStep}
-              isLastStep={isLastStep}
-              isLoading={isSaving || isCheckingOut}
-              canProceed={canCheckout}
-              finalizeLabel={`💌 Presentear ${truncatedName} agora`}
-            />
-          </div>
+          <WizardNavigation
+            onPrev={prevStep}
+            prevLabel="← Voltar para editar"
+            hideNext={true}
+          />
         </div>
       </FullscreenStep>
 
@@ -1051,6 +919,7 @@ export function Step4Preview() {
             cards={cards}
             onClose={handleClosePreview}
             onCardOpened={handleCardOpened}
+            onBackToEdit={handleBackToEdit}
           />
         )}
       </AnimatePresence>

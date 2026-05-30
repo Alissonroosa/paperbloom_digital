@@ -40,6 +40,8 @@ export interface WizardNavigationProps {
   canProceed?: boolean;
   /** Whether keyboard navigation is enabled (default: true) */
   enableKeyboardNavigation?: boolean;
+  /** Hide the primary (next/finalize) button — useful when advance happens via another action */
+  hideNext?: boolean;
   /** Additional CSS classes */
   className?: string;
 }
@@ -81,6 +83,7 @@ export function WizardNavigation({
   finalizeLabel = 'Finalizar Compra →',
   canProceed = true,
   enableKeyboardNavigation = true,
+  hideNext = false,
   className,
 }: WizardNavigationProps): JSX.Element {
   // Enable keyboard navigation (Enter to advance, Escape to go back)
@@ -118,37 +121,39 @@ export function WizardNavigation({
   return (
     <div className={`flex flex-col gap-3 w-full ${className ?? ''}`}>
       {/* Primary action button (Next/Finalize) */}
-      <button
-        type="button"
-        onClick={handleNextClick}
-        disabled={isPrimaryDisabled}
-        className={`
-          w-full min-h-[44px] px-6 py-3
-          rounded-lg font-medium text-white
-          transition-all duration-200
-          flex items-center justify-center gap-2
-          ${isLastStep 
-            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-300' 
-            : 'bg-pink-600 hover:bg-pink-700 focus:ring-pink-300'
-          }
-          ${isPrimaryDisabled 
-            ? 'opacity-50 cursor-not-allowed' 
-            : 'hover:shadow-md active:scale-[0.98]'
-          }
-          focus:outline-none focus:ring-2 focus:ring-offset-2
-        `}
-        aria-busy={isLoading}
-        aria-disabled={isPrimaryDisabled}
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-            <span>Processando...</span>
-          </>
-        ) : (
-          primaryButtonLabel
-        )}
-      </button>
+      {!hideNext && (
+        <button
+          type="button"
+          onClick={handleNextClick}
+          disabled={isPrimaryDisabled}
+          className={`
+            w-full min-h-[44px] px-6 py-3
+            rounded-lg font-medium text-white
+            transition-all duration-200
+            flex items-center justify-center gap-2
+            ${isLastStep
+              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-300'
+              : 'bg-pink-600 hover:bg-pink-700 focus:ring-pink-300'
+            }
+            ${isPrimaryDisabled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:shadow-md active:scale-[0.98]'
+            }
+            focus:outline-none focus:ring-2 focus:ring-offset-2
+          `}
+          aria-busy={isLoading}
+          aria-disabled={isPrimaryDisabled}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+              <span>Processando...</span>
+            </>
+          ) : (
+            primaryButtonLabel
+          )}
+        </button>
+      )}
 
       {/* Back button (hidden on first step) */}
       {!isFirstStep && (

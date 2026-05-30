@@ -79,7 +79,7 @@ export function Step1BasicInfo() {
     <FullscreenStep
       emoji="💌"
       title="Vamos criar algo especial!"
-      subtitle="12 cartas cheias de amor para momentos únicos da pessoa que você ama"
+      subtitle="12 cartas cheias de amor para momentos únicos do seu amor"
       showProgress={true}
       showBackLink={true}
       backLinkHref="/"
@@ -87,6 +87,20 @@ export function Step1BasicInfo() {
       showPriceBadge={false}
     >
       <div className="w-full max-w-md mx-auto space-y-6">
+
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-2xl border border-pink-200 bg-gradient-to-br from-pink-50 via-white to-purple-50 p-4 text-center"
+        >
+          <p className="text-sm font-medium text-gray-800">
+            Que linda essa decisão 💕
+          </p>
+          <p className="mt-1 text-xs text-gray-600 leading-relaxed">
+            Em menos de 3 minutos seu presente está pronto — e ainda dá pra ajustar tudo depois.
+          </p>
+        </motion.div>
 
         {/* Recipient Name */}
         <div className="space-y-2">
@@ -98,7 +112,7 @@ export function Step1BasicInfo() {
             type="text"
             value={recipientName}
             onChange={(e) => setRecipientName(e.target.value)}
-            placeholder="Ex: Maria, Amor, Mãe..."
+            placeholder="Ex: Maria, Amor da minha vida, Bebê..."
             maxLength={100}
             autoFocus
             className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-pink-300 ${
@@ -115,14 +129,14 @@ export function Step1BasicInfo() {
         {/* Sender Name */}
         <div className="space-y-2">
           <label htmlFor="senderName" className="block text-sm font-medium text-gray-700">
-            💜 E quem está enviando todo esse carinho?
+            💜 E quem está enviando todo esse amor?
           </label>
           <input
             id="senderName"
             type="text"
             value={senderName}
             onChange={(e) => setSenderName(e.target.value)}
-            placeholder="Ex: João, Seu amor, Filha..."
+            placeholder="Ex: João, Seu amor, Seu namorado..."
             maxLength={100}
             className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-purple-300 ${
               errors.senderName 

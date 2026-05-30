@@ -81,6 +81,15 @@ export function PhotoUploadModal({ card, isOpen, onClose, onSave, onRemove }: Ph
       setZoom(1);
       setRotation(0);
       setCroppedAreaPixels(null);
+
+      // Se ainda não há foto, abre o seletor de arquivo imediatamente
+      // (evita o "clique extra" pra escolher a foto)
+      if (!card.imageUrl) {
+        // pequeno delay garante que o input já está montado
+        setTimeout(() => {
+          fileInputRef.current?.click();
+        }, 50);
+      }
     }
   }, [isOpen, card.imageUrl]);
 

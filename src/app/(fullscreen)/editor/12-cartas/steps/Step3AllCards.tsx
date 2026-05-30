@@ -68,9 +68,9 @@ export function Step3AllCards() {
 
   return (
     <FullscreenStep
-      emoji="💌"
+      emoji="💝"
       title={`As 12 cartas de ${recipientName}`}
-      subtitle="Toque em um grupo para ver e personalizar as cartas — ou siga direto"
+      subtitle="Já estão prontas. Toque num grupo só se quiser personalizar."
       showProgress={true}
       showBackLink={false}
       showPriceBadge={false}
@@ -78,10 +78,10 @@ export function Step3AllCards() {
       <div className="w-full max-w-2xl mx-auto space-y-4">
         <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center space-y-1">
           <p className="text-sm text-purple-800 font-medium">
-            ✨ Já preparamos as 12 cartas com IA
+            ✨ Nossa IA já escreveu as 12 cartas para {recipientName}
           </p>
           <p className="text-xs text-purple-700">
-            Personalize se quiser, ou siga direto para o checkout.
+            Cada uma com mensagens emocionantes. Você pode trocar texto e foto se quiser — ou seguir direto.
           </p>
         </div>
 
@@ -158,6 +158,7 @@ export function Step3AllCards() {
           isFirstStep={isFirstStep}
           isLastStep={isLastStep}
           isLoading={isSaving}
+          nextLabel="Próximo: capa e música →"
         />
       </div>
 
