@@ -170,7 +170,7 @@
         "whatsappMessage": "Olá! Tenho interesse no Quadro com 9 Polaroids + Fio de Fada (a partir de R$ 45,00). Podem me ajudar com a encomenda?",
         "label": "Encomendar pelo WhatsApp",
         "productionTime": "3 dias úteis",
-        "priceFormatted": "A partir de R$ 45,00"
+        "priceFormatted": "R$ 55,00"
       },
       "badge": "Mais vendido",
       "active": true
@@ -178,7 +178,7 @@
     {
       "id": "caneca-romance-008",
       "slug": "caneca-personalizada-romance",
-      "title": "Caneca Personalizada — Edição Romance",
+      "title": "Caneca Personalizada",
       "shortDescription": "Caneca personalizada em diferentes cores e modelos. Escolha uma arte pronta ou criamos uma exclusiva para vocês. Acompanha caixinha.",
       "longDescription": "A Caneca Personalizada Edição Romance traz uma arte exclusiva com mensagens e ilustrações que contam a história do casal. Disponível em diferentes cores e modelos para combinar com o estilo de vocês.\n\nEscolha entre as artes prontas ou, se preferir, criamos uma arte totalmente personalizada sob encomenda — basta nos contar a ideia pelo WhatsApp.\n\nPerfeita para o café da manhã juntos ou para ter sempre por perto. Acompanha caixinha personalizada para presente.\n\nValores: só com mensagem R$ 35,00 · com foto do casal R$ 39,00. Combine no WhatsApp.",
       "images": [
@@ -221,7 +221,7 @@
         "whatsappMessage": "Olá! Tenho interesse no Livro Nossas Memórias personalizado (Básico R$ 89,00 ou Premium R$ 149,00). Podem me passar mais detalhes?",
         "label": "Encomendar versão impressa",
         "productionTime": "7 dias úteis",
-        "priceFormatted": "A partir de R$ 89,00"
+        "priceFormatted": "A partir de R$ 69,00"
       },
       "badge": "Novidade 2026",
       "active": true
@@ -377,8 +377,8 @@
       "id": "kit-cesta-coracao-016",
       "slug": "kit-cesta-coracao",
       "title": "Kit Cesta Coração — Dia dos Namorados",
-      "shortDescription": "Cesta em formato de coração com bebidas, doces e jogos personalizados. 10 opções românticas prontas para presentear.",
-      "longDescription": "O Kit Cesta Coração traz o presente dentro de uma cesta em formato de coração — o embrulho já é parte do encanto. São 10 opções de kits montados com combinações de bebidas, doces e produtos artesanais Paper Bloom.\n\nAs opções incluem:\n• Vinho 375ml com taça e bombons + Jogo VB Inferno, VB Romance ou Baralho Personalizado\n• Mini champagne com taças, bombons, chocolate + Vales do Amor\n• Coca-Cola Zero com Doritos, chocolate, 10 Motivos e Vale do Amor\n\nCada cesta é montada com cuidado e entregue pronta para surpreender. Consulte as opções pelo WhatsApp.",
+      "shortDescription": "Cesta romântica com bebidas, doces e jogos personalizados. 10 opções prontas para presentear.",
+      "longDescription": "O Kit Cesta Coração traz o presente em uma cesta romântica caprichada, com decoração de coração — o embrulho já é parte do encanto. São 10 opções de kits montados com combinações de bebidas, doces e produtos artesanais Paper Bloom.\n\nAs opções incluem:\n• Vinho 375ml com taça e bombons + Jogo VB Inferno, VB Romance ou Baralho Personalizado\n• Mini champagne com taças, bombons, chocolate + Vales do Amor\n• Coca-Cola Zero com Doritos, chocolate, 10 Motivos e Vale do Amor\n\nCada cesta é montada com cuidado e entregue pronta para surpreender. Consulte as opções pelo WhatsApp.",
       "images": [
         "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-1.jpg",
         "https://imagem.paperbloom.com.br/loja/dia-dos-namorados-2026/kit-cesta-coracao/foto-2.jpg",
