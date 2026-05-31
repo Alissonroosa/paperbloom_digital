@@ -85,8 +85,10 @@ async function handleCardCollectionPayment(
   if (tokenAlreadyExisted) {
     console.warn(`[Webhook] ⚠️ Dashboard token already existed for collection ${collectionId} — skipping email to avoid duplicate send`);
   } else {
-    const contactEmail = payerEmail || metadata.contact_email || metadata.contactEmail || collection.contactEmail;
-    const contactName = metadata.contact_name || metadata.contactName || collection.contactName || collection.senderName;
+    // Prioriza o email que o comprador digitou no form do editor.
+    // payerEmail (vindo do Mercado Pago) é fallback — frequentemente difere do email real do comprador.
+    const contactEmail = collection.contactEmail || metadata.contact_email || metadata.contactEmail || payerEmail;
+    const contactName = collection.contactName || metadata.contact_name || metadata.contactName || collection.senderName;
 
     if (contactEmail) {
       const emailResult = await emailService.sendPaymentConfirmationEmail({
@@ -232,8 +234,9 @@ async function sendQRCodeEmail(
   try {
     const qrCodeDataUrl = await loadQRCodeAsDataUrl(qrCodeUrl);
 
-    const contactEmail = payerEmail || itemData.metadataEmail || itemData.contactEmail;
-    const contactName = itemData.metadataName || itemData.contactName || itemData.senderName;
+    // Prioriza o email digitado no form. payerEmail (do Mercado Pago) é fallback.
+    const contactEmail = itemData.contactEmail || itemData.metadataEmail || payerEmail;
+    const contactName = itemData.contactName || itemData.metadataName || itemData.senderName;
 
     if (contactEmail) {
       const emailResult = await emailService.sendQRCodeEmail({

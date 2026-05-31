@@ -31,10 +31,15 @@ export default async function PublicCardCollectionPage({
     // Ordenar cartas por ordem
     const sortedCards = cards.sort((a, b) => a.order - b.order);
 
+    // Pula a intro cinematográfica se o destinatário já abriu pelo menos uma carta.
+    // Vem do banco (não do localStorage) — fonte da verdade e evita hydration mismatch.
+    const skipIntro = sortedCards.some(c => c.status === 'opened');
+
     return (
       <CardCollectionViewer
         collection={collection}
         cards={sortedCards}
+        skipIntro={skipIntro}
       />
     );
   } catch (error) {

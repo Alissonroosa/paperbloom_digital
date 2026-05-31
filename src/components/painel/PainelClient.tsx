@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { CardCollection, Card } from '@/types/card';
-import { Send, Eye, Pencil } from 'lucide-react';
+import { Send, Eye, Pencil, Sparkles } from 'lucide-react';
 import { EntregaTab } from './tabs/EntregaTab';
 import { AcompanhamentoTab } from './tabs/AcompanhamentoTab';
 import { EditarTab } from './tabs/EditarTab';
 import { CardPreviewModal } from './CardPreviewModal';
+import { CardCinematicPreviewModal } from '@/components/card-editor/CardCinematicPreviewModal';
 import { SendModal } from './SendModal';
 
 type TabId = 'entrega' | 'acompanhamento' | 'editar';
@@ -32,6 +34,7 @@ export function PainelClient({ collection, cards: initialCards }: PainelClientPr
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isSendOpen, setIsSendOpen] = useState(false);
+  const [isCinematicPreviewOpen, setIsCinematicPreviewOpen] = useState(false);
 
   const collectionUrl =
     typeof window !== 'undefined' && collection.slug
@@ -63,13 +66,24 @@ export function PainelClient({ collection, cards: initialCards }: PainelClientPr
     <div className="min-h-screen bg-[#FFFAFA]">
       {/* Compact header */}
       <div className="bg-white border-b border-[#E6C2C2] px-4 py-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-xl font-serif font-bold text-[#4A4A4A]">
-            12 Cartas para {collection.recipientName}
-          </h1>
-          <p className="text-xs text-[#8B5F5F] mt-0.5">
-            De {collection.senderName}
-          </p>
+        <div className="max-w-2xl mx-auto text-center space-y-3">
+          <div>
+            <h1 className="text-xl font-serif font-bold text-[#4A4A4A]">
+              12 Cartas para {collection.recipientName}
+            </h1>
+            <p className="text-xs text-[#8B5F5F] mt-0.5">
+              De {collection.senderName}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsCinematicPreviewOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-white shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+            style={{ backgroundColor: '#D4A5A5' }}
+          >
+            <Sparkles className="w-4 h-4" aria-hidden="true" />
+            Ver prévia como {collection.recipientName} vai ver
+          </button>
         </div>
       </div>
 
@@ -143,6 +157,22 @@ export function PainelClient({ collection, cards: initialCards }: PainelClientPr
         collectionUrl={collectionUrl}
         collectionId={collection.id}
       />
+
+      <AnimatePresence>
+        {isCinematicPreviewOpen && (
+          <CardCinematicPreviewModal
+            collection={{
+              recipientName: collection.recipientName,
+              senderName: collection.senderName,
+              introMessage: collection.introMessage,
+              coverImageUrl: collection.coverImageUrl,
+            }}
+            cards={cards}
+            onClose={() => setIsCinematicPreviewOpen(false)}
+            mode="dashboard"
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

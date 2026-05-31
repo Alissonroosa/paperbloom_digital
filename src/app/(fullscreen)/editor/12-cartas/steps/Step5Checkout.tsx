@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, BookHeart, Music, Eye, X } from 'lucide-react';
 import { FullscreenStep } from '@/components/interactive-wizard/FullscreenStep';
 import { WizardNavigation } from '@/components/interactive-wizard/WizardNavigation';
 import { PriceBadge } from '@/components/interactive-wizard/PriceBadge';
@@ -15,8 +16,16 @@ import { analytics } from '@/lib/analytics';
 
 const CHECKOUT_STEP_INDEX = 4;
 
+const EDIT_OPTIONS = [
+  { step: 0, icon: User,      title: 'Mudar nomes',                desc: 'Para quem é e quem está enviando' },
+  { step: 1, icon: BookHeart, title: 'Personalizar as 12 cartas',  desc: 'Trocar textos e adicionar fotos' },
+  { step: 2, icon: Music,     title: 'Capa, mensagem e música',    desc: 'Foto coringa, mensagem de abertura e trilha' },
+  { step: 3, icon: Eye,       title: 'Ver preview de novo',        desc: 'Reabrir a pré-visualização cinematográfica' },
+] as const;
+
 export function Step5Checkout() {
-  const { prevStep, isFirstStep, isLastStep } = useInteractiveWizardNavigation();
+  const { goToStep, isFirstStep, isLastStep } = useInteractiveWizardNavigation();
+  const [isEditMenuOpen, setIsEditMenuOpen] = useState(false);
   const { setStepValidation } = useInteractiveWizardValidation();
   const { clearDraft } = useInteractiveWizardAutoSave();
   const {
@@ -208,7 +217,7 @@ export function Step5Checkout() {
 
         {/* 3. Botão de voltar + finalize */}
         <WizardNavigation
-          onPrev={prevStep}
+          onPrev={() => setIsEditMenuOpen(true)}
           onFinalize={handleFinalize}
           isFirstStep={isFirstStep}
           isLastStep={isLastStep}
@@ -227,6 +236,78 @@ export function Step5Checkout() {
           Entrega instantânea · Sem assinatura · Cancele quando quiser
         </motion.p>
       </div>
+
+      {/* Modal: "O que você quer ajustar?" */}
+      <AnimatePresence>
+        {isEditMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-4"
+            onClick={() => setIsEditMenuOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 30 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 30 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  O que você quer ajustar?
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsEditMenuOpen(false)}
+                  className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                  aria-label="Fechar"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-500">
+                Seus dados ficam salvos — pode ajustar à vontade.
+              </p>
+
+              <div className="space-y-2">
+                {EDIT_OPTIONS.map(opt => {
+                  const Icon = opt.icon;
+                  return (
+                    <button
+                      key={opt.step}
+                      type="button"
+                      onClick={() => {
+                        setIsEditMenuOpen(false);
+                        goToStep(opt.step);
+                      }}
+                      className="w-full flex items-center gap-3 p-4 rounded-2xl border-2 border-gray-200 hover:border-pink-300 hover:bg-pink-50/50 transition-all text-left"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-pink-600" aria-hidden="true" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">{opt.title}</p>
+                        <p className="text-xs text-gray-500">{opt.desc}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsEditMenuOpen(false)}
+                className="w-full mt-2 py-3 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancelar
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </FullscreenStep>
   );
 }

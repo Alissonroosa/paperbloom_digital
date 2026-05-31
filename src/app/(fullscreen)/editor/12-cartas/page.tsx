@@ -280,8 +280,12 @@ function ErrorState({ error }: { error: string }) {
  * 
  * @see Requirements 4.1, 4.3, 4.6, 4.8
  */
+const ACTIVE_KEY = 'paperbloom-active-card-collection-id';
+const STEP_KEY_PREFIX = 'paperbloom-active-card-collection-step:';
+
 export default function Editor12CartasPage() {
   const [collectionId, setCollectionId] = useState<string | null>(null);
+  const [initialStep, setInitialStep] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -296,8 +300,39 @@ export default function Editor12CartasPage() {
 
     hasInitialized.current = true;
 
+    const readSavedStep = (id: string): number => {
+      try {
+        const raw = localStorage.getItem(STEP_KEY_PREFIX + id);
+        if (!raw) return 0;
+        const n = parseInt(raw, 10);
+        return Number.isFinite(n) && n >= 0 ? n : 0;
+      } catch {
+        return 0;
+      }
+    };
+
     const initializeCollection = async () => {
       try {
+        // 1. Tenta retomar uma collection draft anterior persistida no localStorage.
+        //    Evita que voltar do navegador / do Mercado Pago zere o trabalho.
+        const savedId = typeof window !== 'undefined' ? localStorage.getItem(ACTIVE_KEY) : null;
+        if (savedId) {
+          const existing = await fetch(`/api/card-collections/${savedId}`).catch(() => null);
+          if (existing?.ok) {
+            const { collection } = await existing.json();
+            if (collection && collection.status === 'pending') {
+              setCollectionId(collection.id);
+              setInitialStep(readSavedStep(collection.id));
+              setIsLoading(false);
+              return;
+            }
+          }
+          // collection paga, removida, ou erro de fetch → começa nova
+          localStorage.removeItem(ACTIVE_KEY);
+          localStorage.removeItem(STEP_KEY_PREFIX + savedId);
+        }
+
+        // 2. Não há draft válida — cria collection nova
         const response = await fetch('/api/card-collections/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -313,7 +348,11 @@ export default function Editor12CartasPage() {
         }
 
         const { collection } = await response.json();
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(ACTIVE_KEY, collection.id);
+        }
         setCollectionId(collection.id);
+        setInitialStep(0);
         setIsLoading(false);
       } catch (err) {
         console.error('Failed to create collection:', err);
@@ -325,9 +364,13 @@ export default function Editor12CartasPage() {
     initializeCollection();
   }, []);
 
-  // Handle step change for analytics
-  const handleStepChange = (step: number, direction: 'forward' | 'backward') => {
-    // Analytics tracking is handled in EditorContent
+  // Persiste o step atual no localStorage por collectionId.
+  // Permite retomar onde parou ao voltar do Mercado Pago / aba do navegador.
+  const handleStepChange = (step: number, _direction: 'forward' | 'backward') => {
+    if (typeof window === 'undefined' || !collectionId) return;
+    try {
+      localStorage.setItem(STEP_KEY_PREFIX + collectionId, String(step));
+    } catch { /* localStorage indisponível — ignora */ }
   };
 
   if (isLoading) {
@@ -341,6 +384,7 @@ export default function Editor12CartasPage() {
   return (
     <InteractiveWizardProvider
       config={CARD_COLLECTION_CONFIG}
+      initialStep={initialStep}
       onStepChange={handleStepChange}
     >
       {collectionId && (

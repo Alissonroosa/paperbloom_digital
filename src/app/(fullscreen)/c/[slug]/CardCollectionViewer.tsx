@@ -29,6 +29,8 @@ type Stage =
 interface CardCollectionViewerProps {
     collection: CardCollection;
     cards: Card[];
+    /** Se true, pula a intro cinematográfica (já abriu alguma carta antes). Vem do server. */
+    skipIntro?: boolean;
 }
 
 // Fallback images if card doesn't have one
@@ -87,12 +89,14 @@ function IntroMessageDisplay({ message, textColor }: { message: string; textColo
 
 export default function CardCollectionViewer({
     collection,
-    cards: rawCards
+    cards: rawCards,
+    skipIntro = false,
 }: CardCollectionViewerProps) {
-    // Prepare cards data with fallback images and moment labels
+    // Prepare cards data with fallback images and moment labels.
+    // Prioridade: foto da carta → coverImageUrl da coleção (foto coringa) → fallback genérico.
     const cards = rawCards.map((card, index) => ({
         ...card,
-        imageUrl: card.imageUrl || FALLBACK_IMAGES[index] || FALLBACK_IMAGES[0],
+        imageUrl: card.imageUrl || collection.coverImageUrl || FALLBACK_IMAGES[index] || FALLBACK_IMAGES[0],
         momentLabel: getMomentLabel(card.order),
         message: card.messageText,
     }));
@@ -102,7 +106,10 @@ export default function CardCollectionViewer({
     const youtubeVideoId = collection.youtubeVideoId || "nSDgHBxUbVQ";
     const customEmoji = "❤️"; // Fixed emoji
 
-    const [stage, setStage] = useState<Stage>("intro-1");
+    // Pula a intro cinematográfica se o destinatário já abriu alguma carta antes.
+    // Decisão vem do server (skipIntro prop, baseada em cards.status do banco) —
+    // evita hydration mismatch e ignora limpeza de cookies/localStorage.
+    const [stage, setStage] = useState<Stage>(skipIntro ? "main-view" : "intro-1");
     const [openedCards, setOpenedCards] = useState<Set<string>>(new Set());
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedCard, setSelectedCard] = useState<any>(null);
@@ -634,23 +641,23 @@ export default function CardCollectionViewer({
                             animate={{ scale: 1, y: 0 }}
                             exit={{ scale: 0.9, y: 50 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                            className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-2xl md:max-w-4xl w-full max-h-[92vh] flex flex-col md:flex-row"
                         >
-                            {/* Card Image */}
-                            <div className="relative h-64 md:h-80">
+                            {/* Card Image — proporção 3:4 (mesmo aspect do crop do editor) */}
+                            <div className="relative w-full md:w-2/5 md:flex-shrink-0 aspect-[3/4] md:aspect-auto md:self-stretch max-h-[55vh] md:max-h-none bg-gray-100">
                                 <Image
                                     src={selectedCard.imageUrl}
                                     alt={selectedCard.title}
                                     fill
                                     className="object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <div className="absolute bottom-0 left-0 w-full p-6">
-                                    <span 
+                                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/60 to-transparent" />
+                                <div className="absolute bottom-0 left-0 w-full p-6 md:hidden">
+                                    <span
                                         className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
-                                        style={{ 
+                                        style={{
                                             backgroundColor: themeColors.accentColor + '20',
-                                            color: themeColors.accentColor 
+                                            color: themeColors.accentColor
                                         }}
                                     >
                                         {selectedCard.momentLabel}
@@ -662,22 +669,35 @@ export default function CardCollectionViewer({
                             </div>
 
                             {/* Card Message */}
-                            <div className="p-8">
-                                <p className="text-xl md:text-2xl leading-relaxed text-gray-800 mb-6">
+                            <div className="p-6 md:p-8 md:flex-1 md:flex md:flex-col md:justify-center overflow-y-auto">
+                                <div className="hidden md:block mb-4">
+                                    <span
+                                        className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
+                                        style={{
+                                            backgroundColor: themeColors.accentColor + '20',
+                                            color: themeColors.accentColor,
+                                        }}
+                                    >
+                                        {selectedCard.momentLabel}
+                                    </span>
+                                    <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: themeColors.textColor }}>
+                                        {selectedCard.title}
+                                    </h2>
+                                </div>
+
+                                <p className="text-lg md:text-xl leading-relaxed text-gray-800 mb-6">
                                     {selectedCard.message}
                                 </p>
 
-                                <Button
+                                <button
                                     onClick={handleCloseCard}
-                                    className="w-full"
-                                    size="lg"
+                                    className="w-full min-h-[56px] py-4 px-6 rounded-full font-medium text-base text-white transition-opacity hover:opacity-90"
                                     style={{
                                         backgroundColor: themeColors.accentColor,
-                                        color: 'white'
                                     }}
                                 >
                                     Fechar
-                                </Button>
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -741,29 +761,25 @@ export default function CardCollectionViewer({
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-3">
-                                    <Button
+                                    <button
                                         onClick={handleCancelOpen}
-                                        variant="outline"
-                                        size="lg"
-                                        className="flex-1 rounded-full border-2"
+                                        className="flex-1 min-h-[56px] py-4 px-6 rounded-full border-2 font-medium text-base transition-colors hover:bg-gray-50"
                                         style={{
                                             borderColor: themeColors.accentColor,
                                             color: themeColors.textColor
                                         }}
                                     >
                                         Cancelar
-                                    </Button>
-                                    <Button
+                                    </button>
+                                    <button
                                         onClick={handleConfirmOpen}
-                                        size="lg"
-                                        className="flex-1 rounded-full"
+                                        className="flex-1 min-h-[56px] py-4 px-6 rounded-full font-medium text-base text-white transition-opacity hover:opacity-90"
                                         style={{
                                             backgroundColor: themeColors.accentColor,
-                                            color: 'white'
                                         }}
                                     >
                                         Sim, abrir carta
-                                    </Button>
+                                    </button>
                                 </div>
                             </div>
                         </motion.div>
@@ -830,20 +846,18 @@ export default function CardCollectionViewer({
                                     Você já abriu esta carta. Cada carta só pode ser aberta uma única vez para manter a magia do momento especial. ✨
                                 </p>
 
-                                <Button
+                                <button
                                     onClick={() => {
                                         setShowAlreadyOpenedMessage(false);
                                         setCardToOpen(null);
                                     }}
-                                    size="lg"
-                                    className="w-full rounded-full"
+                                    className="w-full min-h-[56px] py-4 px-6 rounded-full font-medium text-base text-white transition-opacity hover:opacity-90"
                                     style={{
                                         backgroundColor: themeColors.accentColor,
-                                        color: 'white'
                                     }}
                                 >
                                     Entendi
-                                </Button>
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>

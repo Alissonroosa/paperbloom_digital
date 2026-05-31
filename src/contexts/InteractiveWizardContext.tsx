@@ -96,6 +96,8 @@ export interface InteractiveWizardProviderProps {
   children: ReactNode;
   /** Configuration for the wizard */
   config: InteractiveWizardConfig;
+  /** Step inicial (0-based). Útil para retomar onde o usuário parou. */
+  initialStep?: number;
   /** Callback when step changes */
   onStepChange?: (step: number, direction: 'forward' | 'backward') => void;
   /** Custom validation function for steps */
@@ -115,6 +117,7 @@ export interface InteractiveWizardProviderProps {
 export function InteractiveWizardProvider({
   children,
   config,
+  initialStep = 0,
   onStepChange,
   validateStep,
 }: InteractiveWizardProviderProps): JSX.Element {
@@ -122,7 +125,12 @@ export function InteractiveWizardProvider({
   // State
   // ============================================================================
 
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(() => {
+    // Clamp initial step entre [0, totalSteps - 1]
+    if (initialStep < 0) return 0;
+    if (initialStep >= config.totalSteps) return config.totalSteps - 1;
+    return initialStep;
+  });
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [stepValidation, setStepValidationState] = useState<
     Record<number, { isValid: boolean; errors: Record<string, string> }>
