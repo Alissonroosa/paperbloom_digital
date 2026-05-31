@@ -166,6 +166,7 @@ export function PainelClient({ collection, cards: initialCards }: PainelClientPr
               senderName: collection.senderName,
               introMessage: collection.introMessage,
               coverImageUrl: collection.coverImageUrl,
+              youtubeVideoId: collection.youtubeVideoId,
             }}
             cards={cards}
             onClose={() => setIsCinematicPreviewOpen(false)}

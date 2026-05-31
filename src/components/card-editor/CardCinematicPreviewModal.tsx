@@ -6,6 +6,15 @@ import { Lock, Unlock, Heart, X, ArrowLeft } from 'lucide-react';
 import { PriceBadge } from '@/components/interactive-wizard/PriceBadge';
 import { Card as CardType } from '@/types/card';
 
+// YouTube IFrame API types (compatível com o viewer real)
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 const accent = '#E6C2C2';
 const accentDark = '#D4A5A5';
 const textMain = '#4A4A4A';
@@ -41,6 +50,7 @@ export interface CardCinematicPreviewModalProps {
     senderName: string;
     introMessage: string | null;
     coverImageUrl?: string | null;
+    youtubeVideoId?: string | null;
   };
   cards: CardType[];
   onClose: () => void;
@@ -89,10 +99,83 @@ export function CardCinematicPreviewModal({
   const sortedCards = [...cards].sort((a, b) => a.order - b.order);
   const isDashboard = mode === 'dashboard';
 
+  // YouTube player (apenas no modo dashboard — espelha a experiência do produto real)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const playerRef = useRef<any>(null);
+  const playerContainerRef = useRef<HTMLDivElement>(null);
+  const [youtubeReady, setYoutubeReady] = useState(false);
+  const playMusicEnabled = isDashboard && !!collection.youtubeVideoId;
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
+
+  // Carrega o YouTube IFrame API uma única vez
+  useEffect(() => {
+    if (!playMusicEnabled) return;
+    if (window.YT && window.YT.Player) {
+      setYoutubeReady(true);
+      return;
+    }
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
+    window.onYouTubeIframeAPIReady = () => setYoutubeReady(true);
+  }, [playMusicEnabled]);
+
+  // Inicializa o player oculto (volume 0 — só toca após interação)
+  useEffect(() => {
+    if (!playMusicEnabled || !youtubeReady || !playerContainerRef.current || playerRef.current) return;
+
+    playerRef.current = new window.YT.Player('cinematic-preview-youtube-player', {
+      videoId: collection.youtubeVideoId,
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        modestbranding: 1,
+        playsinline: 1,
+        rel: 0,
+        showinfo: 0,
+        iv_load_policy: 3,
+        enablejsapi: 1,
+      },
+      events: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onReady: (event: any) => event.target.setVolume(0),
+      },
+    });
+
+    return () => {
+      if (playerRef.current?.destroy) {
+        try { playerRef.current.destroy(); } catch { /* ignore */ }
+        playerRef.current = null;
+      }
+    };
+  }, [playMusicEnabled, youtubeReady, collection.youtubeVideoId]);
+
+  // Inicia a música com fade-in. Chamado na primeira interação do usuário.
+  const startMusicIfNeeded = () => {
+    if (!playMusicEnabled || !playerRef.current?.playVideo) return;
+    try {
+      const state = playerRef.current.getPlayerState?.();
+      if (state === 1) return; // já tocando
+      playerRef.current.setVolume(0);
+      playerRef.current.playVideo();
+      let vol = 0;
+      const interval = setInterval(() => {
+        if (vol < 50 && playerRef.current?.setVolume) {
+          vol += 10;
+          playerRef.current.setVolume(vol);
+        } else {
+          clearInterval(interval);
+        }
+      }, 100);
+    } catch { /* ignore */ }
+  };
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -103,6 +186,9 @@ export function CardCinematicPreviewModal({
   }, [stage, onClose]);
 
   const handleCardClick = (card: CardType) => {
+    // Inicia música ao primeiro clique em qualquer carta (modo dashboard)
+    startMusicIfNeeded();
+
     if (isDashboard) {
       // Dashboard: qualquer carta é clicável e pode ser reaberta
       setTargetCard(card);
@@ -170,6 +256,13 @@ export function CardCinematicPreviewModal({
     >
       {/* Paper texture overlay */}
       <div className="fixed inset-0 pointer-events-none opacity-30 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]" />
+
+      {/* YouTube Player oculto (apenas no modo dashboard, se houver vídeo configurado) */}
+      {playMusicEnabled && (
+        <div ref={playerContainerRef} className="fixed -left-[9999px] -top-[9999px] pointer-events-none">
+          <div id="cinematic-preview-youtube-player"></div>
+        </div>
+      )}
 
       {/* Top banner */}
       <div
