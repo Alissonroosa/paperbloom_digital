@@ -281,6 +281,86 @@ export class PhysicalOrderService {
   }
 
   /**
+   * Distribuição por status do pedido — pra dashboard.
+   */
+  async byOrderStatus(fromDate?: string, toDate?: string): Promise<Array<{ key: OrderStatus; count: number; revenue_cents: number }>> {
+    return this.groupByEnum('order_status', fromDate, toDate) as Promise<Array<{ key: OrderStatus; count: number; revenue_cents: number }>>;
+  }
+
+  async byPaymentStatus(fromDate?: string, toDate?: string): Promise<Array<{ key: PaymentStatus; count: number; revenue_cents: number }>> {
+    return this.groupByEnum('payment_status', fromDate, toDate) as Promise<Array<{ key: PaymentStatus; count: number; revenue_cents: number }>>;
+  }
+
+  async byDeliveryType(fromDate?: string, toDate?: string): Promise<Array<{ key: DeliveryType; count: number; revenue_cents: number }>> {
+    return this.groupByEnum('delivery_type', fromDate, toDate) as Promise<Array<{ key: DeliveryType; count: number; revenue_cents: number }>>;
+  }
+
+  /**
+   * Top clientes por receita no período.
+   */
+  async topCustomers(fromDate?: string, toDate?: string, limit = 10): Promise<Array<{ customer_name: string; customer_city: string | null; count: number; revenue_cents: number; last_order_date: string }>> {
+    const conds: string[] = [];
+    const values: unknown[] = [];
+    let i = 1;
+    if (fromDate) { conds.push(`order_date >= $${i++}`); values.push(fromDate); }
+    if (toDate) { conds.push(`order_date <= $${i++}`); values.push(toDate); }
+    const where = conds.length > 0 ? `WHERE ${conds.join(' AND ')}` : '';
+    values.push(limit);
+
+    const r = await pool.query<{
+      customer_name: string;
+      customer_city: string | null;
+      count: string;
+      revenue_cents: string;
+      last_order_date: string;
+    }>(
+      `SELECT
+         customer_name,
+         MAX(customer_city) AS customer_city,
+         COUNT(*)::text AS count,
+         COALESCE(SUM(price_cents * quantity), 0)::text AS revenue_cents,
+         to_char(MAX(order_date), 'YYYY-MM-DD') AS last_order_date
+       FROM physical_orders ${where}
+       GROUP BY customer_name
+       ORDER BY SUM(price_cents * quantity) DESC NULLS LAST
+       LIMIT $${i}`,
+      values
+    );
+    return r.rows.map((row) => ({
+      customer_name: row.customer_name,
+      customer_city: row.customer_city,
+      count: parseInt(row.count, 10),
+      revenue_cents: parseInt(row.revenue_cents, 10),
+      last_order_date: row.last_order_date,
+    }));
+  }
+
+  // Helper privado pra agrupamentos enum simples
+  private async groupByEnum(column: 'order_status' | 'payment_status' | 'delivery_type', fromDate?: string, toDate?: string): Promise<Array<{ key: string; count: number; revenue_cents: number }>> {
+    const conds: string[] = [];
+    const values: unknown[] = [];
+    let i = 1;
+    if (fromDate) { conds.push(`order_date >= $${i++}`); values.push(fromDate); }
+    if (toDate) { conds.push(`order_date <= $${i++}`); values.push(toDate); }
+    const where = conds.length > 0 ? `WHERE ${conds.join(' AND ')}` : '';
+
+    const r = await pool.query<{ key: string; count: string; revenue_cents: string }>(
+      `SELECT ${column} AS key,
+              COUNT(*)::text AS count,
+              COALESCE(SUM(price_cents * quantity), 0)::text AS revenue_cents
+       FROM physical_orders ${where}
+       GROUP BY ${column}
+       ORDER BY COUNT(*) DESC`,
+      values
+    );
+    return r.rows.map((row) => ({
+      key: row.key,
+      count: parseInt(row.count, 10),
+      revenue_cents: parseInt(row.revenue_cents, 10),
+    }));
+  }
+
+  /**
    * Pedidos agrupados por produto — visão de performance por produto.
    */
   async groupedByProduct(fromDate?: string, toDate?: string): Promise<ProductGrouped[]> {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Search, X, Edit2, Trash2, Package, TrendingUp, AlertCircle, type LucideIcon } from "lucide-react";
+import { Plus, Search, X, Edit2, Trash2, Copy, Package, TrendingUp, AlertCircle, type LucideIcon } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -69,15 +69,48 @@ function fmtDate(s: string | null): string {
   return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-function parsePriceInput(value: string): number {
-  // "55,00" → 5500 ; "55" → 5500 ; "55.50" → 5550
-  const clean = value.replace(/\./g, "").replace(",", ".");
-  const n = parseFloat(clean);
-  return Number.isFinite(n) ? Math.round(n * 100) : 0;
-}
+/**
+ * Input de moeda estilo calculadora: o usuário digita só dígitos e o display
+ * formata da direita pra esquerda (vai preenchendo centavos primeiro).
+ *
+ * Ex: digita "5500" → "55,00"
+ *     digita "5" → "0,05"
+ *     digita "55" → "0,55"
+ *     backspace remove o último dígito
+ *
+ * Evita o bug de reformatar a cada keystroke (que embaralha cursor).
+ */
+function CurrencyInput({
+  valueCents,
+  onChange,
+  placeholder,
+  className,
+}: {
+  valueCents: number;
+  onChange: (cents: number) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const display = `R$ ${(valueCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-function formatPriceInput(cents: number): string {
-  return (cents / 100).toFixed(2).replace(".", ",");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Extrai só dígitos. Tudo que não for dígito é ignorado (incluindo a vírgula
+    // formatada, "R$ ", separadores de milhar, etc.).
+    const digits = e.target.value.replace(/\D/g, "");
+    const cents = digits === "" ? 0 : parseInt(digits, 10);
+    onChange(cents);
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      value={display}
+      onChange={handleChange}
+      placeholder={placeholder ?? "R$ 0,00"}
+      className={className}
+    />
+  );
 }
 
 const PAYMENT_LABELS: Record<PaymentStatus, { label: string; cls: string }> = {
@@ -103,7 +136,59 @@ const DELIVERY_LABELS: Record<DeliveryType, string> = {
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
-type Tab = "pedidos" | "por-produto" | "produtos";
+type Tab = "pedidos" | "resultados" | "produtos";
+
+type PeriodPreset = "mes-atual" | "7d" | "30d" | "mes-passado" | "ano" | "personalizado";
+
+const PERIOD_OPTIONS: { id: PeriodPreset; label: string }[] = [
+  { id: "mes-atual", label: "Mês atual" },
+  { id: "7d", label: "7 dias" },
+  { id: "30d", label: "30 dias" },
+  { id: "mes-passado", label: "Mês passado" },
+  { id: "ano", label: "Ano" },
+  { id: "personalizado", label: "Personalizado" },
+];
+
+function getPeriodRange(preset: PeriodPreset, customFrom?: string, customTo?: string): { from: string; to: string; label: string } {
+  const today = new Date();
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+  if (preset === "personalizado") {
+    return {
+      from: customFrom ?? iso(today),
+      to: customTo ?? iso(today),
+      label: customFrom && customTo ? `${customFrom} a ${customTo}` : "Personalizado",
+    };
+  }
+
+  if (preset === "7d") {
+    const from = new Date(today);
+    from.setDate(from.getDate() - 6);
+    return { from: iso(from), to: iso(today), label: "Últimos 7 dias" };
+  }
+
+  if (preset === "30d") {
+    const from = new Date(today);
+    from.setDate(from.getDate() - 29);
+    return { from: iso(from), to: iso(today), label: "Últimos 30 dias" };
+  }
+
+  if (preset === "mes-passado") {
+    const firstOfThis = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastOfPast = new Date(firstOfThis.getTime() - 1);
+    const firstOfPast = new Date(lastOfPast.getFullYear(), lastOfPast.getMonth(), 1);
+    return { from: iso(firstOfPast), to: iso(lastOfPast), label: "Mês passado" };
+  }
+
+  if (preset === "ano") {
+    const firstOfYear = new Date(today.getFullYear(), 0, 1);
+    return { from: iso(firstOfYear), to: iso(today), label: `Ano ${today.getFullYear()}` };
+  }
+
+  // mes-atual (default)
+  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  return { from: iso(firstOfMonth), to: iso(today), label: "Mês atual" };
+}
 
 export default function PedidosFisicosPage() {
   const [tab, setTab] = useState<Tab>("pedidos");
@@ -120,7 +205,7 @@ export default function PedidosFisicosPage() {
       <div className="bg-white rounded-t-xl border-b border-gray-200 px-2 sm:px-4 flex gap-1 overflow-x-auto">
         {[
           { id: "pedidos" as Tab, label: "Pedidos" },
-          { id: "por-produto" as Tab, label: "Por produto" },
+          { id: "resultados" as Tab, label: "Resultados" },
           { id: "produtos" as Tab, label: "Produtos cadastrados" },
         ].map((t) => (
           <button
@@ -138,7 +223,7 @@ export default function PedidosFisicosPage() {
       </div>
 
       {tab === "pedidos" && <OrdersTab />}
-      {tab === "por-produto" && <GroupedTab />}
+      {tab === "resultados" && <ResultadosTab />}
       {tab === "produtos" && <ProductsTab />}
     </div>
   );
@@ -153,11 +238,19 @@ function OrdersTab() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<PhysicalOrder | null>(null);
   const [creating, setCreating] = useState(false);
+  const [duplicating, setDuplicating] = useState<PhysicalOrder | null>(null);
   const [filters, setFilters] = useState<{
     paymentStatus: string;
     orderStatus: string;
     search: string;
   }>({ paymentStatus: "", orderStatus: "", search: "" });
+  const [preset, setPreset] = useState<PeriodPreset>("mes-atual");
+  const [customRange, setCustomRange] = useState<{ from: string; to: string }>(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return { from: today, to: today };
+  });
+
+  const period = getPeriodRange(preset, customRange.from, customRange.to);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -165,14 +258,12 @@ function OrdersTab() {
     if (filters.paymentStatus) sp.set("paymentStatus", filters.paymentStatus);
     if (filters.orderStatus) sp.set("orderStatus", filters.orderStatus);
     if (filters.search) sp.set("search", filters.search);
-
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    const fromDate = monthStart.toISOString().slice(0, 10);
+    sp.set("fromDate", period.from);
+    sp.set("toDate", period.to);
 
     const [ordersRes, summaryRes, productsRes] = await Promise.all([
       fetch(`/api/admin/physical-orders?${sp.toString()}`),
-      fetch(`/api/admin/physical-orders/summary?fromDate=${fromDate}`),
+      fetch(`/api/admin/physical-orders/summary?fromDate=${period.from}&toDate=${period.to}`),
       fetch(`/api/admin/products`),
     ]);
     const ordersData = await ordersRes.json();
@@ -182,7 +273,7 @@ function OrdersTab() {
     setSummary(summaryData.summary || null);
     setProducts(productsData.products || []);
     setLoading(false);
-  }, [filters]);
+  }, [filters, period.from, period.to]);
 
   useEffect(() => {
     fetchData();
@@ -196,15 +287,27 @@ function OrdersTab() {
 
   return (
     <div className="space-y-6">
-      {/* KPIs do mês */}
+      {/* Seletor de período */}
+      <PeriodSelector
+        preset={preset}
+        setPreset={setPreset}
+        customRange={customRange}
+        setCustomRange={setCustomRange}
+        label={period.label}
+        from={period.from}
+        to={period.to}
+      />
+
+      {/* KPIs do período */}
       {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <KPICard icon={Package} label="Pedidos no mês" value={summary.totalOrders.toString()} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <KPICard icon={Package} label="Pedidos" value={summary.totalOrders.toString()} />
           <KPICard icon={TrendingUp} label="Receita" value={fmtCurrency(summary.totalRevenueCents)} />
           <KPICard icon={TrendingUp} label="Lucro bruto" value={fmtCurrency(summary.totalProfitCents)} highlight />
-          <KPICard icon={AlertCircle} label="Pagamento pendente" value={summary.pendingPaymentCount.toString()} warn={summary.pendingPaymentCount > 0} />
+          <KPICard icon={AlertCircle} label="Pagto pendente" value={summary.pendingPaymentCount.toString()} warn={summary.pendingPaymentCount > 0} />
         </div>
       )}
+
 
       {/* Filtros + botão novo */}
       <div className="bg-white rounded-xl p-3 sm:p-4 space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-3 shadow-sm">
@@ -284,13 +387,22 @@ function OrdersTab() {
                       </div>
                       {o.customer_city && <div className="text-xs text-gray-500">{o.customer_city}</div>}
                     </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(o.id); }}
-                      className="text-gray-300 hover:text-red-500 p-1 -mr-1"
-                      aria-label="Remover"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex items-center gap-1 -mr-1">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDuplicating(o); }}
+                        className="text-gray-300 hover:text-pink-600 p-1"
+                        aria-label="Duplicar"
+                      >
+                        <Copy size={16} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(o.id); }}
+                        className="text-gray-300 hover:text-red-500 p-1"
+                        aria-label="Remover"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="text-sm text-gray-700 mb-2">
@@ -379,6 +491,9 @@ function OrdersTab() {
                           <button onClick={() => setEditing(o)} className="text-gray-400 hover:text-pink-600 p-1" title="Editar">
                             <Edit2 size={16} />
                           </button>
+                          <button onClick={() => setDuplicating(o)} className="text-gray-400 hover:text-pink-600 p-1" title="Duplicar">
+                            <Copy size={16} />
+                          </button>
                           <button onClick={() => handleDelete(o.id)} className="text-gray-400 hover:text-red-600 p-1" title="Remover">
                             <Trash2 size={16} />
                           </button>
@@ -393,17 +508,20 @@ function OrdersTab() {
         </>
       )}
 
-      {(creating || editing) && (
+      {(creating || editing || duplicating) && (
         <OrderForm
           order={editing}
+          duplicateFrom={duplicating}
           products={products}
           onClose={() => {
             setCreating(false);
             setEditing(null);
+            setDuplicating(null);
           }}
           onSaved={() => {
             setCreating(false);
             setEditing(null);
+            setDuplicating(null);
             fetchData();
           }}
         />
@@ -412,57 +530,220 @@ function OrdersTab() {
   );
 }
 
-// ─── Aba 2: Por produto ──────────────────────────────────────────────────────
+// ─── Aba 2: Resultados (dashboard) ───────────────────────────────────────────
 
-function GroupedTab() {
-  const [grouped, setGrouped] = useState<ProductGrouped[]>([]);
+interface ResultsPayload {
+  summary: OrderSummary;
+  byOrderStatus: { key: OrderStatus; count: number; revenue_cents: number }[];
+  byPaymentStatus: { key: PaymentStatus; count: number; revenue_cents: number }[];
+  byDeliveryType: { key: DeliveryType; count: number; revenue_cents: number }[];
+  byProduct: ProductGrouped[];
+  topCustomers: { customer_name: string; customer_city: string | null; count: number; revenue_cents: number; last_order_date: string }[];
+}
+
+function ResultadosTab() {
+  const [data, setData] = useState<ResultsPayload | null>(null);
   const [loading, setLoading] = useState(true);
+  const [preset, setPreset] = useState<PeriodPreset>("mes-atual");
+  const [customRange, setCustomRange] = useState<{ from: string; to: string }>(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return { from: today, to: today };
+  });
+
+  const period = getPeriodRange(preset, customRange.from, customRange.to);
 
   useEffect(() => {
-    fetch(`/api/admin/physical-orders/summary?grouped=1`)
+    setLoading(true);
+    fetch(`/api/admin/physical-orders/results?fromDate=${period.from}&toDate=${period.to}`)
       .then((r) => r.json())
       .then((d) => {
-        setGrouped(d.grouped || []);
+        setData(d);
         setLoading(false);
       });
-  }, []);
-
-  if (loading) return <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gray-500">Carregando...</div>;
-  if (grouped.length === 0)
-    return <div className="bg-white rounded-xl p-12 text-center text-gray-500">Nenhum pedido ainda.</div>;
+  }, [period.from, period.to]);
 
   return (
-    <>
-      {/* Cards mobile */}
-      <div className="md:hidden space-y-3">
-        {grouped.map((g) => {
-          const margin = g.total_revenue_cents > 0 ? (g.total_profit_cents / g.total_revenue_cents) * 100 : 0;
-          return (
-            <div key={(g.product_id ?? "null") + g.product_name} className="bg-white rounded-xl shadow-sm p-4">
-              <div className="font-semibold text-gray-900 mb-3">{g.product_name}</div>
-              <div className="grid grid-cols-3 gap-3 text-sm mb-3">
-                <div>
-                  <div className="text-xs text-gray-500">Pedidos</div>
-                  <div className="font-semibold">{g.order_count}</div>
+    <div className="space-y-6">
+      {/* Filtro de período */}
+      <PeriodSelector
+        preset={preset}
+        setPreset={setPreset}
+        customRange={customRange}
+        setCustomRange={setCustomRange}
+        label={period.label}
+        from={period.from}
+        to={period.to}
+      />
+
+      {loading || !data ? (
+        <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gray-500">Carregando...</div>
+      ) : data.summary.totalOrders === 0 ? (
+        <div className="bg-white rounded-xl p-12 text-center text-gray-500">
+          Nenhum pedido no período selecionado.
+        </div>
+      ) : (
+        <>
+          {/* KPIs */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            <KPICard icon={Package} label="Pedidos" value={data.summary.totalOrders.toString()} />
+            <KPICard icon={TrendingUp} label="Receita" value={fmtCurrency(data.summary.totalRevenueCents)} />
+            <KPICard icon={TrendingUp} label="Lucro bruto" value={fmtCurrency(data.summary.totalProfitCents)} highlight />
+            <KPICard icon={AlertCircle} label="Pagto pendente" value={data.summary.pendingPaymentCount.toString()} warn={data.summary.pendingPaymentCount > 0} />
+          </div>
+
+          {/* Grid de seções */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <DistributionCard
+              title="Por status do pedido"
+              items={data.byOrderStatus.map((b) => ({
+                label: STATUS_LABELS[b.key].label,
+                color: STATUS_BAR_COLORS[b.key],
+                count: b.count,
+                revenue_cents: b.revenue_cents,
+              }))}
+              total={data.summary.totalOrders}
+            />
+            <DistributionCard
+              title="Por status do pagamento"
+              items={data.byPaymentStatus.map((b) => ({
+                label: PAYMENT_LABELS[b.key].label,
+                color: PAYMENT_BAR_COLORS[b.key],
+                count: b.count,
+                revenue_cents: b.revenue_cents,
+              }))}
+              total={data.summary.totalOrders}
+            />
+            <DistributionCard
+              title="Por tipo de entrega"
+              items={data.byDeliveryType.map((b) => ({
+                label: DELIVERY_LABELS[b.key],
+                color: "#D4A5A5",
+                count: b.count,
+                revenue_cents: b.revenue_cents,
+              }))}
+              total={data.summary.totalOrders}
+            />
+            <TopCustomersCard customers={data.topCustomers} />
+          </div>
+
+          {/* Por produto (mesma tabela que estava na aba antiga) */}
+          <ProductBreakdownTable products={data.byProduct} />
+        </>
+      )}
+    </div>
+  );
+}
+
+// Cores das barras por status (combina com PAYMENT_LABELS / STATUS_LABELS, mas em hex pra usar em width)
+const STATUS_BAR_COLORS: Record<OrderStatus, string> = {
+  novo: "#3b82f6",
+  "em-producao": "#f59e0b",
+  pronto: "#a855f7",
+  entregue: "#16a34a",
+  cancelado: "#9ca3af",
+};
+const PAYMENT_BAR_COLORS: Record<PaymentStatus, string> = {
+  pago: "#16a34a",
+  "reserva-30": "#f59e0b",
+  pendente: "#ef4444",
+};
+
+// Card reutilizável: lista com barra de proporção
+function DistributionCard({
+  title,
+  items,
+  total,
+}: {
+  title: string;
+  items: { label: string; color: string; count: number; revenue_cents: number }[];
+  total: number;
+}) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5">
+      <h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
+      <div className="space-y-3">
+        {items.length === 0 ? (
+          <p className="text-sm text-gray-500">Sem dados.</p>
+        ) : (
+          items.map((it) => {
+            const pct = total > 0 ? (it.count / total) * 100 : 0;
+            return (
+              <div key={it.label}>
+                <div className="flex items-baseline justify-between text-sm mb-1">
+                  <span className="text-gray-700">{it.label}</span>
+                  <span className="text-gray-500">
+                    <strong className="text-gray-900">{it.count}</strong> · {fmtCurrency(it.revenue_cents)}
+                  </span>
                 </div>
-                <div>
-                  <div className="text-xs text-gray-500">Qtd</div>
-                  <div className="font-semibold">{g.total_quantity}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-500">Margem</div>
-                  <div className="font-semibold">{margin.toFixed(1)}%</div>
+                <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${pct}%`, backgroundColor: it.color }}
+                  />
                 </div>
               </div>
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100 text-sm">
-                <div>
-                  <div className="text-xs text-gray-500">Receita</div>
-                  <div className="font-semibold text-gray-900">{fmtCurrency(g.total_revenue_cents)}</div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TopCustomersCard({
+  customers,
+}: {
+  customers: { customer_name: string; customer_city: string | null; count: number; revenue_cents: number; last_order_date: string }[];
+}) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5">
+      <h3 className="text-sm font-semibold text-gray-900 mb-4">Top clientes</h3>
+      {customers.length === 0 ? (
+        <p className="text-sm text-gray-500">Sem dados.</p>
+      ) : (
+        <div className="space-y-3">
+          {customers.map((c, idx) => (
+            <div key={c.customer_name + idx} className="flex items-center gap-3 text-sm">
+              <span className="w-6 text-right text-gray-400 font-mono text-xs">{idx + 1}</span>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-gray-900 truncate">{c.customer_name}</div>
+                <div className="text-xs text-gray-500">
+                  {c.customer_city ? `${c.customer_city} · ` : ""}
+                  {c.count} {c.count === 1 ? "pedido" : "pedidos"} · último em {fmtDate(c.last_order_date)}
                 </div>
-                <div className="text-right">
-                  <div className="text-xs text-gray-500">Lucro bruto</div>
-                  <div className="font-semibold text-green-700">{fmtCurrency(g.total_profit_cents)}</div>
-                </div>
+              </div>
+              <div className="text-right font-semibold text-gray-900 whitespace-nowrap">
+                {fmtCurrency(c.revenue_cents)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductBreakdownTable({ products }: { products: ProductGrouped[] }) {
+  if (products.length === 0) return null;
+  return (
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="px-4 sm:px-5 py-4 border-b border-gray-100">
+        <h3 className="text-sm font-semibold text-gray-900">Por produto</h3>
+      </div>
+
+      {/* Cards mobile */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {products.map((g) => {
+          const margin = g.total_revenue_cents > 0 ? (g.total_profit_cents / g.total_revenue_cents) * 100 : 0;
+          return (
+            <div key={(g.product_id ?? "null") + g.product_name} className="p-4">
+              <div className="font-semibold text-gray-900 mb-2">{g.product_name}</div>
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div><span className="text-gray-500">Pedidos:</span> <strong>{g.order_count}</strong></div>
+                <div><span className="text-gray-500">Qtd:</span> <strong>{g.total_quantity}</strong></div>
+                <div><span className="text-gray-500">Margem:</span> <strong>{margin.toFixed(1)}%</strong></div>
+                <div className="col-span-2"><span className="text-gray-500">Receita:</span> <strong>{fmtCurrency(g.total_revenue_cents)}</strong></div>
+                <div className="text-right text-green-700"><strong>{fmtCurrency(g.total_profit_cents)}</strong></div>
               </div>
             </div>
           );
@@ -470,40 +751,101 @@ function GroupedTab() {
       </div>
 
       {/* Tabela desktop */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
-              <tr>
-                <th className="px-4 py-3 text-left">Produto</th>
-                <th className="px-4 py-3 text-right">Pedidos</th>
-                <th className="px-4 py-3 text-right">Qtd total</th>
-                <th className="px-4 py-3 text-right">Receita</th>
-                <th className="px-4 py-3 text-right">Custo</th>
-                <th className="px-4 py-3 text-right">Lucro bruto</th>
-                <th className="px-4 py-3 text-right">Margem</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {grouped.map((g) => {
-                const margin = g.total_revenue_cents > 0 ? (g.total_profit_cents / g.total_revenue_cents) * 100 : 0;
-                return (
-                  <tr key={(g.product_id ?? "null") + g.product_name} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{g.product_name}</td>
-                    <td className="px-4 py-3 text-right">{g.order_count}</td>
-                    <td className="px-4 py-3 text-right">{g.total_quantity}</td>
-                    <td className="px-4 py-3 text-right">{fmtCurrency(g.total_revenue_cents)}</td>
-                    <td className="px-4 py-3 text-right text-gray-500">{fmtCurrency(g.total_cost_cents)}</td>
-                    <td className="px-4 py-3 text-right font-medium text-green-700">{fmtCurrency(g.total_profit_cents)}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{margin.toFixed(1)}%</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+            <tr>
+              <th className="px-4 py-3 text-left">Produto</th>
+              <th className="px-4 py-3 text-right">Pedidos</th>
+              <th className="px-4 py-3 text-right">Qtd</th>
+              <th className="px-4 py-3 text-right">Receita</th>
+              <th className="px-4 py-3 text-right">Custo</th>
+              <th className="px-4 py-3 text-right">Lucro bruto</th>
+              <th className="px-4 py-3 text-right">Margem</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {products.map((g) => {
+              const margin = g.total_revenue_cents > 0 ? (g.total_profit_cents / g.total_revenue_cents) * 100 : 0;
+              return (
+                <tr key={(g.product_id ?? "null") + g.product_name} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium text-gray-900">{g.product_name}</td>
+                  <td className="px-4 py-3 text-right">{g.order_count}</td>
+                  <td className="px-4 py-3 text-right">{g.total_quantity}</td>
+                  <td className="px-4 py-3 text-right">{fmtCurrency(g.total_revenue_cents)}</td>
+                  <td className="px-4 py-3 text-right text-gray-500">{fmtCurrency(g.total_cost_cents)}</td>
+                  <td className="px-4 py-3 text-right font-medium text-green-700">{fmtCurrency(g.total_profit_cents)}</td>
+                  <td className="px-4 py-3 text-right text-gray-600">{margin.toFixed(1)}%</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-    </>
+    </div>
+  );
+}
+
+// Seletor de período reutilizável (usado em Pedidos e Resultados)
+function PeriodSelector({
+  preset,
+  setPreset,
+  customRange,
+  setCustomRange,
+  label,
+  from,
+  to,
+}: {
+  preset: PeriodPreset;
+  setPreset: (p: PeriodPreset) => void;
+  customRange: { from: string; to: string };
+  setCustomRange: (r: { from: string; to: string }) => void;
+  label: string;
+  from: string;
+  to: string;
+}) {
+  return (
+    <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 mr-1">Período:</span>
+        {PERIOD_OPTIONS.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => setPreset(p.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              preset === p.id ? "bg-pink-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+      {preset === "personalizado" && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+          <label className="flex items-center gap-2">
+            <span className="text-gray-500">De:</span>
+            <input
+              type="date"
+              value={customRange.from}
+              onChange={(e) => setCustomRange({ ...customRange, from: e.target.value })}
+              className="px-2 py-1.5 border border-gray-200 rounded-lg"
+            />
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="text-gray-500">Até:</span>
+            <input
+              type="date"
+              value={customRange.to}
+              onChange={(e) => setCustomRange({ ...customRange, to: e.target.value })}
+              className="px-2 py-1.5 border border-gray-200 rounded-lg"
+            />
+          </label>
+        </div>
+      )}
+      <p className="text-xs text-gray-500 mt-2">
+        {label} · {from} → {to}
+      </p>
+    </div>
   );
 }
 
@@ -689,31 +1031,41 @@ function KPICard({
 
 function OrderForm({
   order,
+  duplicateFrom,
   products,
   onClose,
   onSaved,
 }: {
   order: PhysicalOrder | null;
+  duplicateFrom?: PhysicalOrder | null;
   products: AdminProduct[];
   onClose: () => void;
   onSaved: () => void;
 }) {
+  // Fonte de dados pra inicializar: order (editar) > duplicateFrom (duplicar) > vazio (novo)
+  // Quando duplicar, NUNCA passamos order.id ao salvar (vira POST novo), e datas/status resetam.
+  const source = order ?? duplicateFrom ?? null;
+  const isDuplicate = !order && !!duplicateFrom;
+
   const [form, setForm] = useState({
-    customerName: order?.customer_name ?? "",
-    customerPhone: order?.customer_phone ?? "",
-    customerCity: order?.customer_city ?? "",
-    productId: order?.product_id ?? "",
-    productName: order?.product_name ?? "",
-    quantity: order?.quantity ?? 1,
-    costCents: order?.cost_cents ?? 0,
-    priceCents: order?.price_cents ?? 0,
-    productionDays: order?.production_days ?? null,
+    customerName: source?.customer_name ?? "",
+    customerPhone: source?.customer_phone ?? "",
+    customerCity: source?.customer_city ?? "",
+    productId: source?.product_id ?? "",
+    productName: source?.product_name ?? "",
+    quantity: source?.quantity ?? 1,
+    costCents: source?.cost_cents ?? 0,
+    priceCents: source?.price_cents ?? 0,
+    productionDays: source?.production_days ?? null,
+    // Quando duplicando, usa data de hoje (não copia data do pedido original)
     orderDate: order?.order_date.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+    // Data de entrega não copia em duplicação (precisa decidir uma nova)
     deliveryDate: order?.delivery_date?.slice(0, 10) ?? "",
-    deliveryType: order?.delivery_type ?? "outro" as DeliveryType,
+    deliveryType: source?.delivery_type ?? "outro" as DeliveryType,
+    // Pagamento e status resetam em duplicação (pedido novo começa do zero)
     paymentStatus: order?.payment_status ?? "pendente" as PaymentStatus,
     orderStatus: order?.order_status ?? "novo" as OrderStatus,
-    notes: order?.notes ?? "",
+    notes: source?.notes ?? "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -768,11 +1120,18 @@ function OrderForm({
         onSubmit={handleSubmit}
         className="bg-white sm:rounded-2xl rounded-t-2xl max-w-3xl w-full max-h-[92vh] overflow-y-auto p-4 sm:p-6 space-y-4 shadow-xl"
       >
-        <div className="flex items-center justify-between sticky top-0 bg-white -mx-4 px-4 -mt-4 pt-4 sm:-mx-6 sm:px-6 sm:-mt-6 sm:pt-6 pb-2 border-b border-gray-100">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-            {order ? `Pedido #${String(order.order_number).padStart(3, "0")}` : "Novo pedido físico"}
-          </h2>
-          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 -mr-1">
+        <div className="flex items-start justify-between sticky top-0 z-10 bg-white -mx-4 px-4 -mt-4 pt-4 sm:-mx-6 sm:px-6 sm:-mt-6 sm:pt-6 pb-4 mb-8 border-b border-gray-100">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+              {order ? `Pedido #${String(order.order_number).padStart(3, "0")}` : "Novo pedido físico"}
+            </h2>
+            {isDuplicate && duplicateFrom && (
+              <p className="text-xs text-pink-600 mt-0.5">
+                Duplicando do pedido #{String(duplicateFrom.order_number).padStart(3, "0")}
+              </p>
+            )}
+          </div>
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 -mr-1 shrink-0">
             <X size={22} />
           </button>
         </div>
@@ -841,21 +1200,17 @@ function OrderForm({
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
               />
             </Field>
-            <Field label="Custo unit. (R$)">
-              <input
-                type="text"
-                inputMode="decimal"
-                value={formatPriceInput(form.costCents)}
-                onChange={(e) => setForm({ ...form, costCents: parsePriceInput(e.target.value) })}
+            <Field label="Custo unitário">
+              <CurrencyInput
+                valueCents={form.costCents}
+                onChange={(v) => setForm({ ...form, costCents: v })}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
               />
             </Field>
-            <Field label="Venda unit. (R$)">
-              <input
-                type="text"
-                inputMode="decimal"
-                value={formatPriceInput(form.priceCents)}
-                onChange={(e) => setForm({ ...form, priceCents: parsePriceInput(e.target.value) })}
+            <Field label="Venda unitária">
+              <CurrencyInput
+                valueCents={form.priceCents}
+                onChange={(v) => setForm({ ...form, priceCents: v })}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
               />
             </Field>
@@ -954,7 +1309,7 @@ function OrderForm({
             disabled={saving}
             className="px-6 py-3 sm:py-2 bg-pink-600 text-white rounded-lg font-semibold hover:bg-pink-700 disabled:opacity-50"
           >
-            {saving ? "Salvando..." : order ? "Salvar alterações" : "Criar pedido"}
+            {saving ? "Salvando..." : order ? "Salvar alterações" : isDuplicate ? "Criar pedido duplicado" : "Criar pedido"}
           </button>
         </div>
       </form>
@@ -1018,21 +1373,17 @@ function ProductForm({
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Custo padrão (R$)">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={formatPriceInput(form.defaultCostCents)}
-              onChange={(e) => setForm({ ...form, defaultCostCents: parsePriceInput(e.target.value) })}
+          <Field label="Custo padrão">
+            <CurrencyInput
+              valueCents={form.defaultCostCents}
+              onChange={(v) => setForm({ ...form, defaultCostCents: v })}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
             />
           </Field>
-          <Field label="Venda padrão (R$)">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={formatPriceInput(form.defaultPriceCents)}
-              onChange={(e) => setForm({ ...form, defaultPriceCents: parsePriceInput(e.target.value) })}
+          <Field label="Venda padrão">
+            <CurrencyInput
+              valueCents={form.defaultPriceCents}
+              onChange={(v) => setForm({ ...form, defaultPriceCents: v })}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
             />
           </Field>
