@@ -144,7 +144,7 @@ export const analytics = {
    */
   editorStep: (productType: ProductType, step: number, stepName: string) => {
     const product = getProduct(productType)
-    
+
     gtag('event', 'checkout_progress', {
       currency: 'BRL',
       value: product.price,
@@ -156,11 +156,90 @@ export const analytics = {
         quantity: 1
       }]
     })
-    
+
     fbq('trackCustom', 'EditorStep', {
       product_type: product.type,
       step_number: step,
       step_name: stepName
+    })
+  },
+
+  /**
+   * 5a. EDITOR FIELD FILLED — primeira vez que o usuário preenche um campo significativo.
+   * Idempotente por sessão (1 disparo por campo).
+   * Permite construir funil de "% de quem chegou no Step → % que preencheu campo X".
+   */
+  editorFieldFilled: (productType: ProductType, field: string) => {
+    if (!shouldTrack(`editor_field_${productType}_${field}`)) return
+    gtag('event', 'editor_field_filled', {
+      product_type: productType,
+      field_name: field,
+    })
+    fbq('trackCustom', 'EditorFieldFilled', {
+      product_type: productType,
+      field_name: field,
+    })
+  },
+
+  /**
+   * 5b. EDITOR TIME ON STEP — disparado ao sair de um step.
+   * `seconds` = tempo total que o usuário ficou nele.
+   * Identifica steps que levam tempo demais (= confusos).
+   */
+  editorTimeOnStep: (productType: ProductType, step: number, stepName: string, seconds: number) => {
+    gtag('event', 'editor_time_on_step', {
+      product_type: productType,
+      step_number: step,
+      step_name: stepName,
+      seconds_on_step: Math.round(seconds),
+    })
+    fbq('trackCustom', 'EditorTimeOnStep', {
+      product_type: productType,
+      step_number: step,
+      step_name: stepName,
+      seconds_on_step: Math.round(seconds),
+    })
+  },
+
+  /**
+   * 5c. EDITOR BACK NAVIGATION — clicou em "voltar" ou usou modal de "ajustar algo antes".
+   * Sinal de UX confusa (algo no step destino foi mal explicado).
+   */
+  editorBackNavigation: (productType: ProductType, fromStep: number, toStep: number, source: 'wizard_back' | 'edit_menu' | 'preview_back') => {
+    gtag('event', 'editor_back_navigation', {
+      product_type: productType,
+      from_step: fromStep,
+      to_step: toStep,
+      source,
+    })
+    fbq('trackCustom', 'EditorBackNavigation', {
+      product_type: productType,
+      from_step: fromStep,
+      to_step: toStep,
+      source,
+    })
+  },
+
+  /**
+   * 5d. EDITOR ABANDON — disparado no `beforeunload` se o usuário fechar a aba/navegar pra fora.
+   * Envia o último step ativo + tempo total na sessão do editor.
+   * Usa `navigator.sendBeacon` indiretamente via gtag/fbq (que já lidam com unload).
+   */
+  editorAbandon: (productType: ProductType, lastStep: number, lastStepName: string, totalSeconds: number, fieldsCompleted: string[]) => {
+    gtag('event', 'editor_abandon', {
+      product_type: productType,
+      last_step: lastStep,
+      last_step_name: lastStepName,
+      total_seconds: Math.round(totalSeconds),
+      fields_completed_count: fieldsCompleted.length,
+      fields_completed: fieldsCompleted.join(','),
+    })
+    fbq('trackCustom', 'EditorAbandon', {
+      product_type: productType,
+      last_step: lastStep,
+      last_step_name: lastStepName,
+      total_seconds: Math.round(totalSeconds),
+      fields_completed_count: fieldsCompleted.length,
     })
   },
 

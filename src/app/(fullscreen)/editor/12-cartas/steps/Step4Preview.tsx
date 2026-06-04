@@ -10,6 +10,9 @@ import {
 } from '@/contexts/InteractiveWizardContext';
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { CardCinematicPreviewModal } from '@/components/card-editor/CardCinematicPreviewModal';
+import { analytics } from '@/lib/analytics';
+
+const PREVIEW_STEP_INDEX = 3;
 
 /**
  * Step 4 — Preview only (no form/checkout).
@@ -32,6 +35,8 @@ export function Step4Preview() {
 
   const handleBackToEdit = () => {
     setShowPreviewModal(false);
+    analytics.editorBackNavigation('card-collection', PREVIEW_STEP_INDEX + 1, PREVIEW_STEP_INDEX, 'preview_back');
+    try { sessionStorage.setItem('pb_suppress_next_back_nav', '1'); } catch { /* ignore */ }
     setTimeout(() => prevStep(), 150);
   };
 

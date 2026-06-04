@@ -109,29 +109,87 @@ function EditorContent() {
   const { collection } = useCardCollectionEditor();
   const hasTrackedStart = useRef(false);
   const lastTrackedStep = useRef<number | null>(null);
+  const stepStartTime = useRef<number>(Date.now());
+  const editorStartTime = useRef<number>(Date.now());
 
   // Track: Início do editor
   useEffect(() => {
     if (!hasTrackedStart.current) {
       analytics.startEditor('card-collection');
       hasTrackedStart.current = true;
+      editorStartTime.current = Date.now();
+      stepStartTime.current = Date.now();
     }
   }, []);
 
-  // Track: Mudança real de step (não dispara no mount — startEditor já cobre)
+  // Track: Mudança real de step + tempo gasto no step anterior
   useEffect(() => {
     if (lastTrackedStep.current === null) {
       lastTrackedStep.current = state.currentStep;
+      stepStartTime.current = Date.now();
       return;
     }
     if (state.currentStep !== lastTrackedStep.current) {
+      const previousStep = lastTrackedStep.current;
+      const secondsOnPreviousStep = (Date.now() - stepStartTime.current) / 1000;
+
+      analytics.editorTimeOnStep(
+        'card-collection',
+        previousStep + 1,
+        STEP_NAMES[previousStep] || `Step ${previousStep + 1}`,
+        secondsOnPreviousStep,
+      );
+
       analytics.editorStep(
         'card-collection',
-        state.currentStep + 1, // Convert to 1-based for analytics
+        state.currentStep + 1,
         STEP_NAMES[state.currentStep] || `Step ${state.currentStep + 1}`
       );
+
+      // Sinal de back navigation. Se outro componente (modal de "ajustar antes"
+      // ou "voltar pra editar") já registrou com source específico, suprime aqui.
+      if (state.currentStep < previousStep) {
+        const suppressed = typeof window !== 'undefined'
+          && sessionStorage.getItem('pb_suppress_next_back_nav') === '1';
+        if (suppressed) {
+          sessionStorage.removeItem('pb_suppress_next_back_nav');
+        } else {
+          analytics.editorBackNavigation(
+            'card-collection',
+            previousStep + 1,
+            state.currentStep + 1,
+            'wizard_back',
+          );
+        }
+      }
+
       lastTrackedStep.current = state.currentStep;
+      stepStartTime.current = Date.now();
     }
+  }, [state.currentStep]);
+
+  // Track: abandono (fechar aba / navegar pra fora antes de finalizar).
+  // Lê os campos preenchidos da própria sessionStorage (mesma usada pelo shouldTrack)
+  // — evita acoplar com o estado dos steps individuais.
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const totalSeconds = (Date.now() - editorStartTime.current) / 1000;
+      const lastStep = lastTrackedStep.current ?? state.currentStep;
+      const stepName = STEP_NAMES[lastStep] || `Step ${lastStep + 1}`;
+      const fields: string[] = [];
+      if (typeof window !== 'undefined') {
+        try {
+          for (const key of ['recipientName', 'senderName', 'introMessage', 'coverImageUrl', 'youtubeVideoId', 'card_message_edited', 'card_photo_added']) {
+            if (sessionStorage.getItem(`tracked_editor_field_card-collection_${key}`)) {
+              fields.push(key);
+            }
+          }
+        } catch { /* ignore */ }
+      }
+      analytics.editorAbandon('card-collection', lastStep + 1, stepName, totalSeconds, fields);
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [state.currentStep]);
 
   // Gradient background from config

@@ -8,6 +8,7 @@ import { useInteractiveWizardNavigation } from '@/contexts/InteractiveWizardCont
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { CardGridView } from '@/components/card-editor/CardGridView';
 import { Loader2, ChevronDown } from 'lucide-react';
+import { analytics } from '@/lib/analytics';
 
 const EditMessageModal = lazy(() =>
   import('@/components/card-editor/modals/EditMessageModal').then(mod => ({ default: mod.EditMessageModal }))
@@ -56,10 +57,12 @@ export function Step3AllCards() {
 
   const handleSaveMessage = useCallback(async (cardId: string, data: { title: string; messageText: string }) => {
     await updateCard(cardId, data);
+    analytics.editorFieldFilled('card-collection', 'card_message_edited');
   }, [updateCard]);
 
   const handleSavePhoto = useCallback(async (cardId: string, imageUrl: string) => {
     await updateCard(cardId, { imageUrl });
+    analytics.editorFieldFilled('card-collection', 'card_photo_added');
   }, [updateCard]);
 
   const handleRemovePhoto = useCallback(async (cardId: string) => {

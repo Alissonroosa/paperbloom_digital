@@ -6,6 +6,7 @@ import { WizardNavigation } from '@/components/interactive-wizard/WizardNavigati
 import { useInteractiveWizardNavigation, useInteractiveWizardValidation } from '@/contexts/InteractiveWizardContext';
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { motion } from 'framer-motion';
+import { analytics } from '@/lib/analytics';
 
 /**
  * Step 1: Informações Básicas
@@ -111,7 +112,11 @@ export function Step1BasicInfo() {
             id="recipientName"
             type="text"
             value={recipientName}
-            onChange={(e) => setRecipientName(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setRecipientName(v);
+              if (v.trim().length > 0) analytics.editorFieldFilled('card-collection', 'recipientName');
+            }}
             placeholder="Ex: Maria, Amor da minha vida, Bebê..."
             maxLength={100}
             autoFocus
@@ -135,7 +140,11 @@ export function Step1BasicInfo() {
             id="senderName"
             type="text"
             value={senderName}
-            onChange={(e) => setSenderName(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setSenderName(v);
+              if (v.trim().length > 0) analytics.editorFieldFilled('card-collection', 'senderName');
+            }}
             placeholder="Ex: João, Seu amor, Seu namorado..."
             maxLength={100}
             className={`w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-purple-300 ${

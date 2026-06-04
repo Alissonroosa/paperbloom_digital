@@ -12,6 +12,7 @@ import type { Area, Point } from 'react-easy-crop';
 import { getCroppedImage, fixImageOrientation } from '@/lib/crop-image';
 import { Button } from '@/components/ui/Button';
 import { YouTubeSearch } from '@/components/interactive-wizard/YouTubeSearch';
+import { analytics } from '@/lib/analytics';
 
 const MESSAGE_SUGGESTIONS = [
   {
@@ -168,6 +169,7 @@ export function Step2Intro() {
       if (!res.ok) throw new Error('Falha no upload');
       const data = await res.json();
       setCoverImageUrl(data.url);
+      analytics.editorFieldFilled('card-collection', 'coverImageUrl');
       setCropOpen(false);
       URL.revokeObjectURL(cropSrc);
       setCropSrc(null);
@@ -216,6 +218,7 @@ export function Step2Intro() {
     const id = extractVideoId(url);
     if (id) {
       setVideoId(id);
+      analytics.editorFieldFilled('card-collection', 'youtubeVideoId');
     } else {
       setVideoId(null);
       setUrlError('URL do YouTube inválida');
@@ -227,6 +230,7 @@ export function Step2Intro() {
     setYoutubeUrl(`https://www.youtube.com/watch?v=${selectedVideoId}`);
     setSelectedTitle(title);
     setUrlError(null);
+    analytics.editorFieldFilled('card-collection', 'youtubeVideoId');
   };
 
   const handleRemoveMusic = () => {
@@ -382,7 +386,11 @@ export function Step2Intro() {
           <textarea
             id="introMessage"
             value={introMessage}
-            onChange={(e) => setIntroMessage(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setIntroMessage(v);
+              if (v.trim().length > 0) analytics.editorFieldFilled('card-collection', 'introMessage');
+            }}
             placeholder="Ex: Meu amor, preparei essas 12 cartas pensando em cada momento que vivemos juntos..."
             rows={4}
             maxLength={500}

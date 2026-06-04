@@ -281,6 +281,8 @@ export function Step5Checkout() {
                       type="button"
                       onClick={() => {
                         setIsEditMenuOpen(false);
+                        analytics.editorBackNavigation('card-collection', CHECKOUT_STEP_INDEX + 1, opt.step + 1, 'edit_menu');
+                        try { sessionStorage.setItem('pb_suppress_next_back_nav', '1'); } catch { /* ignore */ }
                         goToStep(opt.step);
                       }}
                       className="w-full flex items-center gap-3 p-4 rounded-2xl border-2 border-gray-200 hover:border-pink-300 hover:bg-pink-50/50 transition-all text-left"
