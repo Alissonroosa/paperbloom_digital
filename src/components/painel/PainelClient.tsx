@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { CardCollection, Card } from '@/types/card';
-import { Send, Eye, Pencil, Sparkles } from 'lucide-react';
+import { Send, Eye, Pencil, Sparkles, MessageCircle, Copy, Check } from 'lucide-react';
 import { EntregaTab } from './tabs/EntregaTab';
 import { AcompanhamentoTab } from './tabs/AcompanhamentoTab';
 import { EditarTab } from './tabs/EditarTab';
 import { CardPreviewModal } from './CardPreviewModal';
 import { CardCinematicPreviewModal } from '@/components/card-editor/CardCinematicPreviewModal';
 import { SendModal } from './SendModal';
+import { analytics } from '@/lib/analytics';
+import { buildShareMessage, buildWhatsAppUrl } from '@/lib/share-message';
 
 type TabId = 'entrega' | 'acompanhamento' | 'editar';
 
@@ -22,14 +24,27 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
 interface PainelClientProps {
   collection: CardCollection;
   cards: Card[];
+  /** Valor da compra (em reais) — usado para o evento Purchase do GA4/Meta. */
+  purchaseValue: number;
 }
 
 /**
  * Client wrapper for the buyer dashboard.
  * Tab-based navigation: Entrega, Acompanhamento, Editar.
  */
-export function PainelClient({ collection, cards: initialCards }: PainelClientProps) {
+export function PainelClient({ collection, cards: initialCards, purchaseValue }: PainelClientProps) {
   const [cards, setCards] = useState<Card[]>(initialCards);
+  const [linkJustCopied, setLinkJustCopied] = useState(false);
+
+  // Dispara Purchase do GA4/Meta na primeira visita ao painel após o pagamento.
+  // O ID do MP serve como transactionId. analytics.purchase já é idempotente
+  // por sessionStorage (chave `tracked_purchase_<id>`), então recarregar a página
+  // não duplica o evento.
+  useEffect(() => {
+    if (collection.status !== 'paid') return;
+    const transactionId = collection.paymentId || collection.id;
+    analytics.purchase('card-collection', transactionId, purchaseValue);
+  }, [collection.status, collection.paymentId, collection.id, purchaseValue]);
   const [activeTab, setActiveTab] = useState<TabId>('entrega');
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -62,6 +77,30 @@ export function PainelClient({ collection, cards: initialCards }: PainelClientPr
     setCards(prev => prev.map(c => c.id === updatedCard.id ? updatedCard : c));
   };
 
+  // Envio rápido via WhatsApp com mensagem pré-formatada.
+  // Abre o WhatsApp do próprio comprador (web ou app, conforme device).
+  const handleQuickWhatsAppSend = () => {
+    if (!collectionUrl) return;
+    const message = buildShareMessage({
+      recipientName: collection.recipientName,
+      senderName: collection.senderName,
+      url: collectionUrl,
+    });
+    analytics.openWhatsAppShare(collection.id);
+    window.open(buildWhatsAppUrl(message), '_blank', 'noopener,noreferrer');
+  };
+
+  // Copia link bruto pra colar onde quiser.
+  const handleQuickCopyLink = async () => {
+    if (!collectionUrl) return;
+    try {
+      await navigator.clipboard.writeText(collectionUrl);
+      analytics.copyShareLink(collection.id);
+      setLinkJustCopied(true);
+      setTimeout(() => setLinkJustCopied(false), 2000);
+    } catch { /* clipboard indisponível em http: */ }
+  };
+
   return (
     <div className="min-h-screen bg-[#FFFAFA]">
       {/* Compact header */}
@@ -86,6 +125,56 @@ export function PainelClient({ collection, cards: initialCards }: PainelClientPr
           </button>
         </div>
       </div>
+
+      {/* Hero CTA — primeira ação que o comprador deve fazer no painel */}
+      <section className="bg-gradient-to-br from-[#FFFAFA] via-white to-[#FFE4E4] px-4 py-6 border-b border-[#E6C2C2]">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-md border-2 border-[#D4A5A5]/30 p-5 space-y-4">
+            <div className="text-center space-y-1">
+              <p className="text-base font-bold text-[#4A4A4A]">
+                📨 Pronto para enviar para {collection.recipientName}?
+              </p>
+              <p className="text-xs text-[#8B5F5F]">
+                Quanto antes mandar, mais cedo a emoção começa 💕
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={handleQuickWhatsAppSend}
+                disabled={!collectionUrl}
+                className="inline-flex items-center justify-center gap-2 py-3 px-4 rounded-full font-semibold text-white bg-[#25D366] hover:bg-[#1FB855] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <MessageCircle className="w-4 h-4" aria-hidden="true" />
+                Enviar pelo WhatsApp
+              </button>
+              <button
+                type="button"
+                onClick={handleQuickCopyLink}
+                disabled={!collectionUrl}
+                className="inline-flex items-center justify-center gap-2 py-3 px-4 rounded-full font-semibold text-[#4A4A4A] bg-white border-2 border-[#D4A5A5] hover:bg-[#FFFAFA] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {linkJustCopied ? (
+                  <>
+                    <Check className="w-4 h-4 text-green-600" aria-hidden="true" />
+                    Link copiado!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" aria-hidden="true" />
+                    Copiar link
+                  </>
+                )}
+              </button>
+            </div>
+
+            <p className="text-center text-[11px] text-[#8B5F5F]/80">
+              {collection.recipientName} vai ver as 12 cartas exatamente como na prévia.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Tab navigation */}
       <nav className="bg-white border-b border-[#E6C2C2] sticky top-0 z-40">

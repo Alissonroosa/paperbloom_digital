@@ -111,6 +111,11 @@ export interface CardCollection {
   youtubeVideoId: string | null;   // ID do vídeo do YouTube
   coverImageUrl: string | null;    // Foto capa única (fallback nas cartas sem foto)
   dashboardToken: string | null;   // Token único para acesso ao painel do comprador
+  utmSource: string | null;        // UTM source da primeira visita (atribuição)
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
+  utmTerm: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -152,6 +157,11 @@ export interface CardCollectionRow {
   youtube_video_id: string | null;
   cover_image_url: string | null;
   dashboard_token: string | null;  // Token único para acesso ao painel do comprador
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -192,6 +202,12 @@ export const createCardCollectionSchema = z.object({
     .trim()
     .nullable()
     .optional(),
+  // UTM attribution — capturados na primeira visita à LP/editor.
+  utmSource: z.string().max(255).nullable().optional(),
+  utmMedium: z.string().max(255).nullable().optional(),
+  utmCampaign: z.string().max(255).nullable().optional(),
+  utmContent: z.string().max(255).nullable().optional(),
+  utmTerm: z.string().max(255).nullable().optional(),
 });
 
 /**
@@ -324,6 +340,11 @@ export function rowToCardCollection(row: CardCollectionRow): CardCollection {
     youtubeVideoId: row.youtube_video_id,
     coverImageUrl: row.cover_image_url,
     dashboardToken: row.dashboard_token,
+    utmSource: row.utm_source,
+    utmMedium: row.utm_medium,
+    utmCampaign: row.utm_campaign,
+    utmContent: row.utm_content,
+    utmTerm: row.utm_term,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

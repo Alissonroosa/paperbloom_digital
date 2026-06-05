@@ -42,10 +42,15 @@ export class CardCollectionService {
         sender_name,
         contact_email,
         status,
+        utm_source,
+        utm_medium,
+        utm_campaign,
+        utm_content,
+        utm_term,
         created_at,
         updated_at
       )
-      VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
       RETURNING *
     `;
 
@@ -55,6 +60,11 @@ export class CardCollectionService {
       validatedData.senderName,
       validatedData.contactEmail || null,
       'pending', // Default status
+      validatedData.utmSource || null,
+      validatedData.utmMedium || null,
+      validatedData.utmCampaign || null,
+      validatedData.utmContent || null,
+      validatedData.utmTerm || null,
     ];
 
     try {

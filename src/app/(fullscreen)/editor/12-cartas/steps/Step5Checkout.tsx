@@ -13,6 +13,7 @@ import {
 } from '@/contexts/InteractiveWizardContext';
 import { useCardCollectionEditor } from '@/contexts/CardCollectionEditorContext';
 import { analytics } from '@/lib/analytics';
+import { suggestEmailFix, isEmailFormatValid } from '@/lib/email-validation';
 
 const CHECKOUT_STEP_INDEX = 4;
 
@@ -38,6 +39,7 @@ export function Step5Checkout() {
 
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [emailSuggestion, setEmailSuggestion] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
@@ -61,7 +63,7 @@ export function Step5Checkout() {
     }
     if (!contactEmail.trim()) {
       newErrors.contactEmail = 'Email é obrigatório';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+    } else if (!isEmailFormatValid(contactEmail)) {
       newErrors.contactEmail = 'Email inválido';
     }
     setErrors(newErrors);
@@ -73,6 +75,17 @@ export function Step5Checkout() {
   useEffect(() => {
     if (contactName || contactEmail) validateFields();
   }, [contactName, contactEmail]);
+
+  // Sugere correção de typo no domínio (ex.: gmial.com → gmail.com)
+  // Só calcula quando o email parece "completo" (tem @ e algo depois).
+  useEffect(() => {
+    const trimmed = contactEmail.trim();
+    if (trimmed.length > 5 && trimmed.includes('@') && trimmed.includes('.', trimmed.indexOf('@'))) {
+      setEmailSuggestion(suggestEmailFix(trimmed));
+    } else {
+      setEmailSuggestion(null);
+    }
+  }, [contactEmail]);
 
   const handleFinalize = async () => {
     if (!validateFields() || !collection) return;
@@ -203,6 +216,23 @@ export function Step5Checkout() {
               }`}
             />
             {errors.contactEmail && <p className="text-sm text-red-600">{errors.contactEmail}</p>}
+
+            {emailSuggestion && !errors.contactEmail && (
+              <button
+                type="button"
+                onClick={() => {
+                  setContactEmail(emailSuggestion);
+                  setEmailSuggestion(null);
+                }}
+                className="text-left w-full px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
+              >
+                <p className="text-xs text-amber-900">
+                  Você quis dizer <span className="font-semibold underline">{emailSuggestion}</span>?
+                </p>
+                <p className="text-[10px] text-amber-700 mt-0.5">Toque para corrigir</p>
+              </button>
+            )}
+
             <p className="text-xs text-gray-500">
               Você gerencia tudo pelo painel. {recipientName} só recebe quando você decidir.
             </p>

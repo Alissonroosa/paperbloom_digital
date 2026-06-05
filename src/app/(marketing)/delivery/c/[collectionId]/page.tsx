@@ -1,16 +1,13 @@
-import { redirect } from 'next/navigation';
-import { cardCollectionService } from '@/services/CardCollectionService';
+import { DeliveryCardCollectionClient } from './DeliveryCardCollectionClient';
 
 /**
- * Legacy delivery page — redirects to the buyer dashboard.
- * Converts old /delivery/c/[collectionId] URLs to /painel/[token].
+ * Delivery page para 12 cartas — espera o webhook do Mercado Pago processar
+ * (gerar dashboardToken) e redireciona pro painel.
+ *
+ * Antes era server component que redirecionava na hora. Se o webhook ainda
+ * não rodou, o cliente caía na home sem feedback (perdíamos a venda na percepção).
+ * Agora faz polling no client com UI clara de "confirmando pagamento".
  */
-export default async function Page({ params }: { params: { collectionId: string } }) {
-  const collection = await cardCollectionService.findById(params.collectionId);
-
-  if (!collection?.dashboardToken) {
-    redirect('/');
-  }
-
-  redirect('/painel/' + collection.dashboardToken);
+export default function Page({ params }: { params: { collectionId: string } }) {
+  return <DeliveryCardCollectionClient collectionId={params.collectionId} />;
 }

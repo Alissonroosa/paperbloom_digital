@@ -6,6 +6,7 @@ import { CardCollectionEditorProvider, useCardCollectionEditor } from '@/context
 import { InteractiveWizardProvider, useInteractiveWizardContext } from '@/contexts/InteractiveWizardContext';
 import { CARD_COLLECTION_CONFIG } from '@/types/interactive-wizard';
 import { analytics } from '@/lib/analytics';
+import { captureUtmsFromUrl } from '@/lib/utm';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
@@ -14,16 +15,33 @@ const SUPPORT_WHATSAPP_MESSAGE =
   'Olá! Estou criando minhas 12 cartas no editor da Paper Bloom e tenho uma dúvida.';
 const LOGO_WHATSAPP = 'https://imagem.paperbloom.com.br/loja/assets/whatsapp.svg';
 
+/**
+ * Botão de ajuda no WhatsApp.
+ *
+ * Aparece só depois de 30s no editor — pra não competir com o CTA principal
+ * e não convidar o usuário a sair do funil cedo. Quem fica 30s+ tem dúvida
+ * real. Em mobile fica como ícone compacto (sem texto) pra não obstruir
+ * inputs e o CTA do step.
+ */
 function WhatsAppHelpButton() {
   const url = `https://wa.me/${SUPPORT_WHATSAPP_PHONE}?text=${encodeURIComponent(SUPPORT_WHATSAPP_MESSAGE)}`;
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 30000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
 
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Dúvidas de como fazer? Chama no WhatsApp"
-      className="fixed bottom-4 left-4 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-medium text-white shadow-lg ring-1 ring-black/5 transition-all hover:scale-105 hover:bg-[#1FB855] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#25D366]"
+      aria-label="Dúvidas? Chama no WhatsApp"
+      title="Dúvidas? Chama no WhatsApp"
+      className="fixed bottom-4 left-4 z-50 inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] h-12 w-12 sm:w-auto sm:px-4 sm:py-3 text-sm font-medium text-white shadow-lg ring-1 ring-black/5 transition-all hover:scale-105 hover:bg-[#1FB855] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#25D366]"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -33,8 +51,7 @@ function WhatsAppHelpButton() {
         style={{ filter: 'brightness(0) invert(1)' }}
         aria-hidden="true"
       />
-      <span className="hidden sm:inline">Dúvidas? Chama no WhatsApp</span>
-      <span className="sr-only sm:hidden">Dúvidas? Chama no WhatsApp</span>
+      <span className="hidden sm:inline">Dúvidas?</span>
     </a>
   );
 }
@@ -390,13 +407,17 @@ export default function Editor12CartasPage() {
           localStorage.removeItem(STEP_KEY_PREFIX + savedId);
         }
 
-        // 2. Não há draft válida — cria collection nova
+        // 2. Não há draft válida — cria collection nova.
+        // Captura UTMs (first-touch) e persiste junto com a coleção pra atribuir
+        // cada venda ao criativo/campanha de origem.
+        const utms = captureUtmsFromUrl();
         const response = await fetch('/api/card-collections/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             recipientName: 'Destinatário',
             senderName: 'Remetente',
+            ...(utms ?? {}),
           }),
         });
 

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { cardCollectionService } from '@/services/CardCollectionService';
 import { cardService } from '@/services/CardService';
+import { priceService } from '@/services/PriceService';
 import { PainelClient } from '@/components/painel/PainelClient';
 
 export const dynamic = 'force-dynamic';
@@ -22,5 +23,15 @@ export default async function PainelPage({ params }: Props) {
 
   const cards = await cardService.findByCollectionId(collection.id);
 
-  return <PainelClient collection={collection} cards={cards} />;
+  // Preço efetivo do produto (em reais) — usado para disparar Purchase no client.
+  const priceInfo = await priceService.getEffectivePrice('card-collection');
+  const purchaseValue = priceInfo.priceCents / 100;
+
+  return (
+    <PainelClient
+      collection={collection}
+      cards={cards}
+      purchaseValue={purchaseValue}
+    />
+  );
 }

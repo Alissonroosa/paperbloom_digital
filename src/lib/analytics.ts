@@ -479,6 +479,86 @@ export const analytics = {
   // ============================================
 
   /**
+   * Entrou na demo cinematográfica /demo/card-collection.
+   * `source` identifica de onde veio (hero, after_how_it_works, sticky_mobile…)
+   * — útil pra atribuir performance da demo a cada ponto da LP.
+   * Idempotente por sessão+source.
+   */
+  viewDemo: (source: string = 'unknown') => {
+    if (!shouldTrack(`view_demo_${source}`)) return;
+    gtag('event', 'view_demo', {
+      product_type: 'card-collection',
+      demo_source: source,
+    });
+    fbq('trackCustom', 'ViewDemo', {
+      product_type: 'card-collection',
+      demo_source: source,
+    });
+  },
+
+  /**
+   * Usuário abriu (selou) a primeira carta dentro da demo cinematográfica.
+   * Sinaliza intenção forte — leu a mensagem inteira e fechou.
+   * Idempotente: dispara só na primeira carta selada na sessão.
+   */
+  demoCardOpened: (cardOrder: number) => {
+    if (!shouldTrack(`demo_first_card_opened`)) return;
+    gtag('event', 'demo_card_opened', {
+      product_type: 'card-collection',
+      card_order: cardOrder,
+    });
+    fbq('trackCustom', 'DemoCardOpened', {
+      product_type: 'card-collection',
+      card_order: cardOrder,
+    });
+  },
+
+  /**
+   * Clique em qualquer CTA da demo que leva pro editor.
+   * `source` distingue qual CTA: post_seal_overlay, main_view_button, cta_final…
+   */
+  demoToEditor: (source: string) => {
+    gtag('event', 'demo_to_editor', {
+      product_type: 'card-collection',
+      cta_source: source,
+    });
+    fbq('trackCustom', 'DemoToEditor', {
+      product_type: 'card-collection',
+      cta_source: source,
+    });
+  },
+
+  /**
+   * Abertura de item do FAQ.
+   * `source` identifica em qual página (lp_12_cartas, etc).
+   * Útil pra ver quais objeções os usuários mais buscam responder.
+   */
+  faqOpen: (question: string, source: string) => {
+    gtag('event', 'faq_open', {
+      source,
+      faq_question: question,
+    });
+    fbq('trackCustom', 'FaqOpen', {
+      source,
+      faq_question: question,
+    });
+  },
+
+  /**
+   * Clique em botão de contato via WhatsApp.
+   * `source` distingue onde apareceu: header, after_pricing, after_faq,
+   * floating_button, support_inline. Sinaliza onde estão as dúvidas reais.
+   */
+  contactWhatsApp: (source: string) => {
+    gtag('event', 'contact_whatsapp', {
+      source,
+    });
+    fbq('trackCustom', 'ContactWhatsApp', {
+      source,
+    });
+  },
+
+  /**
    * Cópia do link de compartilhamento no painel
    */
   copyShareLink: (collectionId: string) => {

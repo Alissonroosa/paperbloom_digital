@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Volume2, VolumeX, Lock, LockOpen, X } from "lucide-react";
+import { Heart, Volume2, VolumeX, Lock, LockOpen, X, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 import { FallingEmojis } from "@/components/effects/FallingEmojis";
 import { CardFallbackImage } from "@/components/card-viewer/CardFallbackImage";
+import { analytics } from "@/lib/analytics";
 
 // YouTube Player Types
 declare global {
@@ -50,13 +52,13 @@ interface DemoData {
 }
 
 const DEFAULT_DEMO_DATA: DemoData = {
-    senderName: "João",
-    recipientName: "Maria",
+    senderName: "Seu Amor",
+    recipientName: "Você",
     cards: [
         {
             id: "1",
             order: 1,
-            title: "Quando estiver triste",
+            title: "Quando o dia estiver pesado",
             message: "Meu amor, eu sei que a vida às vezes pesa demais nos seus ombros. Sei que existem dias em que você acorda e o mundo parece cinza, em que tudo parece difícil demais. Mas eu preciso que você saiba de uma coisa: você é a pessoa mais forte que eu conheço. Eu vi você superar coisas que a maioria das pessoas nem conseguiria imaginar. Vi você chorar escondida e mesmo assim levantar no dia seguinte com um sorriso. Essa força que você tem me inspira todos os dias. Então quando a tristeza vier, deixa ela passar por você como uma onda — ela vai embora, eu prometo. E quando ela for embora, eu vou estar aqui, do seu lado, te lembrando de quem você realmente é.",
             imageUrl: "",
             momentLabel: "Para Momentos Difíceis",
@@ -65,7 +67,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "2",
             order: 2,
-            title: "Quando precisar de coragem",
+            title: "Quando precisar de coragem pra encarar o mundo",
             message: "Lembra daquela vez que você disse que não ia conseguir? Pois é, você conseguiu. E daquela outra vez? Também. A verdade é que você sempre acha que não vai dar conta, mas no final você sempre dá. Isso não é sorte, é quem você é. Coragem não é não ter medo — é tremer inteira e ir assim mesmo. E você faz isso toda vez. Eu queria que você se visse pelos meus olhos, porque o que eu vejo é uma mulher incrível que enfrenta tudo de peito aberto, mesmo quando o coração está apertado. Então vai lá, enfrenta o que precisar enfrentar. Eu estou aqui torcendo por você, como sempre estive e sempre vou estar.",
             imageUrl: "",
             momentLabel: "Para Momentos Difíceis",
@@ -74,7 +76,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "3",
             order: 3,
-            title: "Quando se sentir sozinho(a)",
+            title: "Quando a saudade apertar",
             message: "Eu sei que às vezes, mesmo rodeada de gente, você se sente sozinha. Que tem horas que parece que ninguém entende o que você está sentindo, que ninguém enxerga de verdade. Mas eu enxergo. Eu vejo cada detalhe seu — os que você mostra e os que tenta esconder. E eu quero que você saiba que não importa a hora, o dia, a distância: eu estou com você. Pode ser de madrugada, pode ser no meio de uma segunda-feira caótica. Me liga, me manda mensagem, aparece na minha porta. Você nunca vai ser um incômodo pra mim. Você é a pessoa que eu escolhi pra vida, e solidão não combina com a gente.",
             imageUrl: "",
             momentLabel: "Para Momentos Difíceis",
@@ -83,7 +85,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "4",
             order: 4,
-            title: "Quando conquistar algo",
+            title: "Quando conquistar algo grande",
             message: "VOCÊ CONSEGUIU! Eu sabia, eu sempre soube. Enquanto você duvidava, eu já estava aqui comemorando por dentro porque eu conheço você — eu sei do que você é capaz. Cada noite mal dormida, cada momento de dúvida, cada vez que você pensou em desistir e não desistiu... tudo valeu a pena. Essa conquista é sua e de mais ninguém. Você batalhou, você mereceu, você chegou lá. Eu tenho tanto orgulho de você que nem cabe no peito. Celebra isso, viu? Não minimiza, não fala que foi sorte, não muda de assunto. Para, respira, e sente o tamanho do que você fez. Eu te amo e estou explodindo de orgulho.",
             imageUrl: "",
             momentLabel: "Para Momentos Felizes",
@@ -92,7 +94,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "5",
             order: 5,
-            title: "Quando estiver feliz",
+            title: "Quando estiver feliz e quiser dividir",
             message: "Sabe o que é engraçado? Quando você está feliz, o mundo inteiro ao redor parece mais bonito. Seus olhos brilham de um jeito que me faz esquecer de qualquer problema. Seu riso é a minha música favorita — e olha que eu já ouvi muita música boa. Eu vivo pros seus momentos de felicidade. Não porque os tristes não importem, mas porque ver você radiante me lembra do porquê de tudo. Então guarda esse momento. Fecha os olhos e grava essa sensação no coração. Nos dias difíceis, volta aqui e lembra: a felicidade não é um destino, é o caminho. E o nosso caminho juntos é lindo demais.",
             imageUrl: "",
             momentLabel: "Para Momentos Felizes",
@@ -101,7 +103,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "6",
             order: 6,
-            title: "Quando quiser sorrir",
+            title: "Quando bater saudade dos nossos momentos",
             message: "Lembra do dia que a gente ficou preso na chuva e em vez de reclamar a gente começou a dançar no meio da rua? Ou daquela vez que você tentou cozinhar aquele prato elaborado e acabou pedindo pizza? Eu rio até hoje. A verdade é que os melhores momentos da minha vida são os mais simples — e todos eles têm você. Seu sorriso tem o poder de transformar o dia mais comum em algo extraordinário. Então se você está precisando sorrir, lembra da gente. Lembra das nossas bobeiras, das nossas piadas sem graça que só a gente entende, dos olhares cúmplices. A gente é isso: dois bobos que se encontraram e fizeram a vida ficar mais leve.",
             imageUrl: "",
             momentLabel: "Para Momentos Felizes",
@@ -110,7 +112,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "7",
             order: 7,
-            title: "Quando precisar rir",
+            title: "Quando precisar dar uma risada (de nós dois)",
             message: "Ok, prepara que eu vou te fazer rir. Lembra quando eu tentei te impressionar cozinhando e quase coloquei fogo na cozinha? Ou quando eu tropecei na frente de toda a sua família no primeiro almoço de domingo? Sua mãe até hoje me olha diferente por causa daquilo. E aquela vez que eu mandei uma mensagem romântica... pro grupo da família? Eu queria sumir da face da Terra. Mas sabe o que eu mais amo? Que em todos esses momentos vergonhosos, você estava lá rindo comigo (e de mim, vamos ser honestos). Nosso amor é feito de gargalhadas, e eu não trocaria nenhuma delas por nada nesse mundo.",
             imageUrl: "",
             momentLabel: "Para Momentos Felizes",
@@ -119,7 +121,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "8",
             order: 8,
-            title: "Quando sentir saudade",
+            title: "Quando sentir saudade de mim",
             message: "Se você está sentindo saudade, saiba que eu também estou. A saudade é engraçada — ela dói, mas ao mesmo tempo é bonita, porque só sente saudade quem viveu algo que valeu a pena. E a gente viveu tanta coisa bonita juntos. Cada abraço apertado, cada beijo demorado, cada noite conversando até o sono vencer. Eu guardo tudo isso num lugar especial dentro de mim. Às vezes, no meio do dia, uma lembrança sua aparece do nada e eu fico sorrindo sozinho feito bobo. As pessoas devem achar que eu sou maluco. Mas é que pensar em você me faz bem demais. A saudade vai passar, e quando a gente se encontrar de novo, vai ser ainda mais especial.",
             imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
@@ -128,7 +130,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "9",
             order: 9,
-            title: "Quando precisar de paz",
+            title: "Quando precisar respirar e desacelerar",
             message: "Para tudo. Respira fundo. Inspira pelo nariz... segura... solta pela boca. De novo. Mais uma vez. Pronto, agora me escuta: você não precisa resolver tudo hoje. Não precisa ter todas as respostas agora. Não precisa ser perfeita, não precisa agradar todo mundo, não precisa carregar o mundo nas costas. Você só precisa ser você, no seu tempo, do seu jeito. E isso já é mais que suficiente. Eu sei que sua mente às vezes parece uma tempestade, com mil pensamentos ao mesmo tempo. Mas depois de toda tempestade vem a calmaria. E eu estou aqui pra ser sua calmaria. Descansa o coração, meu bem. Tudo vai ficar bem.",
             imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
@@ -137,7 +139,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "10",
             order: 10,
-            title: "Quando quiser agradecer",
+            title: "Quando quiser me agradecer (sou eu que agradeço)",
             message: "Eu é que deveria estar agradecendo. Agradecer por você existir, por ter cruzado o meu caminho, por ter escolhido ficar. Você transformou a minha vida de um jeito que eu nem sabia que era possível. Antes de você, eu achava que sabia o que era amor. Mas você me mostrou que amor de verdade é muito mais do que eu imaginava. É acordar e a primeira coisa que vem na cabeça é o seu sorriso. É querer ser uma pessoa melhor só porque você merece o melhor. É encontrar paz no meio do caos só porque você está por perto. Então se você quer agradecer por algo, eu te digo: obrigado por me deixar te amar. Esse é o maior presente que eu já recebi.",
             imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
@@ -146,7 +148,7 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "11",
             order: 11,
-            title: "Quando sonhar com o futuro",
+            title: "Quando sonhar com o nosso futuro",
             message: "Fecha os olhos e imagina a gente daqui a dez anos. Eu imagino a gente numa casa com um jardim bagunçado, talvez um cachorro (ou três, conhecendo você). Imagino manhãs de domingo preguiçosas, café na cama, risadas ecoando pelos corredores. Imagino a gente viajando pra aqueles lugares que a gente vive falando, envelhecendo juntos e ainda se olhando do mesmo jeito. Eu não sei exatamente como o futuro vai ser — ninguém sabe. Mas eu sei que quero você nele. Em todos os cenários, em todos os planos, em todas as versões do amanhã. Você é o meu futuro favorito. E eu mal posso esperar pra viver tudo isso com você.",
             imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
@@ -155,8 +157,8 @@ const DEFAULT_DEMO_DATA: DemoData = {
         {
             id: "12",
             order: 12,
-            title: "Quando quiser lembrar de mim",
-            message: "Se um dia você precisar lembrar de mim, não precisa ir longe. Eu estou em cada música que a gente ouviu juntos, em cada lugar que a gente visitou, em cada piada interna que só a gente entende. Eu estou no seu sorriso quando você lembra de algo engraçado que eu fiz, no seu suspiro quando você sente saudade, no seu coração quando ele bate mais forte. Eu sou seu e você é minha — não de um jeito possessivo, mas de um jeito que transcende tudo. A gente se pertence de alma. E não importa o que aconteça, onde a vida nos leve, uma coisa nunca vai mudar: eu te amo. Te amo de um jeito que eu nem sabia que existia antes de você. Te amo hoje, amanhã e em todas as vidas que vierem depois dessa. Pra sempre, seu João. ❤️",
+            title: "Quando precisar me sentir perto",
+            message: "Se um dia você precisar lembrar de mim, não precisa ir longe. Eu estou em cada música que a gente ouviu juntos, em cada lugar que a gente visitou, em cada piada interna que só a gente entende. Eu estou no seu sorriso quando você lembra de algo engraçado que eu fiz, no seu suspiro quando você sente saudade, no seu coração quando ele bate mais forte. Eu sou seu e você é minha — não de um jeito possessivo, mas de um jeito que transcende tudo. A gente se pertence de alma. E não importa o que aconteça, onde a vida nos leve, uma coisa nunca vai mudar: eu te amo. Te amo de um jeito que eu nem sabia que existia antes de você. Te amo hoje, amanhã e em todas as vidas que vierem depois dessa. Pra sempre, seu amor. ❤️",
             imageUrl: "",
             momentLabel: "Para Momentos de Reflexão",
             isOpened: false
@@ -179,35 +181,41 @@ export default function CardCollectionDemoPage() {
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [showSealAnimation, setShowSealAnimation] = useState(false);
     const [showAlreadyOpened, setShowAlreadyOpened] = useState(false);
+    // Overlay emocional que aparece após o seal da 1ª carta selada na sessão.
+    // É a janela de pico emocional pra converter — não reaparece em selagens seguintes.
+    const [showPostFirstCardCTA, setShowPostFirstCardCTA] = useState(false);
+    const hasShownPostFirstCardCTA = useRef(false);
+    // Mostra o tooltip "toque na Carta 1" + ring pulsante na primeira carta.
+    // Esconde no momento que o usuário tocar em qualquer carta.
+    const [showFirstCardHint, setShowFirstCardHint] = useState(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const playerRef = useRef<any>(null);
     const playerContainerRef = useRef<HTMLDivElement>(null);
 
-    // Load demo data from localStorage or use defaults
+    // Demo sempre começa fresca a cada visita.
+    // O preview interno (de quem usou /editor/demo pra testar uma collection
+    // específica) é mantido apenas durante a sessão atual. Visitas a partir
+    // de outras origens (LP, anúncio) vêem a experiência cinematográfica do zero.
     useEffect(() => {
+        // Track view com `source` vindo de ?source=... no UTM
+        const source = new URLSearchParams(window.location.search).get('source') || 'direct';
+        analytics.viewDemo(source);
+        analytics.viewProduct('card-collection');
+
+        // 1. Limpa cartas abertas — toda visita revive a emoção do começo.
+        localStorage.removeItem('paperbloom-opened-cards');
+
+        // 2. Carrega dados de preview (se foi setado pelo painel interno /editor/demo).
+        //    Se não há preview customizado, usa o DEFAULT_DEMO_DATA (cartas demo padrão).
         const saved = localStorage.getItem('paperbloom-card-collection-demo-data');
         if (saved) {
             try {
-                const parsedData = JSON.parse(saved);
-                setDemoData(parsedData);
-                console.log('Loaded demo data from localStorage');
-            } catch (e) {
-                console.error('Failed to load demo data:', e);
+                setDemoData(JSON.parse(saved));
+            } catch {
                 setDemoData(DEFAULT_DEMO_DATA);
             }
         } else {
-            console.log('Using default demo data');
             setDemoData(DEFAULT_DEMO_DATA);
-        }
-
-        // Load opened cards from localStorage
-        const savedOpened = localStorage.getItem('paperbloom-opened-cards');
-        if (savedOpened) {
-            try {
-                setOpenedCards(new Set(JSON.parse(savedOpened)));
-            } catch (e) {
-                console.error('Failed to load opened cards:', e);
-            }
         }
     }, []);
 
@@ -266,18 +274,19 @@ export default function CardCollectionDemoPage() {
         };
     }, [youtubeReady, youtubeVideoId]);
 
-    // Auto-advance intro sequence
+    // Auto-advance intro sequence.
+    // Versão comprimida: intro-1 (2.5s) → intro-2 (3s) → main-view (~5.5s total).
+    // Antes eram 20s passando por 3 blocos cinematográficos (Difíceis/Felizes/Reflexão)
+    // — reduzimos o tempo passivo pra diminuir drop e movemos a educação pro grid
+    // (tooltip "toque na Carta 1" + micro-pílulas explicando diferenciais).
     useEffect(() => {
         let timeout: NodeJS.Timeout;
 
         if (stage === "intro-1") {
-            timeout = setTimeout(() => setStage("intro-2"), 3000);
+            timeout = setTimeout(() => setStage("intro-2"), 2500);
         } else if (stage === "intro-2") {
-            timeout = setTimeout(() => setStage("cards-block-1"), 5000); // Aumentado de 3s para 5s
-        } else if (stage === "cards-block-1") {
-            timeout = setTimeout(() => setStage("cards-block-2"), 4000);
-        } else if (stage === "cards-block-2") {
-            timeout = setTimeout(() => setStage("cards-block-3"), 4000);
+            // Auto-avança pra main-view e dispara a música, igual ao handleViewCards.
+            timeout = setTimeout(() => handleViewCards(), 3000);
         }
 
         return () => clearTimeout(timeout);
@@ -304,6 +313,9 @@ export default function CardCollectionDemoPage() {
     };
 
     const handleOpenCard = (card: CardData) => {
+        // Esconde tooltips/hints assim que o usuário interage com qualquer carta
+        setShowFirstCardHint(false);
+
         if (openedCards.has(card.id)) {
             // Card already opened - show "already opened" message
             setCardToOpen(card);
@@ -351,9 +363,18 @@ export default function CardCollectionDemoPage() {
     const handleConfirmClose = () => {
         setShowCloseConfirm(false);
         setShowSealAnimation(true);
+        const sealedCard = selectedCard;
         setTimeout(() => {
             setShowSealAnimation(false);
             setSelectedCard(null);
+            // Pico emocional: usuário acabou de viver a experiência da 1ª carta.
+            // Mostra overlay com CTA emocional pro editor.
+            if (sealedCard && !hasShownPostFirstCardCTA.current) {
+                hasShownPostFirstCardCTA.current = true;
+                analytics.demoCardOpened(sealedCard.order);
+                // Pequeno delay pra deixar o usuário processar a sensação antes do CTA.
+                setTimeout(() => setShowPostFirstCardCTA(true), 600);
+            }
         }, 2000);
     };
 
@@ -389,8 +410,9 @@ export default function CardCollectionDemoPage() {
     };
 
     return (
-        <div 
-            className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden font-sans transition-all duration-1000"
+        <div
+            // pt-10 reserva espaço para a tarja "Modo demonstração" fixa no topo (~40px)
+            className="min-h-screen pt-10 flex flex-col items-center justify-center relative overflow-hidden font-sans transition-all duration-1000"
             style={{
                 ...getBackgroundStyle(),
                 color: themeColors.textColor,
@@ -408,6 +430,37 @@ export default function CardCollectionDemoPage() {
 
             {/* Background Texture */}
             <div className="absolute inset-0 pointer-events-none opacity-30 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]" />
+
+            {/* Tarja "Modo demonstração" — sticky no topo durante toda a sessão.
+                Separa visualmente o que é meta (esta tarja, pílulas educativas) do
+                que é produto real (grid de cartas, animações). Sinaliza pro usuário
+                desde o segundo 0 que aquilo é uma demonstração.
+                Inclui também o botão de voltar pra LP. */}
+            <div
+                className="fixed top-0 left-0 right-0 z-[60] px-3 py-2 shadow-sm border-b border-white/50 backdrop-blur-md"
+                style={{ backgroundColor: 'rgba(255, 250, 250, 0.92)' }}
+            >
+                <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
+                    <Link
+                        href="/12-cartas"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium hover:bg-white/60 transition-colors"
+                        style={{ color: themeColors.secondaryTextColor }}
+                        aria-label="Voltar para a página inicial"
+                    >
+                        <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span className="hidden sm:inline">Voltar</span>
+                    </Link>
+
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-center flex-1 justify-center" style={{ color: themeColors.accentColorDark }}>
+                        <span aria-hidden="true">👀</span>
+                        <span>Modo demonstração</span>
+                        <span className="hidden md:inline font-normal opacity-70">— é assim que ele(a) vai ver</span>
+                    </div>
+
+                    {/* spacer pra centralizar o título mesmo com botão de voltar à esquerda */}
+                    <div className="w-12 sm:w-16" aria-hidden="true" />
+                </div>
+            </div>
 
             {/* Skip to Cards Button (only during intro and card blocks) */}
             {(stage === "intro-1" || stage === "intro-2" || stage === "cards-block-1" || stage === "cards-block-2" || stage === "cards-block-3") && (
@@ -657,7 +710,7 @@ export default function CardCollectionDemoPage() {
                             </p>
                         </div>
                         
-                        <p 
+                        <p
                             className="text-lg md:text-xl font-light"
                             style={{ color: themeColors.secondaryTextColor }}
                         >
@@ -665,20 +718,117 @@ export default function CardCollectionDemoPage() {
                         </p>
                     </motion.div>
 
+                    {/* Bloco educativo — destacado visualmente como meta-camada (não-produto).
+                        Tratamento "anotação": label de seção acima, borda tracejada
+                        nas pílulas, fundo levemente quente. Comunica pro usuário que
+                        isto é uma explicação, não parte do produto. */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
+                        className="mb-6 px-4"
+                    >
+                        <p
+                            className="text-center text-[10px] sm:text-xs font-bold tracking-[0.18em] mb-3 uppercase"
+                            style={{ color: themeColors.accentColorDark, opacity: 0.7 }}
+                        >
+                            <span aria-hidden="true">···  </span>
+                            Como funciona
+                            <span aria-hidden="true">  ···</span>
+                        </p>
+
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                            {[
+                                { emoji: '🔒', text: 'Cada carta só abre uma vez', delay: 0.6 },
+                                { emoji: '🎵', text: 'Com música, foto e mensagem sua', delay: 0.9 },
+                                { emoji: '💌', text: 'Você decide quando entregar', delay: 1.2 },
+                            ].map((pill, i) => (
+                                <motion.span
+                                    key={i}
+                                    initial={{ opacity: 0, scale: 0.9, y: 8 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ delay: pill.delay, type: 'spring', stiffness: 200, damping: 18 }}
+                                    // border-dashed + fundo off-white com tint quente = visual de anotação/post-it,
+                                    // claramente separado da estética sólida das cartas do produto.
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border-2 border-dashed text-xs sm:text-sm font-medium"
+                                    style={{
+                                        color: themeColors.secondaryTextColor,
+                                        borderColor: themeColors.accentColor,
+                                        backgroundColor: 'rgba(255, 248, 240, 0.7)',
+                                    }}
+                                >
+                                    <span aria-hidden="true">{pill.emoji}</span>
+                                    {pill.text}
+                                </motion.span>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Call-out apontando pra Carta 1 — instrui a 1ª interação.
+                        Esconde assim que o usuário toca em qualquer carta. */}
+                    <AnimatePresence>
+                        {showFirstCardHint && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ delay: 1.4 }}
+                                className="mx-auto mb-6 max-w-md rounded-2xl border-2 border-dashed px-5 py-3 text-center"
+                                style={{ borderColor: themeColors.accentColor, backgroundColor: themeColors.accentColor + '15' }}
+                            >
+                                <motion.div
+                                    animate={{ y: [0, -4, 0] }}
+                                    transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                                    className="text-xl"
+                                    aria-hidden="true"
+                                >
+                                    👇
+                                </motion.div>
+                                <p className="text-sm font-semibold" style={{ color: themeColors.accentColorDark }}>
+                                    Toque em alguma Carta pra experimentar
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
                         {cards.map((card, index) => {
                             const isOpened = openedCards.has(card.id);
+                            const isFirstCardHinted = showFirstCardHint && index === 0 && !isOpened;
                             
                             return (
                                 <motion.button
                                     key={card.id}
                                     initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.05 }}
+                                    animate={
+                                        isFirstCardHinted
+                                            ? {
+                                                  opacity: 1,
+                                                  y: 0,
+                                                  boxShadow: [
+                                                      `0 0 0 0px ${themeColors.accentColor}80`,
+                                                      `0 0 0 12px ${themeColors.accentColor}00`,
+                                                      `0 0 0 0px ${themeColors.accentColor}80`,
+                                                  ],
+                                              }
+                                            : { opacity: 1, y: 0 }
+                                    }
+                                    transition={
+                                        isFirstCardHinted
+                                            ? {
+                                                  opacity: { delay: index * 0.05 },
+                                                  y: { delay: index * 0.05 },
+                                                  boxShadow: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' },
+                                              }
+                                            : { delay: index * 0.05 }
+                                    }
                                     onClick={() => handleOpenCard(card)}
-                                    className="aspect-[3/4] relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
+                                    className={`aspect-[3/4] relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group ${isFirstCardHinted ? 'ring-4' : ''}`}
                                     style={{
                                         backgroundColor: isOpened ? '#f0f0f0' : 'white',
+                                        ...(isFirstCardHinted
+                                            ? ({ '--tw-ring-color': themeColors.accentColor } as React.CSSProperties)
+                                            : {}),
                                     }}
                                 >
                                     {isOpened ? (
@@ -738,24 +888,25 @@ export default function CardCollectionDemoPage() {
                         })}
                     </div>
 
-                    {/* CTA Button */}
+                    {/* CTA Button — leva direto pro editor (sem tela intermediária cta-final) */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.8 }}
                         className="text-center mt-12"
                     >
-                        <Button
-                            onClick={() => setStage("cta-final")}
-                            size="lg"
-                            className="px-12 py-6 text-lg font-medium rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
-                            style={{
-                                backgroundColor: themeColors.accentColor,
-                                color: themeColors.textColor
-                            }}
+                        <Link
+                            href="/editor/12-cartas?source=demo_main_view"
+                            onClick={() => analytics.demoToEditor('main_view_button')}
                         >
-                            Criar uma mensagem igual a essa
-                        </Button>
+                            <button
+                                type="button"
+                                className="px-12 py-6 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl text-white transition-all duration-300"
+                                style={{ backgroundColor: '#D4A5A5' }}
+                            >
+                                💌 Criar minhas 12 cartas
+                            </button>
+                        </Link>
                     </motion.div>
                 </motion.div>
             )}
@@ -1217,6 +1368,95 @@ export default function CardCollectionDemoPage() {
                 )}
             </AnimatePresence>
 
+            {/* OVERLAY EMOCIONAL APÓS A 1ª CARTA SELADA */}
+            {/* Janela de pico emocional — usuário acabou de viver a experiência.
+                Aparece UMA vez por sessão de demo. CTA primário leva direto pro editor;
+                secundário fecha o overlay e o usuário continua explorando. */}
+            <AnimatePresence>
+                {showPostFirstCardCTA && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="fixed inset-0 z-[150] flex items-center justify-center p-4"
+                        style={{ backgroundColor: 'rgba(74, 74, 74, 0.7)', backdropFilter: 'blur(8px)' }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.92, y: 30 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.92, y: 30 }}
+                            transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                            className="relative max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden"
+                        >
+                            {/* Decoração superior em gradient */}
+                            <div
+                                className="h-2"
+                                style={{ background: 'linear-gradient(90deg, #E6C2C2, #D4A5A5, #E6C2C2)' }}
+                            />
+
+                            <div className="p-7 text-center space-y-5">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: 0.25, type: 'spring', stiffness: 260 }}
+                                    className="inline-block text-5xl"
+                                    aria-hidden="true"
+                                >
+                                    💕
+                                </motion.div>
+
+                                <div className="space-y-2">
+                                    <h2
+                                        className="text-2xl md:text-3xl font-light leading-tight"
+                                        style={{ color: themeColors.textColor }}
+                                    >
+                                        Imagine isso com<br />
+                                        <span className="font-semibold italic" style={{ color: themeColors.secondaryTextColor }}>
+                                            suas palavras
+                                        </span>
+                                    </h2>
+                                    <p
+                                        className="text-sm leading-relaxed"
+                                        style={{ color: themeColors.secondaryTextColor }}
+                                    >
+                                        Você acabou de viver a experiência.<br />
+                                        Crie a sua e emocione quem você ama. 💌
+                                    </p>
+                                </div>
+
+                                <Link
+                                    href="/editor/12-cartas?source=demo_post_seal_overlay"
+                                    onClick={() => analytics.demoToEditor('post_seal_overlay')}
+                                    className="block w-full"
+                                >
+                                    <button
+                                        type="button"
+                                        className="w-full min-h-[56px] py-4 px-6 rounded-full font-semibold text-base text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.99] transition-all"
+                                        style={{ backgroundColor: '#D4A5A5' }}
+                                    >
+                                        💌 Criar pro meu amor
+                                    </button>
+                                </Link>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPostFirstCardCTA(false)}
+                                    className="text-sm font-medium hover:opacity-70 transition-opacity"
+                                    style={{ color: themeColors.secondaryTextColor }}
+                                >
+                                    Continuar vendo as cartas
+                                </button>
+
+                                <p className="text-[11px] text-gray-400 pt-1">
+                                    12 cartas · R$ 29,90 · Sem assinatura
+                                </p>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* CTA FINAL */}
             {stage === "cta-final" && (
                 <motion.div
@@ -1270,17 +1510,18 @@ export default function CardCollectionDemoPage() {
                             transition={{ delay: 1.1 }}
                             className="flex flex-col sm:flex-row gap-4 justify-center"
                         >
-                            <Button
-                                onClick={() => window.location.href = '/'}
-                                size="lg"
-                                className="px-12 py-6 text-lg font-medium rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
-                                style={{
-                                    backgroundColor: themeColors.accentColor,
-                                    color: themeColors.textColor
-                                }}
+                            <Link
+                                href="/editor/12-cartas?source=demo_cta_final"
+                                onClick={() => analytics.demoToEditor('cta_final')}
                             >
-                                Criar Minha Mensagem
-                            </Button>
+                                <button
+                                    type="button"
+                                    className="px-12 py-6 text-lg font-semibold text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
+                                    style={{ backgroundColor: '#D4A5A5' }}
+                                >
+                                    💌 Criar minhas 12 cartas
+                                </button>
+                            </Link>
 
                             <Button
                                 onClick={() => setStage("main-view")}

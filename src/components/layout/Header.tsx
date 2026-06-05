@@ -2,11 +2,20 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/Button"
 import { useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { Heart, Calendar, Baby, ChevronDown, ShoppingBag } from "lucide-react"
 import { catalogService } from "@/services/CatalogService"
+
+// Rotas que têm uma seção #how-it-works embutida na própria página.
+// Pra essas, o link do header rola na mesma página em vez de jogar pra home —
+// evita desorientar o usuário (especialmente em LPs de produto).
+const ROUTES_WITH_HOW_IT_WORKS = new Set<string>([
+  "/",
+  "/12-cartas",
+])
 
 const EXPERIENCIAS = [
     { name: "Mensagem Digital", href: "/mensagem-digital", icon: Heart, description: "Foto, música e mensagem" },
@@ -27,6 +36,12 @@ export function Header() {
     const dropdownRef = useRef<HTMLDivElement>(null)
     const timeoutRef = useRef<NodeJS.Timeout | null>(null)
     const lojaHref = getLojaHref()
+    const pathname = usePathname()
+    // Se a rota atual tem #how-it-works, link rola na mesma página.
+    // Caso contrário, joga pra home (que tem a seção).
+    const howItWorksHref = ROUTES_WITH_HOW_IT_WORKS.has(pathname || "")
+        ? "#how-it-works"
+        : "/#how-it-works"
 
     useEffect(() => {
         const handleScroll = () => {
@@ -79,7 +94,7 @@ export function Header() {
                     <Link href="/" className="text-text-main/80 hover:text-primary transition-colors">
                         Início
                     </Link>
-                    <Link href="/#how-it-works" className="text-text-main/80 hover:text-primary transition-colors">
+                    <Link href={howItWorksHref} className="text-text-main/80 hover:text-primary transition-colors">
                         Como Funciona
                     </Link>
 

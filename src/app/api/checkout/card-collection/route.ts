@@ -64,11 +64,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Prioriza o nome do comprador (preenchido no Step 5). Cai pra senderName
+    // só como fallback (ex.: edge case onde o form não foi preenchido).
     const { preferenceId, url } = await mercadoPagoService.createCheckoutSession(
       collectionId,
       'card-collection',
       {
-        contactName: collection.senderName,
+        contactName: collection.contactName || collection.senderName,
         contactEmail: collection.contactEmail || undefined,
       }
     );
