@@ -31,10 +31,11 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${SITE_URL}/og/12-cartas.png`, // 1200x630 — você sobe esse asset depois em /public/og/
+        url: `${SITE_URL}/og/12-cartas.jpeg`,
         width: 1200,
-        height: 630,
+        height: 896,
         alt: "12 Cartas para o seu amor — Paper Bloom",
+        type: "image/jpeg",
       },
     ],
   },
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "12 Cartas para o seu amor 💌",
     description: "Presente digital com música, foto e mensagem em cada carta. R$ 29,90.",
-    images: [`${SITE_URL}/og/12-cartas.png`],
+    images: [`${SITE_URL}/og/12-cartas.jpeg`],
   },
   alternates: {
     canonical: `${SITE_URL}/12-cartas`,
