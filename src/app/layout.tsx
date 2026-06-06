@@ -25,6 +25,15 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
   title: "Paper Bloom Digital",
   description: "Mensagens personalizadas com emoção.",
+  verification: {
+    // Verificação de domínio do Meta Business — necessária pra:
+    // - Otimização de campanhas em iOS 14.5+ (Aggregated Event Measurement)
+    // - Configuração de eventos priorizados do Pixel
+    // - Atribuição correta de conversões cross-device
+    other: {
+      "facebook-domain-verification": "lb41bnb1odq4clcfhm0md1rtyqsbom",
+    },
+  },
 };
 
 export const viewport: Viewport = {
