@@ -9,14 +9,14 @@ export function GoogleAnalytics() {
 
   return (
     <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
+      {/* Inline-snippet com fila de gtag — roda antes do script externo carregar.
+          Eventos disparados pelo analytics.ts vão pra dataLayer e são processados
+          quando o script lazy carrega. Garante que `analytics.viewProduct()` no
+          mount da LP não se perde, mesmo com script externo em lazyOnload. */}
+      <Script id="google-analytics-init" strategy="beforeInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
+          window.gtag = window.gtag || function(){dataLayer.push(arguments);};
           gtag('js', new Date());
           gtag('config', '${GA_MEASUREMENT_ID}', {
             page_title: document.title,
@@ -24,6 +24,13 @@ export function GoogleAnalytics() {
           });
         `}
       </Script>
+      {/* Script externo (160KB) com lazyOnload — carrega só depois do window.onload.
+          Tira do critical path do LCP. Antes era afterInteractive e custava ~600ms
+          no mobile por competir com hydration na main thread. */}
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        strategy="lazyOnload"
+      />
     </>
   )
 }

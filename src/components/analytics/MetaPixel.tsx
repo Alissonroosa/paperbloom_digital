@@ -9,20 +9,29 @@ export function MetaPixel() {
 
   return (
     <>
-      <Script id="meta-pixel" strategy="afterInteractive">
+      {/* Stub do fbq + init + PageView — roda imediato (beforeInteractive).
+          Define a função fbq como fila de eventos. Eventos disparados pelo
+          analytics.ts antes do script externo carregar entram na n.queue
+          e são processados quando fbevents.js (lazyOnload) carrega.
+          Sem o stub aqui, analytics.viewProduct() no mount da LP perderia. */}
+      <Script id="meta-pixel-init" strategy="beforeInteractive">
         {`
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
           n.callMethod.apply(n,arguments):n.queue.push(arguments)};
           if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}(window, document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
+          n.queue=[]}(window, document,'script');
           fbq('init', '${META_PIXEL_ID}');
           fbq('track', 'PageView');
         `}
       </Script>
+      {/* Script externo (100KB) com lazyOnload — carrega só depois do window.onload.
+          Tira do critical path do LCP. Antes era afterInteractive e custava ~300ms
+          no mobile por competir com hydration na main thread. */}
+      <Script
+        src="https://connect.facebook.net/en_US/fbevents.js"
+        strategy="lazyOnload"
+      />
       <noscript>
         <img
           height="1"
