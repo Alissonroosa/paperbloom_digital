@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { PhoneMockup } from "@/components/ui/PhoneMockup";
@@ -26,7 +27,21 @@ import {
 import { usePrices } from "@/hooks/usePrices";
 import { captureUtmsFromUrl } from "@/lib/utm";
 import { analytics } from "@/lib/analytics";
-import { HowItWorksCarousel, type HowItWorksStep } from "@/components/landing/HowItWorksCarousel";
+import type { HowItWorksStep } from "@/components/landing/HowItWorksCarousel";
+
+// Lazy load do carrossel — ele só importa quando o usuário scrolla até ele.
+// Reduz JS inicial da LP (vídeo player + lógica de transição = grande).
+// ssr:false porque o componente usa IntersectionObserver e video refs.
+// Skeleton mantém altura aproximada pra evitar CLS quando carregar.
+const HowItWorksCarousel = dynamic(
+  () => import("@/components/landing/HowItWorksCarousel").then(m => m.HowItWorksCarousel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full max-w-5xl mx-auto min-h-[520px] bg-white/40 rounded-3xl border border-primary/10 animate-pulse" />
+    ),
+  }
+);
 
 // Vídeos do "Como Funciona" hospedados no R2 (CDN imagem.paperbloom).
 // Cada um tem ~10s, formato vertical 9:16 (gravação de tela do celular).
@@ -675,8 +690,14 @@ export default function DozeCartasLP() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-primary/5 via-[#FFFAFA] to-primary/10 flex flex-col items-center justify-center min-h-[90vh]">
+      {/* Hero Section — todo o conteúdo render direto (sem motion + opacity:0).
+          Antes usava framer-motion com initial opacity 0 + delays 0.1s, 0.2s, 0.3s, 0.4s, 0.6s, 0.8s
+          que faziam o LCP do mobile chegar a 6.7s (texto invisível até JS carregar e animação rodar).
+          Agora renderiza visível no SSR — LCP reduzido drasticamente.
+
+          Mobile: pt-24 (96px) reserva espaço pro header fixo + 32px de respiro
+                  pra evitar o "amontoado" reportado pelo usuário. */}
+      <section className="relative pt-24 pb-16 md:py-28 overflow-hidden bg-gradient-to-br from-primary/5 via-[#FFFAFA] to-primary/10 flex flex-col items-center justify-center min-h-[90vh]">
         {/* Background decorations */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 left-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
@@ -686,97 +707,71 @@ export default function DozeCartasLP() {
 
         <div className="container px-4 md:px-8 relative z-10 max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            {/* Left Column: Text Content */}
+            {/* Left Column: Text Content — Hero conversion-focused.
+                Ordem: headline benefício → sub explicativo → 3 bullets de feature →
+                CTA único dominante + botão demo secundário → trust elements + urgência. */}
             <div className="flex-1 text-center lg:text-left">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-primary/20 shadow-sm mb-6"
-              >
-                <Calendar className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-gray-700">12 Momentos Únicos</span>
-              </motion.div>
+              {/* Headline curto e direto — verbo de ação ("surpreenda") + emoção pura.
+                  Detalhes do "como" ficam no sub e nos bullets logo abaixo. */}
+              <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-text-main mb-4 md:mb-5 leading-[1.05]">
+                Surpreenda{" "}
+                <span className="text-primary italic">quem você ama</span>
+              </h1>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-text-main mb-6 leading-tight"
-              >
-                12 cartas para{" "}
-                <span className="text-primary italic">12 momentos especiais</span>
-              </motion.h1>
+              {/* Sub-headline curto que explica O QUE É em 1 frase. */}
+              <p className="text-base md:text-lg text-muted-foreground mb-6 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                12 cartas digitais com fotos, música e mensagens suas.
+                Cada uma só pode ser aberta uma vez. Pra sempre.
+              </p>
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light"
-              >
-                Uma jornada emocional única. Cada carta só pode ser aberta uma vez, criando momentos
-                inesquecíveis ao longo do ano. Foto, música e mensagem em cada uma.
-              </motion.p>
+              {/* 3 bullets de feature — comunicam diferenciais em segundos.
+                  Cada um com ícone temático. Centralizados em mobile, à esquerda no desktop. */}
+              <ul className="mb-7 space-y-2 max-w-md mx-auto lg:mx-0">
+                <li className="flex items-center gap-2 text-sm md:text-base text-text-main justify-center lg:justify-start">
+                  <Lock className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+                  <span>Cada carta é aberta <strong>uma única vez</strong>, no momento certo</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm md:text-base text-text-main justify-center lg:justify-start">
+                  <Music className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+                  <span>Do jeitinho de vocês: <strong>com suas fotos e a música favorita</strong></span>
+                </li>
+                <li className="flex items-center gap-2 text-sm md:text-base text-text-main justify-center lg:justify-start">
+                  <Sparkles className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+                  <span><strong>Nossa IA cria</strong> as cartas, você ajusta se precisar — fica pronto em <strong>3 minutos</strong></span>
+                </li>
+              </ul>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-              >
-                {/* CTA principal — demo (aquecer antes de mandar pro editor reduz drop
-                    no Step 1 pra tráfego frio do Meta Ads). Usa Button padrão preenchido
-                    com a cor primary do tema (rosa claro) — mesmo visual de antes. */}
+              {/* CTA único dominante + botão secundário pra demo.
+                  Inversão de hierarquia: editor é primário (intenção de conversão).
+                  Demo agora como outline pra ter peso visual real (era link discreto antes). */}
+              <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3">
+                <Link href="/editor/12-cartas?source=hero_button" className="w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto text-lg px-10 h-14 rounded-full shadow-xl shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all"
+                  >
+                    💌 Criar minhas 12 cartas
+                  </Button>
+                </Link>
+
                 <Link
                   href="/demo/card-collection?source=hero_button"
                   onClick={() => analytics.viewDemo('hero_button')}
+                  className="w-full sm:w-auto"
                 >
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto text-lg px-10 h-14 rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-1 transition-all"
-                  >
-                    Sentir a experiência (30s)
-                  </Button>
-                </Link>
-
-                {/* CTA secundário — editor. Outline branco, mesmo visual do "Ver Demo"
-                    original mas com copy "Criar agora →". Mesma animação de hover do
-                    primário (translate-y + shadow) pra dar feedback igual ao clicar. */}
-                <Link href="/editor/12-cartas?source=hero_button">
-                  <Button
-                    size="lg"
                     variant="outline"
-                    className="w-full sm:w-auto text-lg px-8 h-14 rounded-full border-2 shadow-md shadow-primary/10 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all"
+                    className="w-full sm:w-auto text-base px-6 h-12 rounded-full border-2 shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1 transition-all"
                   >
-                    Criar agora →
+                    <Play className="w-4 h-4 mr-1.5 fill-current" aria-hidden="true" />
+                    Ver demonstração (30s)
                   </Button>
                 </Link>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-8 flex flex-col items-center lg:items-start gap-1 text-sm text-muted-foreground"
-              >
-                <p className="font-medium italic text-text-main">
-                  &ldquo;Abre uma carta e me diz se não chora.&rdquo;
-                </p>
-                <p className="text-xs flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-yellow-400" />
-                  Demo grátis · Pague só quando estiver satisfeito
-                </p>
-              </motion.div>
-
-              {/* Trust elements — substituem stats inflados (avatares fake +
-                  número "+800") por sinais verificáveis: pagamento seguro,
-                  entrega imediata, sem assinatura. Honesto e converte mais. */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-2 text-xs text-muted-foreground"
-              >
+              {/* Trust elements + urgência — pagamento, entrega, sem assinatura, deadline DN. */}
+              <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-2 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1.5">
                   <Check className="w-3.5 h-3.5 text-green-600" aria-hidden="true" />
                   Pagamento via
@@ -795,19 +790,20 @@ export default function DozeCartasLP() {
                   <Check className="w-3.5 h-3.5 text-green-600" aria-hidden="true" />
                   Sem assinatura
                 </span>
-              </motion.div>
+              </div>
+
+              {/* Urgência sazonal */}
+              <p className="mt-4 text-xs font-semibold text-red-600 inline-flex items-center gap-1.5 justify-center lg:justify-start">
+                ⏳ Promoção Dia dos Namorados — válida até 12/06
+              </p>
             </div>
 
             {/* Right Column: Phone Preview — todo o mockup é clicável e leva
                 pra demo cinematográfica completa em /demo/card-collection.
                 Antes tinha mini-demo interativa que canibalizava a demo full;
-                agora é um único fluxo de demonstração. */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="flex-1 relative w-full max-w-[350px] lg:max-w-none flex justify-center"
-            >
+                agora é um único fluxo de demonstração.
+                Removido motion wrapper externo (estava opacity:0 inicialmente). */}
+            <div className="flex-1 relative w-full max-w-[350px] lg:max-w-none flex justify-center">
               {/* Mockup do telefone — não mais envelopado por Link externo.
                   O CTA ficou DENTRO do mockup (botão "Abrir demo"), mais explícito
                   e legível que esperar o usuário descobrir que o mockup é clicável.
@@ -830,7 +826,7 @@ export default function DozeCartasLP() {
                   <DemoPreviewStatic onCtaClick={() => analytics.viewDemo('hero_mockup_button')} />
                 </PhoneMockup>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

@@ -63,28 +63,32 @@ export function Header() {
     return (
         <header
             className={cn(
-                "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-[85%] max-w-5xl rounded-full transition-all duration-500 ease-in-out",
+                // Em mobile, header mais estreito (90%) pra não colar nas bordas e parecer menos pesado
+                "fixed top-3 md:top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-[85%] max-w-5xl rounded-full transition-all duration-500 ease-in-out",
                 isScrolled
-                    ? "border border-white/20 bg-white/70 backdrop-blur-md shadow-lg shadow-black/5 py-2"
-                    : "bg-transparent border-transparent py-4"
+                    ? "border border-white/20 bg-white/70 backdrop-blur-md shadow-lg shadow-black/5 py-1.5 md:py-2"
+                    : "bg-transparent border-transparent py-2.5 md:py-4"
             )}
         >
-            <div className="container flex h-12 items-center justify-between px-6">
+            <div className="container flex h-10 md:h-12 items-center justify-between px-3 md:px-6">
                 <Link href="/" className="flex items-center space-x-2 group">
                     <div className={cn(
                         "p-0.5 rounded-full transition-colors duration-300",
                         isScrolled ? "bg-primary/10" : "bg-white/50 backdrop-blur-sm"
                     )}>
-                        <Image 
-                            src="/logo-icon.png" 
-                            alt="Paper Bloom" 
-                            width={38} 
-                            height={38} 
-                            className="transition-transform duration-300 group-hover:rotate-45"
+                        <Image
+                            src="/logo-icon.png"
+                            alt="Paper Bloom"
+                            width={38}
+                            height={38}
+                            // Logo menor em mobile (32px) pra dar mais respiro
+                            className="w-8 h-8 md:w-[38px] md:h-[38px] transition-transform duration-300 group-hover:rotate-45"
                         />
                     </div>
+                    {/* Texto "Paper Bloom" escondido em mobile pra dar espaço ao CTA.
+                        Ícone redondo já carrega o reconhecimento de marca. */}
                     <span className={cn(
-                        "font-serif text-lg font-bold tracking-tight transition-colors duration-300",
+                        "hidden sm:inline font-serif text-lg font-bold tracking-tight transition-colors duration-300",
                         isScrolled ? "text-text-main" : "text-text-main"
                     )}>
                         Paper Bloom
@@ -177,11 +181,14 @@ export function Header() {
                             variant={isScrolled ? "primary" : "outline"}
                             size="sm"
                             className={cn(
-                                "font-serif rounded-full px-6 transition-all duration-300",
+                                // Em mobile o botão fica menor (px-3, text-xs) pra não competir com a logo
+                                "font-serif rounded-full px-3 md:px-6 text-xs md:text-sm h-9 md:h-10 transition-all duration-300",
                                 !isScrolled && "bg-white/50 hover:bg-white border-primary/20 text-primary hover:text-primary-dark backdrop-blur-sm"
                             )}
                         >
-                            Quero meu presente
+                            {/* Texto encurtado em mobile */}
+                            <span className="md:hidden">Meu presente</span>
+                            <span className="hidden md:inline">Quero meu presente</span>
                         </Button>
                     </Link>
                 </div>

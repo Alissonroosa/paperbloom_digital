@@ -5,20 +5,35 @@ import { cn } from "@/lib/utils";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { MetaPixel } from "@/components/analytics/MetaPixel";
 
+// Otimização de fontes (LCP fix):
+// - display: 'swap' evita FOIT (texto invisível enquanto fonte carrega)
+// - preload: true só na Lato (body) — Playfair e Great Vibes são pra heading/decorativo
+// - adjustFontFallback: true reduz CLS quando fonte real carrega
+// - Lato reduzida de 5 pesos pra 2 (400 e 700) — única usada em texto corrido
+// - Playfair reduzida pra 600 e 700 (single bold pra títulos)
 const playfair = Playfair_Display({
   subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+  preload: false,
   variable: "--font-playfair",
 });
 
 const lato = Lato({
-  weight: ["100", "300", "400", "700", "900"],
+  // Usa só 300/400/700 (light/normal/bold) — pesos efetivamente usados na UI.
+  // Removido 100 (nunca usado) e 900 (substituível por 700).
+  weight: ["300", "400", "700"],
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
   variable: "--font-lato",
 });
 
 const greatVibes = Great_Vibes({
   weight: "400",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
   variable: "--font-great-vibes",
 });
 
