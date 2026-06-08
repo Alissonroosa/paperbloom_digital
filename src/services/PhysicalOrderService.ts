@@ -73,6 +73,7 @@ export interface OrderFilters {
   orderStatus?: OrderStatus;
   productId?: string;
   search?: string; // busca por nome do cliente
+  productSearch?: string; // busca por nome do produto (texto livre)
   fromDate?: string; // order_date >=
   toDate?: string; // order_date <=
 }
@@ -122,6 +123,10 @@ export class PhysicalOrderService {
     if (filters.search) {
       conds.push(`lower(customer_name) LIKE $${i++}`);
       values.push(`%${filters.search.toLowerCase()}%`);
+    }
+    if (filters.productSearch) {
+      conds.push(`lower(product_name) LIKE $${i++}`);
+      values.push(`%${filters.productSearch.toLowerCase()}%`);
     }
     if (filters.fromDate) {
       conds.push(`order_date >= $${i++}`);

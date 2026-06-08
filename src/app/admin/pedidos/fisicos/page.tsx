@@ -243,7 +243,8 @@ function OrdersTab() {
     paymentStatus: string;
     orderStatus: string;
     search: string;
-  }>({ paymentStatus: "", orderStatus: "", search: "" });
+    productSearch: string;
+  }>({ paymentStatus: "", orderStatus: "", search: "", productSearch: "" });
   const [preset, setPreset] = useState<PeriodPreset>("mes-atual");
   const [customRange, setCustomRange] = useState<{ from: string; to: string }>(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -258,6 +259,7 @@ function OrdersTab() {
     if (filters.paymentStatus) sp.set("paymentStatus", filters.paymentStatus);
     if (filters.orderStatus) sp.set("orderStatus", filters.orderStatus);
     if (filters.search) sp.set("search", filters.search);
+    if (filters.productSearch) sp.set("productSearch", filters.productSearch);
     sp.set("fromDate", period.from);
     sp.set("toDate", period.to);
 
@@ -317,13 +319,23 @@ function OrdersTab() {
         >
           <Plus size={18} /> Novo pedido
         </button>
-        <div className="relative flex-1 sm:min-w-[200px]">
+        <div className="relative flex-1 sm:min-w-[180px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Buscar por cliente..."
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+            className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm"
+          />
+        </div>
+        <div className="relative flex-1 sm:min-w-[180px]">
+          <Package size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar por produto..."
+            value={filters.productSearch}
+            onChange={(e) => setFilters({ ...filters, productSearch: e.target.value })}
             className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm"
           />
         </div>

@@ -13,12 +13,14 @@ export async function GET(request: NextRequest) {
     const os = sp.get('orderStatus');
     const pid = sp.get('productId');
     const q = sp.get('search');
+    const pq = sp.get('productSearch');
     const fd = sp.get('fromDate');
     const td = sp.get('toDate');
     if (ps) filters.paymentStatus = ps as PaymentStatus;
     if (os) filters.orderStatus = os as OrderStatus;
     if (pid) filters.productId = pid;
     if (q) filters.search = q;
+    if (pq) filters.productSearch = pq;
     if (fd) filters.fromDate = fd;
     if (td) filters.toDate = td;
 
