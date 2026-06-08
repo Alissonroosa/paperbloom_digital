@@ -9,6 +9,7 @@ import {
   DollarSign,
   Megaphone,
   Package,
+  MessageCircle,
   LogOut,
   Menu,
   X,
@@ -43,6 +44,7 @@ const navItems: NavItem[] = [
   },
   { href: "/admin/precos", label: "Preços", icon: DollarSign },
   { href: "/admin/marketing", label: "Marketing", icon: Megaphone },
+  { href: "/admin/atendimento", label: "Atendimento", icon: MessageCircle },
   { href: "/admin/produtos", label: "Produtos", icon: Package },
 ];
 
