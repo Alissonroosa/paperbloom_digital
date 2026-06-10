@@ -9,7 +9,7 @@
 // TIPOS
 // ============================================
 
-type ProductType = 'message' | 'card-collection' | 'gender-reveal'
+type ProductType = 'message' | 'card-collection' | 'gender-reveal' | 'baby-shower'
 
 interface ProductInfo {
   type: ProductType
@@ -21,6 +21,7 @@ const PRODUCTS: Record<ProductType, ProductInfo> = {
   'message': { type: 'message', name: 'Mensagem Digital', price: 19.90 },
   'card-collection': { type: 'card-collection', name: '12 Cartas', price: 29.90 },
   'gender-reveal': { type: 'gender-reveal', name: 'Revelação Virtual', price: 29.90 },
+  'baby-shower': { type: 'baby-shower', name: 'Chá de Fralda', price: 19.90 },
 }
 
 // ============================================

@@ -39,6 +39,16 @@ export const PRODUCTS: Record<string, Product> = {
     priceFormatted: 'R$ 19,90',
     editorPath: '/editor/revelacao-virtual',
   },
+  'baby-shower': {
+    id: 'baby-shower',
+    name: 'Paper Bloom Digital - Chá de Fralda',
+    description: 'Convite interativo de chá de fralda com confirmação de presença e lista de presentes',
+    // LANÇAMENTO GRATUITO — produto oferecido de graça para validação/educação.
+    // Para reativar a cobrança: priceInCents: 1990, priceFormatted: 'R$ 19,90'.
+    priceInCents: 0,
+    priceFormatted: 'Grátis',
+    editorPath: '/editor/cha-de-fralda',
+  },
 };
 
 export type ProductType = keyof typeof PRODUCTS | 'digital-art';

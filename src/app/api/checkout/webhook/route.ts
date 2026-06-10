@@ -3,6 +3,7 @@ import { mercadoPagoService } from '@/services/MercadoPagoService';
 import { messageService } from '@/services/MessageService';
 import { cardCollectionService } from '@/services/CardCollectionService';
 import { genderRevealService } from '@/services/GenderRevealService';
+import { babyShowerService } from '@/services/BabyShowerService';
 import { slugService } from '@/services/SlugService';
 import { qrCodeService } from '@/services/QRCodeService';
 import { emailService } from '@/services/EmailService';
@@ -10,6 +11,7 @@ import { digitalArtOrderService } from '@/services/DigitalArtOrderService';
 import { catalogService } from '@/services/CatalogService';
 import { validateStoredURLs } from '@/lib/utils';
 import { generateRevealSlug } from '@/types/gender-reveal';
+import { generateBabyShowerSlug } from '@/types/baby-shower';
 import { loadQRCodeAsDataUrl } from '@/lib/qr-utils';
 
 /**
@@ -158,6 +160,58 @@ async function handleGenderRevealPayment(
   });
 
   console.log(`Successfully processed payment for gender reveal ${revealId}`);
+}
+
+/**
+ * Handle baby shower ("Chá de Fralda") payment processing.
+ * Mirrors the gender reveal flow: generate slugs + QR + send host email.
+ */
+async function handleBabyShowerPayment(
+  paymentId: number,
+  metadata: Record<string, string>,
+  payerEmail: string | undefined
+): Promise<void> {
+  const babyShowerId =
+    metadata.baby_shower_id || metadata.babyShowerId || metadata.collection_id || metadata.collectionId;
+  if (!babyShowerId) throw new Error('Baby shower ID not found in payment metadata');
+
+  const event = await babyShowerService.findById(babyShowerId);
+  if (!event) throw new Error(`Baby shower not found for ID: ${babyShowerId}`);
+
+  // Idempotency: if already paid, skip to avoid duplicate emails
+  if (event.status === 'paid' && event.slug) {
+    console.warn(`[Webhook] ⚠️ Baby shower ${babyShowerId} already paid — skipping`);
+    return;
+  }
+
+  const slug = generateBabyShowerSlug(event.hostName, event.babyName, babyShowerId);
+  const dashboardSlug = `dashboard-${slug}`;
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const publicUrl = `${baseUrl}/cha-de-fralda/${slug}`;
+  const dashboardUrl = `${baseUrl}/cha-de-fralda/dashboard/${dashboardSlug}`;
+
+  const qrCodeUrl = await qrCodeService.generate(publicUrl, babyShowerId);
+
+  await babyShowerService.update(babyShowerId, {
+    status: 'paid',
+    paymentId: String(paymentId),
+    slug,
+    dashboardSlug,
+    qrCodeUrl,
+  });
+
+  await sendBabyShowerEmail(payerEmail, babyShowerId, publicUrl, dashboardUrl, qrCodeUrl, {
+    hostName: event.hostName,
+    partnerName: event.partnerName,
+    babyName: event.babyName,
+    contactEmail: event.contactEmail,
+    contactName: event.contactName,
+    metadataEmail: metadata.contact_email || metadata.contactEmail,
+    metadataName: metadata.contact_name || metadata.contactName,
+  });
+
+  console.log(`Successfully processed payment for baby shower ${babyShowerId}`);
 }
 
 /**
@@ -361,6 +415,57 @@ async function sendGenderRevealEmail(
 }
 
 /**
+ * Send baby shower email to host with both links
+ */
+async function sendBabyShowerEmail(
+  payerEmail: string | undefined,
+  babyShowerId: string,
+  publicUrl: string,
+  dashboardUrl: string,
+  qrCodeUrl: string,
+  eventData: {
+    hostName: string;
+    partnerName: string | null;
+    babyName: string | null;
+    contactEmail: string | null;
+    contactName: string | null;
+    metadataEmail?: string;
+    metadataName?: string;
+  }
+): Promise<void> {
+  try {
+    const qrCodeDataUrl = await loadQRCodeAsDataUrl(qrCodeUrl);
+
+    // Prioriza o email digitado no form. payerEmail (do Mercado Pago) é fallback.
+    const contactEmail = eventData.contactEmail || eventData.metadataEmail || payerEmail;
+    const contactName = eventData.contactName || eventData.metadataName || eventData.hostName;
+
+    if (contactEmail) {
+      const emailResult = await emailService.sendBabyShowerEmail({
+        recipientEmail: contactEmail,
+        recipientName: contactName,
+        hostName: eventData.hostName,
+        partnerName: eventData.partnerName,
+        babyName: eventData.babyName,
+        publicUrl,
+        dashboardUrl,
+        qrCodeDataUrl,
+      });
+
+      if (emailResult.success) {
+        console.log(`[Webhook] ✅ Baby shower email sent for ${babyShowerId}`);
+      } else {
+        console.error(`[Webhook] ❌ Failed to send baby shower email for ${babyShowerId}`, emailResult.error);
+      }
+    } else {
+      console.warn(`[Webhook] ⚠️ No email found for baby shower ${babyShowerId}`);
+    }
+  } catch (emailError) {
+    console.error('[Webhook] ❌ Error sending baby shower email:', emailError);
+  }
+}
+
+/**
  * POST /api/checkout/webhook
  * Handles Mercado Pago webhook notifications (IPN)
  * Processes payment notifications when status is "approved"
@@ -424,6 +529,8 @@ export async function POST(request: NextRequest) {
 
       if (productType === 'gender-reveal') {
         await handleGenderRevealPayment(payment.id, metadata, payment.payer.email);
+      } else if (productType === 'baby-shower') {
+        await handleBabyShowerPayment(payment.id, metadata, payment.payer.email);
       } else if (productType === 'card-collection') {
         await handleCardCollectionPayment(payment.id, metadata, payment.payer.email);
       } else if (productType === 'digital-art') {

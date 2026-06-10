@@ -1096,6 +1096,127 @@ export const GENDER_REVEAL_EMAIL_TEMPLATE = {
   `,
 };
 
+export interface BabyShowerEmailData {
+  recipientEmail: string;
+  recipientName: string;
+  hostName: string;
+  partnerName?: string | null;
+  babyName?: string | null;
+  publicUrl: string;
+  dashboardUrl: string;
+  qrCodeDataUrl: string;
+}
+
+/**
+ * Baby Shower ("Chá de Fralda") email template — Paper Bloom visual identity
+ */
+export const BABY_SHOWER_EMAIL_TEMPLATE = {
+  subject: (hostName: string) =>
+    `Seu Chá de Fralda está pronto 🍼 — convide quem você ama, ${hostName}!`,
+
+  html: (data: BabyShowerEmailData) => {
+    const parents = data.partnerName ? `${data.hostName} & ${data.partnerName}` : data.hostName;
+    const babyLine = data.babyName ? `do(a) ${data.babyName}` : 'do bebê';
+    return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.7; color: #4A4A4A; margin: 0; padding: 0; background-color: #FFFAFA; }
+          .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+          .brand-bar { height: 6px; background: linear-gradient(90deg, #E6C2C2, #f3dede, #E6C2C2); }
+          .header { text-align: center; padding: 40px 30px 20px; }
+          .header .logo { font-family: 'Georgia', serif; font-size: 26px; color: #8B5F5F; letter-spacing: 1px; margin: 0; }
+          .header .tagline { font-size: 13px; color: #D4A5A5; margin: 6px 0 0; letter-spacing: 2px; text-transform: uppercase; }
+          .divider { width: 60px; height: 1px; background: #E6C2C2; margin: 0 auto; }
+          .content { padding: 30px; text-align: center; }
+          .content h2 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 22px; font-weight: normal; margin: 0 0 10px; }
+          .content p { color: #4A4A4A; font-size: 15px; margin: 8px 0; }
+          .hero { margin: 25px 30px; padding: 28px 20px; background: linear-gradient(135deg, #fce8ee 0%, #fdf3ea 100%); border-radius: 12px; border: 1px solid #E6C2C2; text-align: center; }
+          .hero h3 { font-family: 'Georgia', serif; color: #8B5F5F; font-size: 20px; font-weight: normal; margin: 0 0 8px; }
+          .hero p { color: #4A4A4A; font-size: 14px; margin: 4px 0; }
+          .qr-section { text-align: center; margin: 30px 0; padding: 25px; background-color: #FFFAFA; border-radius: 12px; }
+          .qr-section img { max-width: 220px; width: 100%; height: auto; border: 2px solid #E6C2C2; padding: 12px; background: #fff; border-radius: 12px; }
+          .qr-section p { color: #8B5F5F; font-size: 13px; margin: 12px 0 0; }
+          .link-box { background: #FFFAFA; padding: 20px; border-radius: 12px; margin: 20px 30px; border: 1px solid #E6C2C2; text-align: center; }
+          .link-box a.url { color: #8B5F5F; text-decoration: none; word-break: break-all; font-size: 14px; }
+          .btn { display: inline-block; padding: 14px 32px; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 15px; font-family: 'Georgia', serif; letter-spacing: 0.5px; margin-top: 16px; }
+          .btn-pink { background: #D4A5A5; }
+          .btn-rose { background: #c98f9b; }
+          .tips { margin: 25px 30px; padding: 20px; background: #fdf8f4; border-radius: 12px; border: 1px solid #f0ddd0; text-align: left; }
+          .tips h4 { color: #8B5F5F; font-family: 'Georgia', serif; font-weight: normal; margin: 0 0 12px; font-size: 15px; }
+          .tips ul { margin: 0; padding-left: 18px; }
+          .tips li { color: #4A4A4A; font-size: 14px; margin: 6px 0; }
+          .footer { text-align: center; padding: 30px; border-top: 1px solid #f0e6e6; }
+          .footer .name { color: #8B5F5F; font-family: 'Georgia', serif; font-size: 16px; }
+          .footer a { color: #D4A5A5; text-decoration: none; font-size: 13px; }
+          .footer .auto { font-size: 11px; color: #c4b0b0; margin-top: 12px; }
+          @media only screen and (max-width: 600px) { .content { padding: 20px; } .link-box, .tips { margin: 20px 15px; } .hero { margin: 20px 15px; } }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="brand-bar"></div>
+          <div class="header">
+            <p class="logo">Paper Bloom</p>
+            <p class="tagline">Mensagens com emoção</p>
+          </div>
+          <div class="divider"></div>
+
+          <div class="content">
+            <h2>Seu Chá de Fralda está pronto 🍼</h2>
+            <p>Olá, ${data.recipientName}</p>
+            <p>O convite do chá de fralda ${babyLine} de <strong>${parents}</strong> está pronto para ser compartilhado.</p>
+          </div>
+
+          <div class="hero">
+            <h3>🧸 Convide quem você ama</h3>
+            <p>Os convidados confirmam presença, escolhem um presente da lista e deixam um recado carinhoso</p>
+          </div>
+
+          <div class="qr-section">
+            <img src="cid:qrcode" alt="QR Code do Chá de Fralda" />
+            <p>Escaneie para acessar o convite</p>
+          </div>
+
+          <div class="link-box">
+            <p style="color: #8B5F5F; font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">Link para convidados</p>
+            <a class="url" href="${data.publicUrl}">${data.publicUrl}</a>
+            <br />
+            <a href="${data.publicUrl}" class="btn btn-pink">Abrir Convite</a>
+          </div>
+
+          <div class="link-box">
+            <p style="color: #8B5F5F; font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px;">Seu painel privado</p>
+            <a class="url" href="${data.dashboardUrl}">${data.dashboardUrl}</a>
+            <br />
+            <a href="${data.dashboardUrl}" class="btn btn-rose">Ver Painel</a>
+          </div>
+
+          <div class="tips">
+            <h4>🌿 Como funciona</h4>
+            <ul>
+              <li>Compartilhe o link para convidados com todos</li>
+              <li>Eles confirmam presença e reservam um presente da lista</li>
+              <li>Cada presente reservado some da lista, evitando repetições</li>
+              <li>Use o painel para ver confirmações, presentes e recados</li>
+            </ul>
+          </div>
+
+          <div class="footer">
+            <p class="name">Paper Bloom</p>
+            <p><a href="https://paperbloom.com.br">paperbloom.com.br</a></p>
+            <p class="auto">Este é um email automático. Por favor, não responda.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+  },
+};
+
 /**
  * Singleton instance of EmailService
  * Uses environment configuration by default
@@ -1159,6 +1280,41 @@ export const emailService = {
       return { success: true, messageId: result.data.id };
     } catch (error) {
       console.error('[EmailService] Gender reveal email failed:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
+    }
+  },
+  sendBabyShowerEmail: async (data: BabyShowerEmailData): Promise<EmailSendResult> => {
+    const instance = emailService.instance;
+    if (!instance.validateConfig()) {
+      return { success: false, error: 'Email service not configured properly' };
+    }
+
+    try {
+      const result = await instance['resend'].emails.send({
+        from: `${instance['config'].fromName} <${instance['config'].fromEmail}>`,
+        to: data.recipientEmail,
+        subject: BABY_SHOWER_EMAIL_TEMPLATE.subject(data.hostName),
+        html: BABY_SHOWER_EMAIL_TEMPLATE.html(data),
+        attachments: [
+          {
+            filename: 'qrcode.png',
+            content: data.qrCodeDataUrl.split(',')[1],
+            contentId: 'qrcode',
+          },
+        ],
+      });
+
+      if (result.error) {
+        console.error('[EmailService] Resend REJECTED baby shower:', JSON.stringify(result.error));
+        return { success: false, error: result.error.message || JSON.stringify(result.error) };
+      }
+      if (!result.data?.id) {
+        return { success: false, error: 'Resend returned no messageId' };
+      }
+
+      return { success: true, messageId: result.data.id };
+    } catch (error) {
+      console.error('[EmailService] Baby shower email failed:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
     }
   },

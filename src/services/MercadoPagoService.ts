@@ -49,6 +49,8 @@ export class MercadoPagoService {
         metadata.messageId = itemId;
       } else if (productType === 'gender-reveal') {
         metadata.revealId = itemId;
+      } else if (productType === 'baby-shower') {
+        metadata.babyShowerId = itemId;
       } else {
         metadata.collectionId = itemId;
       }

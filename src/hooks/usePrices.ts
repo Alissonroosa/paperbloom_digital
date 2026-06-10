@@ -39,6 +39,14 @@ const DEFAULT_PRICES: PricesMap = {
     priceFormatted: 'R$ 19,90',
     priceFromFormatted: null,
   },
+  'baby-shower': {
+    productId: 'baby-shower',
+    productName: 'Chá de Fralda',
+    priceCents: 1990,
+    priceFromCents: null,
+    priceFormatted: 'R$ 19,90',
+    priceFromFormatted: null,
+  },
 };
 
 // Cache global para evitar múltiplas requisições
