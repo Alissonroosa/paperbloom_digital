@@ -664,15 +664,6 @@ export default function CardCollectionViewer({
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/60 to-transparent" />
                                 <div className="absolute bottom-0 left-0 w-full p-6 md:hidden">
-                                    <span
-                                        className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
-                                        style={{
-                                            backgroundColor: themeColors.accentColor + '20',
-                                            color: themeColors.accentColor
-                                        }}
-                                    >
-                                        {selectedCard.momentLabel}
-                                    </span>
                                     <h2 className="text-2xl md:text-3xl font-semibold text-white">
                                         {selectedCard.title}
                                     </h2>
@@ -682,15 +673,6 @@ export default function CardCollectionViewer({
                             {/* Card Message */}
                             <div className="p-6 md:p-8 md:flex-1 md:flex md:flex-col md:justify-center overflow-y-auto">
                                 <div className="hidden md:block mb-4">
-                                    <span
-                                        className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-2"
-                                        style={{
-                                            backgroundColor: themeColors.accentColor + '20',
-                                            color: themeColors.accentColor,
-                                        }}
-                                    >
-                                        {selectedCard.momentLabel}
-                                    </span>
                                     <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: themeColors.textColor }}>
                                         {selectedCard.title}
                                     </h2>
