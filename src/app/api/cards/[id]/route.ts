@@ -18,7 +18,11 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { title, message, imageUrl } = body;
+    // Aceita `messageText` (nome canônico do schema, usado pelo editor)
+    // ou `message` (legado, usado pelo painel pós-compra EditarTab).
+    // Antes só lia `message`, então edição no editor durante criação não salvava o texto.
+    const { title, messageText, message, imageUrl, youtubeUrl } = body;
+    const resolvedMessage = messageText !== undefined ? messageText : message;
 
     console.log('[API] PATCH /api/cards/[id] - Request:', {
       id: params.id,
@@ -26,12 +30,12 @@ export async function PATCH(
     });
 
     // Validate at least one field is provided
-    if (!title && !message && imageUrl === undefined) {
+    if (title === undefined && resolvedMessage === undefined && imageUrl === undefined && youtubeUrl === undefined) {
       return NextResponse.json(
         {
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'At least one field (title, message, or imageUrl) must be provided',
+            message: 'At least one field (title, messageText, imageUrl, youtubeUrl) must be provided',
           },
         },
         { status: 400, headers }
@@ -41,8 +45,9 @@ export async function PATCH(
     // Build update object
     const updateData: any = {};
     if (title !== undefined) updateData.title = title;
-    if (message !== undefined) updateData.messageText = message;
+    if (resolvedMessage !== undefined) updateData.messageText = resolvedMessage;
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+    if (youtubeUrl !== undefined) updateData.youtubeUrl = youtubeUrl;
 
     console.log('[API] PATCH /api/cards/[id] - Update data:', updateData);
 

@@ -43,93 +43,102 @@ const SCRIPT_STEPS: ScriptStep[] = [
   {
     id: "recepcao",
     number: 1,
-    title: "Recepção (primeiros 2 min)",
-    goal: "Personalizar, qualificar, criar intimidade antes de vender",
+    title: "Recepção + apresentação (primeiros 2 min)",
+    goal: "Saudar + explicar produto + preço + convidar pro editor — tudo numa mensagem",
     timing: "Responder em até 2 minutos",
     messages: [
       {
-        label: "Mensagem padrão",
+        label: "Mensagem padrão (assume DN, vai direto pro editor)",
         body: `Oiii, [nome]! 💕
 
-Que bom que você se interessou pelas 12 Cartas!
+Que bom que você chegou nas 12 Cartas pro Dia dos Namorados 🥹
 
-Me conta rapidinho:
-🥰 Pra quem é o presente?
-🌸 E qual a ocasião?`,
-        context: "Tira o nome do perfil do WhatsApp.",
+São 12 cartinhas digitais com foto, música e mensagem suas. Cada uma tem um tema, tipo "abra quando estiver triste" 🥹
+
+O melhor: **você consegue acompanhar pelo seu painel quando ele/ela abrir cada carta.** Aí quando você ver que abriu a "abra quando estiver triste", você já sabe e pode mandar uma mensagem, ligar, fazer algo. A cartinha cuida + você cuida 💛
+
+🔗 Link/QR funciona pra sempre
+💌 Cada carta abre só 1 vez (pra ser único)
+👀 Você vê tudo antes de enviar
+
+🎁 Promo DN: R$ 19,90 (de R$ 29,90) até 12/06
+
+Bora? Te mando o link pra criar e te acompanho passo a passo 🌸`,
+        context: "Mensagem completa que substitui as antigas Etapas 1+2. Assume que cliente vem do anúncio de DN, então não pergunta ocasião. Já explica o killer feature (acompanhar pelo painel) + antecipa as 3 dúvidas + dá o preço. Convida direto pro editor (não pra demo).",
         followUp: {
           when: "Após 30 min sem resposta",
           body: `Oi, [nome]! 🌸
-Vi que você passou por aqui. Se quiser, posso te explicar como funcionam as 12 Cartas mesmo sem você me contar o contexto. Sem pressa 💛`
+Sem pressa! Quando você quiser, é só me dizer "manda" que envio o link pra você começar a criar 💛`
+        }
+      },
+      {
+        label: "Resposta após cliente dizer 'manda' / 'sim' / 'bora'",
+        body: `Aqui ó, [nome] 🌸
+
+👉 https://paperbloom.com.br/12-cartas
+
+É só clicar em "Criar minhas 12 cartas" e seguir os passos. Conforme você for criando, já vai vendo um preview de como ficará pra ele/ela 💛
+
+Pode salvar e voltar quando quiser — nada se perde. Qualquer dúvida me chama AQUI mesmo 🥹`,
+        context: "Substitua [nome] no link e mensagem. Cliente já decidiu — entrega o link sem floreio.",
+        followUp: {
+          when: "Após 10 min sem resposta",
+          body: `Conseguiu abrir o editor, [nome]? Tá fluindo? 🌸
+Se travou em qualquer coisa, manda print pra mim que te ajudo na hora 💛`
         }
       },
     ],
   },
   {
-    id: "qualificacao",
+    id: "duvidas-comuns",
     number: 2,
-    title: "Qualificação + apresentação (próximos 3 min)",
-    goal: "Espelhar sentimento + explicar produto + transição pra demo",
-    timing: "Após cliente responder pra quem é/ocasião",
+    title: "Dúvidas comuns durante o atendimento",
+    goal: "Respostas prontas pras perguntas que aparecem após a mensagem inicial",
+    timing: "Quando cliente fizer pergunta específica antes de pedir o link",
     messages: [
       {
-        label: "Resposta após cliente contar a ocasião",
-        body: `[Nome], que linda intenção 🥹
-[Reação curta à ocasião]
+        label: "Cliente quer ver a demo ANTES de criar",
+        body: `Claro! Aqui a demonstração rapidinha 👇
 
-E olha, as 12 Cartas combinam demais com esse momento. Deixa eu te explicar rapidinho:
+https://paperbloom.com.br/demo/card-collection
 
-São 12 cartas digitais. Cada uma tem foto, música e mensagem sua.
+Toca em qualquer carta pra abrir e sentir como fica ❤️
 
-O mágico: **cada carta só pode ser aberta UMA vez.** Aí vira lembrança pra sempre 💛
-
-Quer ver como fica? Te mando uma demonstração rapidinha 👇`,
-        context: "Reação personalizada curta + ponte. Ex: '5 anos? Bodas de madeira, algo que dura.'",
+Quando terminar, é só me chamar aqui que te mando o link pra criar a sua 🌸`,
+        context: "Use SÓ se cliente pedir demo explicitamente. O fluxo padrão é mandar direto pro editor (que já tem preview embutido).",
         followUp: {
-          when: "Após 1h sem resposta ao convite da demo",
-          body: `Oi, [nome]! Sem stress se você tiver ocupada agora.
-Quando puder, é só me dizer "manda" que te envio a demo rapidinho ✨`
-        }
-      },
-    ],
-  },
-  {
-    id: "demo",
-    number: 3,
-    title: "Demo (que já leva pro editor)",
-    goal: "Cliente experimenta o produto e segue direto pra criar",
-    timing: "Após cliente dizer que quer ver",
-    messages: [
-      {
-        label: "Envio da demo + aviso do caminho",
-        body: `https://paperbloom.com.br/demo/card-collection
-
-Toca numa das cartas pra abrir e sentir como fica ❤️
-
-Quando você terminar a demo, ela mesma vai te levar pra criar a sua. Já te aviso: vou ficar aqui o tempo todo pra te ajudar a montar 💛`,
-        context: "A demo direciona automaticamente pro editor após o cliente abrir a primeira carta. Não precisa mandar link do editor depois.",
-        followUp: {
-          when: "Após 20 min sem resposta",
-          body: `Conseguiu abrir a demo? 🌸
-Se não tiver rolado, me avisa que te mando outro caminho 💛`
+          when: "Após 15 min sem resposta",
+          body: `Conseguiu sentir a demo, [nome]? 🥹
+Bora criar a sua? É só me dar um sinal que mando o link 💛`
         }
       },
       {
-        label: "Check-in após cliente abrir a demo",
-        body: `E aí, conseguiu sentir? 🥹
-Quando você for criar a sua, qualquer dúvida me chama AQUI mesmo 💛`,
-        context: "Use se cliente sumir após receber a demo. Reforça que você fica disponível durante a criação.",
-        followUp: {
-          when: "Após 2h sem resposta",
-          body: `[Nome], se quiser pensar com calma, tudo bem 💛
-Só fica o lembrete: dia 12 é DN. Se decidir até lá, te ajudo a montar com calma ✨`
-        }
+        label: "Cliente perguntou em detalhes sobre 'abre 1 vez'",
+        body: `Tranquila, vou te explicar direitinho 💛
+
+✅ **O QR Code/link funciona pra sempre** — não trava, não expira.
+
+✅ **Cada cartinha abre só 1 vez por ele/ela.** Quando abre, vê foto + escuta música + lê a mensagem, e aquela carta vira lembrança selada.
+
+✅ **Você pode ver tudo antes!** Depois de montar, você recebe um painel privado pra revisar. Tem botão de **RESETAR** que zera tudo, aí você envia zerado pra ele/ela 🥰
+
+A ideia é cada carta ser um momento especial — "abra quando estiver triste", "abra no nosso aniversário". E você acompanha pelo painel quando cada uma é aberta ✨`,
+        context: "Apareceu em ~40% das conversas reais (jun/2026). A mensagem inicial já antecipa isso, mas se o cliente aprofundar, use essa."
+      },
+      {
+        label: "Cliente perguntou só o preço",
+        body: `É R$ 19,90 (promo de DN, era R$ 29,90 — vai até 12/06) 🎁
+
+E o melhor: ele/ela não vai abrir todas de uma vez. Cada cartinha vai ser um momento ao longo de meses. E você acompanha pelo painel quando cada uma abre 🥹
+
+Bora montar a sua? Te mando o link e te ajudo passo a passo 💛`,
+        context: "Não responder só com 'R$ 19,90' — sempre seguir com o valor emocional + CTA. Aprendizado de conversa real onde só o preço foi enviado e cliente sumiu."
       },
     ],
   },
   {
     id: "suporte-criacao",
-    number: 4,
+    number: 3,
     title: "Suporte ativo durante a criação (15-30 min)",
     goal: "Reduzir drop-off no editor, coletar gargalos AO VIVO",
     timing: "Enquanto cliente está no editor",
@@ -168,7 +177,7 @@ Se continuar, me conta em qual passo travou que eu te oriento 💛`,
   },
   {
     id: "checkout",
-    number: 5,
+    number: 4,
     title: "Acompanhamento no checkout",
     goal: "Cliente conclui pagamento sem ansiedade",
     timing: "Após cliente terminar a criação",
@@ -201,7 +210,7 @@ Quando revelar pra [destinatário], se ela permitir, me manda a reação? Adoro 
   },
   {
     id: "pos-venda",
-    number: 6,
+    number: 5,
     title: "Pós-venda e indicação",
     goal: "Gerar reciprocidade + base pra indicações futuras",
     timing: "Mesmo dia à noite + dia seguinte",
@@ -257,17 +266,19 @@ const OBJECTIONS: Objection[] = [
     id: "obj-desconto",
     category: "preco",
     question: "Posso pagar mais barato? / Dá desconto?",
-    answer: `[Nome], R$ 29,90 já é o preço mais justo — cada coleção é única, com escolha foto por foto, música por música.
+    answer: `[Nome], R$ 19,90 já é o preço promocional de Dia dos Namorados (de R$ 29,90)!
 
-O que posso fazer é te ajudar PESSOALMENTE em cada passo. Esse acompanhamento normalmente não está incluído 🥰`,
+E olha o detalhe: ele/ela não vai abrir todas de uma vez. Cada cartinha vai ser um momento ao longo de meses — e você acompanha pelo painel quando cada uma é aberta. Vira tipo um "diário do amor de vocês" 🥹
+
+Por R$ 19,90, é caro? 💛`,
   },
   {
     id: "obj-comparacao",
     category: "preco",
     question: "Por que esse preço?",
-    answer: `R$ 29,90 pra um presente que dura pra sempre.
+    answer: `R$ 19,90 (promo DN, de R$ 29,90) pra um presente que se renova ao longo do tempo.
 
-Um buquê custa R$ 80 e dura 1 semana. As 12 Cartas duram **pra sempre** — ela pode reabrir as memórias quando quiser 💛`,
+Um buquê custa R$ 80 e dura 1 semana. As 12 Cartas duram **pra sempre** — cada abertura é um novo momento, e você acompanha tudo pelo painel 💛`,
   },
   {
     id: "obj-fisico",
@@ -286,6 +297,34 @@ Mas a magia tá no digital — foto + música + mensagem juntos. Físico não en
 E se rolar qualquer problema técnico, eu te dou suporte pra ajustar 💛`,
   },
   {
+    id: "obj-abre-uma-vez",
+    category: "confianca",
+    question: "Se eu abrir pra ver antes, ele/ela não vai conseguir abrir? / O QR só funciona 1 vez?",
+    answer: `Boa pergunta! Funciona assim:
+
+🔗 **O link/QR fica disponível pra sempre** — não trava, não some.
+
+💌 **Cada cartinha abre só 1 vez por destinatário.** Quando ele/ela abre, aquela carta é selada — vira lembrança única.
+
+👀 **E você pode ver tudo antes!** Depois de montar, te enviamos um painel pra você revisar. Se quiser, tem botão de RESETAR pra zerar e depois enviar zerado pra ele/ela ✨
+
+Tranquila? 💛`,
+  },
+  {
+    id: "obj-momento-certo",
+    category: "confianca",
+    question: "Quando ele/ela deve abrir as cartas?",
+    answer: `As cartas são feitas pra momentos especiais! Você define o tema de cada uma.
+
+Exemplos:
+✨ "Abra quando estiver triste"
+✨ "Abra quando estiver com saudade"
+✨ "Abra no nosso aniversário"
+✨ "Abra quando precisar de força"
+
+Aí ela escolhe quando vive cada uma 🥹`,
+  },
+  {
     id: "obj-internet",
     category: "tecnico",
     question: "E se a internet dele/dela cair?",
@@ -301,9 +340,13 @@ E se rolar qualquer problema técnico, eu te dou suporte pra ajustar 💛`,
     id: "obj-pensar",
     category: "tempo",
     question: "Vou pensar",
-    answer: `Claro! Pensa com calma. Aqui o link pra quando decidir: [link]
+    answer: `Claro! Pensa com calma 🌸
 
-Se for pra Dia dos Namorados, recomendo começar até dia 10 pra escolher com tempo ✨`,
+Só uma coisa que talvez não tenha pensado: as 12 Cartas não acabam quando ele/ela abre o presente. Cada cartinha vai sendo aberta aos pouquinhos — e você acompanha pelo painel quando cada uma é aberta. Aí sabe o momento exato pra mandar uma mensagem, fazer algo a mais.
+
+É presente que se renova. Por isso vale R$ 19,90 🥹
+
+Se decidir até dia 12, te ajudo a montar passo a passo ✨`,
   },
   {
     id: "obj-criar-depois",
@@ -348,7 +391,7 @@ const CREATION_FAQ: Array<{ q: string; a: string }> = [
   },
   {
     q: "Quanto custa?",
-    a: "R$ 29,90, pagamento único. Sem frete — recebe na hora do pagamento.",
+    a: "R$ 19,90 (promo Dia dos Namorados — de R$ 29,90). Pagamento único, sem frete — recebe na hora do pagamento.",
   },
   {
     q: "Tá pedindo cartão de crédito",
@@ -361,6 +404,14 @@ const CREATION_FAQ: Array<{ q: string; a: string }> = [
   {
     q: "Posso mudar a ordem das cartas depois?",
     a: "Pode editar a ordem ANTES de finalizar. Depois que publicar, a sequência fica fixa pra criar a experiência narrativa.",
+  },
+  {
+    q: "Como funciona o QR Code?",
+    a: "Depois de montar, você recebe o QR Code por e-mail. O QR fica disponível pra sempre — não trava, não expira. Você imprime, manda no WhatsApp, faz como quiser.",
+  },
+  {
+    q: "Posso ver as cartas antes de enviar?",
+    a: "Pode! Depois de montar, você tem acesso a um painel pra revisar todas. Se quiser ver como abre, tem botão de RESETAR pra zerar tudo antes de enviar pro destinatário.",
   },
 ];
 
@@ -599,9 +650,10 @@ export default function AtendimentoPage() {
         <div className="text-sm text-amber-900">
           <p className="font-semibold mb-1">Lembre-se: você é GUIA, não vendedora.</p>
           <p>
-            Seu papel é levar o cliente até concluir a compra <strong>no site</strong>, ajudando em cada passo.
-            Não venda manualmente — eduque, oriente e fique disponível. Cada gargalo que o cliente reportar
-            vira aprendizado pra melhorar o produto.
+            Estratégia atual: <strong>ir direto pro editor</strong> (que já tem preview embutido).
+            Só manda demo se cliente pedir explicitamente. Killer feature do produto:
+            <strong> ele/ela acompanha pelo painel quando cada carta é aberta</strong> — use esse argumento
+            sempre que possível.
           </p>
         </div>
       </div>

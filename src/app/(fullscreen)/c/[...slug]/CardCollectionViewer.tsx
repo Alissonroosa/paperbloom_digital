@@ -113,7 +113,6 @@ export default function CardCollectionViewer({
     const [isPlaying, setIsPlaying] = useState(false);
     const [youtubeReady, setYoutubeReady] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [showAlreadyOpenedMessage, setShowAlreadyOpenedMessage] = useState(false);
     const [cardToOpen, setCardToOpen] = useState<Card | null>(null);
     const [showEnvelopeAnimation, setShowEnvelopeAnimation] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
@@ -229,11 +228,14 @@ export default function CardCollectionViewer({
 
     const handleOpenCard = (card: Card) => {
         if (openedCards.has(card.id)) {
-            // Card already opened - show "already opened" message
-            setCardToOpen(card);
-            setShowAlreadyOpenedMessage(true);
+            // Revisita — abre direto sem confirmação, sem animação.
+            // Mensagem foi selada na 1ª abertura; revisitas servem pra rever a lembrança.
+            setSelectedCard({
+                ...card,
+                message: card.messageText,
+            });
         } else {
-            // First time opening - show confirmation popup
+            // Primeira abertura — pede confirmação (ritual de selagem)
             setCardToOpen(card);
             setShowConfirmation(true);
         }
@@ -257,14 +259,19 @@ export default function CardCollectionViewer({
             if (!response.ok) {
                 const data = await response.json();
                 if (data.alreadyOpened) {
-                    // Card was already opened (race condition or stale state)
+                    // Race condition: carta já estava aberta no server mas não no localStorage.
+                    // Sincroniza o estado e abre direto em modo revisita (sem animação).
                     const newOpened = new Set(openedCards);
                     newOpened.add(cardToOpen.id);
                     setOpenedCards(newOpened);
                     localStorage.setItem(`paperbloom-opened-cards-${collection.id}`, JSON.stringify(Array.from(newOpened)));
                     setShowEnvelopeAnimation(false);
+                    const cardForReopen = cardToOpen;
                     setCardToOpen(null);
-                    setShowAlreadyOpenedMessage(true);
+                    setSelectedCard({
+                        ...cardForReopen,
+                        message: cardForReopen.messageText,
+                    });
                     return;
                 }
                 throw new Error('Failed to open card');
@@ -299,7 +306,14 @@ export default function CardCollectionViewer({
     };
 
     const handleCloseCard = () => {
-        // Show confirmation before sealing
+        // Se for revisita (carta já estava aberta antes de abrir agora), fecha direto.
+        // Só na PRIMEIRA abertura mostramos a confirmação + animação de selar — esse
+        // é o ritual da experiência inicial.
+        const isRevisit = selectedCard ? openedCards.has(selectedCard.id) : false;
+        if (isRevisit) {
+            setSelectedCard(null);
+            return;
+        }
         setShowCloseConfirm(true);
     };
 
@@ -614,7 +628,7 @@ export default function CardCollectionViewer({
                             className="text-lg md:text-xl font-light"
                             style={{ color: themeColors.secondaryTextColor }}
                         >
-                            Cada carta só pode ser aberta uma vez. Escolha o momento certo.
+                            Cada carta é selada quando você abre pela primeira vez — depois, fica sua pra rever sempre que quiser ✨
                         </p>
                     </motion.div>
 
@@ -631,32 +645,46 @@ export default function CardCollectionViewer({
                                     onClick={() => handleOpenCard(card)}
                                     className="aspect-[3/4] relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
                                     style={{
-                                        backgroundColor: isOpened ? '#f0f0f0' : 'white',
+                                        backgroundColor: isOpened ? 'transparent' : 'white',
                                     }}
                                 >
                                     {isOpened ? (
-                                        // Opened card - show image or fallback
+                                        // Carta já aberta — mostra foto vibrante (não opaca) com selo discreto
+                                        // de "já vista". Cliente pode revisitar a qualquer momento.
                                         <>
                                             {card.imageUrl ? (
                                                 <Image
                                                     src={card.imageUrl}
                                                     alt={card.title}
                                                     fill
-                                                    className="object-cover opacity-60"
+                                                    className="object-cover"
                                                 />
                                             ) : (
-                                                <div className="absolute inset-0 opacity-60">
+                                                <div className="absolute inset-0">
                                                     <CardFallbackImage variant={card.fallbackVariant} />
                                                 </div>
                                             )}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                                                <LockOpen className="w-8 h-8 text-white mb-2" />
-                                                <span className="text-sm font-medium text-white">
-                                                    {card.title}
-                                                </span>
-                                                <span className="text-xs text-white/80 mt-1">
+                                            {/* Gradiente suave só no rodapé pra dar contraste no título */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+                                            {/* Selo discreto no topo direito */}
+                                            <div
+                                                className="absolute top-2 right-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm"
+                                                aria-label="Carta já aberta"
+                                            >
+                                                <LockOpen className="w-3 h-3" style={{ color: themeColors.accentColor }} />
+                                                <span
+                                                    className="text-[10px] font-semibold uppercase tracking-wide"
+                                                    style={{ color: themeColors.accentColor }}
+                                                >
                                                     Aberta
+                                                </span>
+                                            </div>
+
+                                            {/* Título no rodapé */}
+                                            <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
+                                                <span className="text-sm font-medium text-white drop-shadow-sm">
+                                                    {card.title}
                                                 </span>
                                             </div>
                                         </>
@@ -786,7 +814,7 @@ export default function CardCollectionViewer({
                                     <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 mb-6">
                                         <p className="text-sm text-amber-800 flex items-center gap-2">
                                             <Lock className="w-4 h-4" />
-                                            Esta é a primeira vez que você abre esta carta. Ela ficará marcada como aberta.
+                                            Primeira vez que você abre esta carta — ela será selada. Mas pode revisitar sempre que quiser depois 💛
                                         </p>
                                     </div>
                                 )}
@@ -855,11 +883,11 @@ export default function CardCollectionViewer({
                                     <span className="font-medium">{cardToOpen.title}</span>
                                 </p>
 
-                                <p 
+                                <p
                                     className="text-base mb-8"
                                     style={{ color: themeColors.secondaryTextColor }}
                                 >
-                                    Esta carta só pode ser aberta uma vez. Tem certeza que este é o momento certo?
+                                    A primeira abertura é o momento da magia ✨ Depois você pode revisitar quantas vezes quiser. Tá pronta(o)?
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-3">
@@ -883,83 +911,6 @@ export default function CardCollectionViewer({
                                         Sim, abrir carta
                                     </button>
                                 </div>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* ALREADY OPENED MESSAGE POPUP */}
-            <AnimatePresence>
-                {showAlreadyOpenedMessage && cardToOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                        onClick={() => {
-                            setShowAlreadyOpenedMessage(false);
-                            setCardToOpen(null);
-                        }}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.8, y: 50 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.8, y: 50 }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-md w-full p-8"
-                        >
-                            <div className="text-center">
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                                    className="mb-6"
-                                >
-                                    <div 
-                                        className="w-20 h-20 mx-auto rounded-full flex items-center justify-center"
-                                        style={{ backgroundColor: '#f0f0f0' }}
-                                    >
-                                        <LockOpen 
-                                            className="w-10 h-10"
-                                            style={{ color: '#999' }}
-                                        />
-                                    </div>
-                                </motion.div>
-
-                                <h2 
-                                    className="text-2xl md:text-3xl font-semibold mb-4"
-                                    style={{ color: themeColors.textColor }}
-                                >
-                                    Carta já aberta
-                                </h2>
-
-                                <p 
-                                    className="text-lg mb-2"
-                                    style={{ color: themeColors.secondaryTextColor }}
-                                >
-                                    <span className="font-medium">{cardToOpen.title}</span>
-                                </p>
-
-                                <p 
-                                    className="text-base mb-8"
-                                    style={{ color: themeColors.secondaryTextColor }}
-                                >
-                                    Você já abriu esta carta. Cada carta só pode ser aberta uma única vez para manter a magia do momento especial. ✨
-                                </p>
-
-                                <button
-                                    onClick={() => {
-                                        setShowAlreadyOpenedMessage(false);
-                                        setCardToOpen(null);
-                                    }}
-                                    className="w-full min-h-[56px] py-4 px-6 rounded-full font-medium text-base text-white transition-opacity hover:opacity-90"
-                                    style={{
-                                        backgroundColor: themeColors.accentColor,
-                                    }}
-                                >
-                                    Entendi
-                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -1099,11 +1050,11 @@ export default function CardCollectionViewer({
                                 </h3>
 
                                 <p className="text-sm leading-relaxed" style={{ color: themeColors.secondaryTextColor }}>
-                                    Ao fechar, esta carta será <strong>selada para sempre</strong>. Você não poderá abri-la novamente.
+                                    Ao fechar, esta carta será <strong>selada</strong> — a magia da primeira abertura termina aqui ✨
                                 </p>
 
                                 <p className="text-sm italic" style={{ color: themeColors.secondaryTextColor, opacity: 0.8 }}>
-                                    Certifique-se de que leu tudo e sentiu cada palavra deste momento especial.
+                                    Mas pode ficar tranquila(o): você poderá revisitar essa carta sempre que quiser 💛
                                 </p>
 
                                 <div className="flex flex-col gap-3 pt-2">
