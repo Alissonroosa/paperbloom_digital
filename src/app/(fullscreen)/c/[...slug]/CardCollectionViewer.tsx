@@ -649,42 +649,30 @@ export default function CardCollectionViewer({
                                     }}
                                 >
                                     {isOpened ? (
-                                        // Carta já aberta — mostra foto vibrante (não opaca) com selo discreto
-                                        // de "já vista". Cliente pode revisitar a qualquer momento.
+                                        // Carta já aberta — foto com opacidade reduzida + LockOpen centralizado
+                                        // + título + "Aberta" embaixo. Mesmo padrão visual da preview cinemática,
+                                        // mantém coerência entre as duas experiências.
                                         <>
                                             {card.imageUrl ? (
                                                 <Image
                                                     src={card.imageUrl}
                                                     alt={card.title}
                                                     fill
-                                                    className="object-cover"
+                                                    className="object-cover opacity-70"
                                                 />
                                             ) : (
-                                                <div className="absolute inset-0">
+                                                <div className="absolute inset-0 opacity-70">
                                                     <CardFallbackImage variant={card.fallbackVariant} />
                                                 </div>
                                             )}
-                                            {/* Gradiente suave só no rodapé pra dar contraste no título */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-                                            {/* Selo discreto no topo direito */}
-                                            <div
-                                                className="absolute top-2 right-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm"
-                                                aria-label="Carta já aberta"
-                                            >
-                                                <LockOpen className="w-3 h-3" style={{ color: themeColors.accentColor }} />
-                                                <span
-                                                    className="text-[10px] font-semibold uppercase tracking-wide"
-                                                    style={{ color: themeColors.accentColor }}
-                                                >
-                                                    Aberta
-                                                </span>
-                                            </div>
-
-                                            {/* Título no rodapé */}
-                                            <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
-                                                <span className="text-sm font-medium text-white drop-shadow-sm">
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                                                <LockOpen className="w-8 h-8 text-white mb-2" aria-hidden="true" />
+                                                <span className="text-sm font-medium text-white line-clamp-2">
                                                     {card.title}
+                                                </span>
+                                                <span className="text-xs text-white/80 mt-1">
+                                                    Aberta
                                                 </span>
                                             </div>
                                         </>
