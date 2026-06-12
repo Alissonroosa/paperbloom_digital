@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX, Lock, LockOpen, Heart, X } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 import { FallingEmojis } from "@/components/effects/FallingEmojis";
 import type { CardCollection, Card } from "@/types/card";
@@ -21,9 +20,6 @@ declare global {
 type Stage =
     | "intro-1"
     | "intro-2"
-    | "cards-block-1"
-    | "cards-block-2"
-    | "cards-block-3"
     | "main-view";
 
 interface CardCollectionViewerProps {
@@ -196,34 +192,37 @@ export default function CardCollectionViewer({
         if (stage === "intro-1") {
             timeout = setTimeout(() => setStage("intro-2"), 3000);
         } else if (stage === "intro-2") {
-            timeout = setTimeout(() => setStage("cards-block-1"), 5000); // Aumentado de 3s para 5s
-        } else if (stage === "cards-block-1") {
-            timeout = setTimeout(() => setStage("cards-block-2"), 4000);
-        } else if (stage === "cards-block-2") {
-            timeout = setTimeout(() => setStage("cards-block-3"), 4000);
+            // Intro foi encurtada: pula direto pra main-view sem mostrar
+            // categorias de cartas (cards-block-1/2/3 foram removidos pra
+            // reduzir tempo de espera antes do destinatário ver as cartas).
+            timeout = setTimeout(() => {
+                setStage("main-view");
+                startMusicWithFadeIn();
+            }, 5000);
         }
 
         return () => clearTimeout(timeout);
     }, [stage]);
 
+    const startMusicWithFadeIn = () => {
+        if (!playerRef.current || !playerRef.current.playVideo) return;
+        playerRef.current.setVolume(0);
+        playerRef.current.playVideo();
+
+        let vol = 0;
+        const interval = setInterval(() => {
+            if (vol < 50) {
+                vol += 10;
+                if (playerRef.current) playerRef.current.setVolume(vol);
+            } else {
+                clearInterval(interval);
+            }
+        }, 100);
+    };
+
     const handleViewCards = () => {
         setStage("main-view");
-        
-        // Start music
-        if (playerRef.current && playerRef.current.playVideo) {
-            playerRef.current.setVolume(0);
-            playerRef.current.playVideo();
-            
-            let vol = 0;
-            const interval = setInterval(() => {
-                if (vol < 50) {
-                    vol += 10;
-                    if (playerRef.current) playerRef.current.setVolume(vol);
-                } else {
-                    clearInterval(interval);
-                }
-            }, 100);
-        }
+        startMusicWithFadeIn();
     };
 
     const handleOpenCard = (card: Card) => {
@@ -378,8 +377,8 @@ export default function CardCollectionViewer({
             {/* Background Texture */}
             <div className="absolute inset-0 pointer-events-none opacity-30 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]" />
 
-            {/* Skip to Cards Button (only during intro and card blocks) */}
-            {(stage === "intro-1" || stage === "intro-2" || stage === "cards-block-1" || stage === "cards-block-2" || stage === "cards-block-3") && (
+            {/* Skip to Cards Button (only during intro) */}
+            {(stage === "intro-1" || stage === "intro-2") && (
                 <motion.div
                     initial={{ y: 50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -478,122 +477,25 @@ export default function CardCollectionViewer({
                         className="absolute inset-0 flex items-center justify-center px-4 text-center z-10"
                     >
                         <div className="max-w-3xl">
-                            <motion.p 
+                            <motion.p
                                 className="text-2xl md:text-3xl font-light leading-relaxed"
                                 style={{ color: themeColors.textColor }}
                             >
-                                Cada carta serve para um momento específico.
+                                Cada carta é pra um momento.
                             </motion.p>
-                            <motion.p 
+                            <motion.p
                                 className="text-2xl md:text-3xl font-light leading-relaxed mt-6"
                                 style={{ color: themeColors.secondaryTextColor }}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 1 }}
                             >
-                                Abra quando estiver precisando...
+                                Escolha quando viver cada uma ✨
                             </motion.p>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* CARDS GRID: Mostra os blocos de 4 cartas sequencialmente */}
-            {(stage === "cards-block-1" || stage === "cards-block-2" || stage === "cards-block-3") && (
-                <motion.div
-                    key={stage}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.8 }}
-                    className="w-full max-w-4xl mx-auto px-4 py-8 z-10"
-                >
-                    {/* Block Title */}
-                    <motion.div
-                        initial={{ y: -30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                        className="text-center mb-12"
-                    >
-                        <h2 
-                            className="text-3xl md:text-4xl font-light mb-4"
-                            style={{ color: themeColors.accentColor }}
-                        >
-                            {stage === "cards-block-1" && "Para Momentos Difíceis"}
-                            {stage === "cards-block-2" && "Para Momentos Felizes"}
-                            {stage === "cards-block-3" && "Para Momentos de Reflexão"}
-                        </h2>
-                        <p 
-                            className="text-lg md:text-xl font-light"
-                            style={{ color: themeColors.secondaryTextColor }}
-                        >
-                            {stage === "cards-block-1" && "Quando você precisar de força e apoio"}
-                            {stage === "cards-block-2" && "Quando você quiser celebrar e sorrir"}
-                            {stage === "cards-block-3" && "Quando você precisar de paz e amor"}
-                        </p>
-                    </motion.div>
-
-                    {/* Cards Grid - 4 cards per block */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                        {cards
-                            .slice(
-                                stage === "cards-block-1" ? 0 : stage === "cards-block-2" ? 4 : 8,
-                                stage === "cards-block-1" ? 4 : stage === "cards-block-2" ? 8 : 12
-                            )
-                            .map((card, index) => (
-                                <motion.div
-                                    key={card.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5 + index * 0.15 }}
-                                    className="aspect-[3/4] relative rounded-2xl overflow-hidden shadow-lg bg-white/90 backdrop-blur-sm border-2 border-white/50"
-                                >
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                                        <div 
-                                            className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
-                                            style={{ backgroundColor: themeColors.accentColor + '20' }}
-                                        >
-                                            <span 
-                                                className="text-xl font-semibold"
-                                                style={{ color: themeColors.accentColor }}
-                                            >
-                                                {card.order}
-                                            </span>
-                                        </div>
-                                        <h3 
-                                            className="text-sm md:text-base font-medium leading-tight"
-                                            style={{ color: themeColors.textColor }}
-                                        >
-                                            {card.title}
-                                        </h3>
-                                    </div>
-                                </motion.div>
-                            ))}
-                    </div>
-
-                    {/* Show button only on last block */}
-                    {stage === "cards-block-3" && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1.5 }}
-                            className="text-center"
-                        >
-                            <Button
-                                onClick={handleViewCards}
-                                size="lg"
-                                className="px-12 py-6 text-lg font-medium rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
-                                style={{
-                                    backgroundColor: themeColors.accentColor,
-                                    color: 'white'
-                                }}
-                            >
-                                Ver Cartas
-                            </Button>
-                        </motion.div>
-                    )}
-                </motion.div>
-            )}
 
             {/* MAIN VIEW: Página final com cartas que podem ser abertas */}
             {stage === "main-view" && !selectedCard && (
