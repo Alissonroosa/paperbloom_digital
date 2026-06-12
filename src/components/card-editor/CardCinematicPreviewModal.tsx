@@ -81,11 +81,14 @@ export function CardCinematicPreviewModal({
   onBackToEdit,
   mode = 'editor',
 }: CardCinematicPreviewModalProps) {
+  const isDashboard = mode === 'dashboard';
   const [stage, setStage] = useState<ModalStage>('grid');
   const [targetCard, setTargetCard] = useState<CardType | null>(null);
   const [hasOpened, setHasOpened] = useState(false);
-  const [showCheckoutBar, setShowCheckoutBar] = useState(false);
+  // Checkout bar é sempre visível no modo editor (antes só aparecia após selar
+  // a 1ª carta — prendia cliente que não queria abrir nenhuma carta no preview).
   const [openedCardIds, setOpenedCardIds] = useState<Set<string>>(new Set());
+  const showCheckoutBar = !isDashboard;
 
   const sparklesRef = useRef(
     Array.from({ length: 10 }, () => ({
@@ -97,7 +100,6 @@ export function CardCinematicPreviewModal({
 
   const recipientName = collection.recipientName || 'a pessoa';
   const sortedCards = [...cards].sort((a, b) => a.order - b.order);
-  const isDashboard = mode === 'dashboard';
 
   // YouTube player (apenas no modo dashboard — espelha a experiência do produto real)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -229,9 +231,6 @@ export function CardCinematicPreviewModal({
         });
       }
       onCardOpened?.();
-      if (!isDashboard) {
-        setTimeout(() => setShowCheckoutBar(true), 400);
-      }
     }, 2800);
   };
 
@@ -345,10 +344,10 @@ export function CardCinematicPreviewModal({
                 👇
               </motion.div>
               <p className="text-base font-semibold" style={{ color: accentDark }}>
-                Toque na Carta 1 para experimentar
+                Quer testar? Toque na Carta 1
               </p>
               <p className="text-xs mt-1" style={{ color: textSecondary }}>
-                Sinta a emoção que {recipientName} vai sentir
+                Sinta a emoção que {recipientName} vai sentir — ou compre direto na barra abaixo 💌
               </p>
             </motion.div>
           )}
@@ -856,10 +855,16 @@ export function CardCinematicPreviewModal({
             className="fixed bottom-0 inset-x-0 z-[110] bg-white/98 backdrop-blur-xl border-t-2 shadow-2xl"
             style={{ borderColor: accent }}
           >
-            <div className="max-w-lg mx-auto px-4 pt-4 pb-6 space-y-4">
+            <div className="max-w-lg mx-auto px-4 pt-4 pb-5 space-y-3">
+              {/* Copy varia se cliente já abriu a 1ª carta (testou a experiência)
+                  ou está só vendo o grid sem ter aberto nenhuma. */}
               <div className="text-center">
-                <p className="text-base font-bold" style={{ color: textMain }}>
-                  ✨ Gostou? Libere as 11 cartas restantes para <span style={{ color: accentDark }}>{recipientName}</span>!
+                <p className="text-sm md:text-base font-bold" style={{ color: textMain }}>
+                  {hasOpened ? (
+                    <>✨ Gostou? Libere as 12 cartas para <span style={{ color: accentDark }}>{recipientName}</span>!</>
+                  ) : (
+                    <>Quando quiser, libere as 12 cartas para <span style={{ color: accentDark }}>{recipientName}</span> 💌</>
+                  )}
                 </p>
               </div>
 
@@ -867,37 +872,12 @@ export function CardCinematicPreviewModal({
                 <PriceBadge productType="card-collection" variant="compact" contextLine="Acesso para sempre" />
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="space-y-1">
-                  <div className="text-xl">📩</div>
-                  <p className="text-xs font-medium" style={{ color: textMain }}>Você recebe o link</p>
-                  <p className="text-[11px]" style={{ color: textSecondary }}>no seu email, na hora</p>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-xl">🎁</div>
-                  <p className="text-xs font-medium" style={{ color: textMain }}>Você decide quando enviar</p>
-                  <p className="text-[11px]" style={{ color: textSecondary }}>{recipientName} não recebe nada agora</p>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-xl">💌</div>
-                  <p className="text-xs font-medium" style={{ color: textMain }}>12 cartas desbloqueadas</p>
-                  <p className="text-[11px]" style={{ color: textSecondary }}>acesso para sempre</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-3 text-xs" style={{ color: textSecondary }}>
-                <span>⭐⭐⭐⭐⭐</span>
-                <span>+800 presentes entregues</span>
-                <span>·</span>
-                <span>🔒 Pagamento seguro</span>
-              </div>
-
               <button
                 onClick={onClose}
                 className="w-full py-4 px-6 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.99] transition-all text-sm"
                 style={{ backgroundColor: accentDark, color: 'white' }}
               >
-                💌 Liberar as 11 cartas para {recipientName.length > 20 ? recipientName.slice(0, 20) + '…' : recipientName}
+                💌 Comprar minhas 12 cartas
               </button>
 
               <p className="text-center text-[11px]" style={{ color: textSecondary }}>
@@ -908,7 +888,9 @@ export function CardCinematicPreviewModal({
         )}
       </AnimatePresence>
 
-      <footer className={`relative z-10 border-t border-gray-200/50 ${showCheckoutBar ? 'mb-72' : 'mt-12'}`}>
+      {/* Footer com espaço inferior pra não ser coberto pela checkout bar sticky
+          (que tem altura ~220px no editor). mt-12 quando não há bar (dashboard). */}
+      <footer className={`relative z-10 border-t border-gray-200/50 ${showCheckoutBar ? 'mb-56' : 'mt-12'}`}>
         <div className="max-w-7xl mx-auto px-4 py-6 text-center">
           <p className="text-sm" style={{ color: textSecondary }}>Feito com ❤️ por Paper Bloom Digital</p>
         </div>

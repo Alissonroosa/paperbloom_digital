@@ -23,6 +23,9 @@ import {
   Unlock,
   Star,
   X,
+  Smartphone,
+  Zap,
+  Pen,
 } from "lucide-react";
 import { usePrices } from "@/hooks/usePrices";
 import { captureUtmsFromUrl } from "@/lib/utm";
@@ -718,26 +721,29 @@ export default function DozeCartasLP() {
                 <span className="text-primary italic">quem você ama</span>
               </h1>
 
-              {/* Sub-headline curto que explica O QUE É em 1 frase. */}
+              {/* Sub-headline curto que explica O QUE É em 1 frase.
+                  Trocada a frase "só pode ser aberta uma vez" — disparava medo de produto
+                  efêmero. Agora foca na permanência ("pra sempre"). */}
               <p className="text-base md:text-lg text-muted-foreground mb-6 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 12 cartas digitais com fotos, música e mensagens suas.
-                Cada uma só pode ser aberta uma vez. Pra sempre.
+                Pra ela revisitar sempre que precisar.
               </p>
 
-              {/* 3 bullets de feature — comunicam diferenciais em segundos.
-                  Cada um com ícone temático. Centralizados em mobile, à esquerda no desktop. */}
+              {/* 3 bullets de feature — narrativa do processo de criação em ordem:
+                  rapidez (objeção "consigo fazer?") → IA + você (objeção "vocês fazem?") →
+                  personalização emocional (gancho pro CTA). */}
               <ul className="mb-7 space-y-2 max-w-md mx-auto lg:mx-0">
                 <li className="flex items-center gap-2 text-sm md:text-base text-text-main justify-center lg:justify-start">
-                  <Lock className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
-                  <span>Cada carta é aberta <strong>uma única vez</strong>, no momento certo</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm md:text-base text-text-main justify-center lg:justify-start">
-                  <Music className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
-                  <span>Do jeitinho de vocês: <strong>com suas fotos e a música favorita</strong></span>
+                  <Smartphone className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+                  <span><strong>Você cria sozinho(a)</strong> em poucos minutos, no celular</span>
                 </li>
                 <li className="flex items-center gap-2 text-sm md:text-base text-text-main justify-center lg:justify-start">
                   <Sparkles className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
-                  <span><strong>Nossa IA cria</strong> as cartas, você ajusta se precisar — fica pronto em <strong>3 minutos</strong></span>
+                  <span>Nossa <strong>IA sugere as mensagens</strong>, você edita do jeito que quiser</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm md:text-base text-text-main justify-center lg:justify-start">
+                  <Music className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+                  <span>Personalize com <strong>suas fotos</strong> e <strong>a música favorita</strong> de vocês</span>
                 </li>
               </ul>
 
@@ -831,6 +837,115 @@ export default function DozeCartasLP() {
         </div>
       </section>
 
+      {/* Antes que você pergunte — 4 cards que matam as objeções principais
+          coletadas dos atendimentos via WhatsApp (jun/2026):
+          1. "Abre só 1 vez?" (efêmero) → magia abre 1 vez, lembrança fica
+          2. "Consigo fazer sozinho?" (técnico) → 15min, celular
+          3. "Vem tudo automático?" (vou pagar e esperar) → entrega na hora
+          4. "Vocês que escrevem?" (vou pagar e vocês fazem) → você cria, IA sugere
+          Posicionado logo após o hero pra interceptar a dúvida ANTES dela travar. */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="container px-4 md:px-8 max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-script text-2xl text-primary mb-2 block"
+            >
+              Antes que você pergunte
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-2xl md:text-4xl font-serif font-bold text-text-main"
+            >
+              As dúvidas mais comuns, já respondidas
+            </motion.h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+            {/* Card 1: Abertura única (efemeridade) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-br from-primary/5 to-white border-2 border-primary/10 rounded-2xl p-5 md:p-6"
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                <Lock className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-base font-semibold text-text-main mb-2 leading-snug">
+                Cada carta abre só uma vez?
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                A <strong>magia da primeira abertura</strong> acontece uma vez só — é o ritual. Mas depois, a carta fica disponível pra ela <strong>revisitar quantas vezes quiser</strong> 💛
+              </p>
+            </motion.div>
+
+            {/* Card 2: Eu consigo fazer sozinha */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-gradient-to-br from-primary/5 to-white border-2 border-primary/10 rounded-2xl p-5 md:p-6"
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                <Smartphone className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-base font-semibold text-text-main mb-2 leading-snug">
+                Consigo fazer sozinha(o)?
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Sim! É <strong>tudo no celular</strong>, em 5 passos. Demora <strong>15 min</strong> e você pode salvar e voltar depois. Nada técnico — se você usa Instagram, dá conta 🌸
+              </p>
+            </motion.div>
+
+            {/* Card 3: Vem tudo automático? */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="bg-gradient-to-br from-primary/5 to-white border-2 border-primary/10 rounded-2xl p-5 md:p-6"
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                <Zap className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-base font-semibold text-text-main mb-2 leading-snug">
+                Vem tudo automático depois?
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Sim! Após o pagamento, <strong>cai na hora</strong> no seu email: link das cartas + QR Code + painel pra acompanhar. <strong>Sem espera, sem frete</strong> ✨
+              </p>
+            </motion.div>
+
+            {/* Card 4: Vocês que fazem a carta? */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="bg-gradient-to-br from-primary/5 to-white border-2 border-primary/10 rounded-2xl p-5 md:p-6"
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                <Pen className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-base font-semibold text-text-main mb-2 leading-snug">
+                Vocês que escrevem as cartas?
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                <strong>Você escreve</strong> — afinal, é seu sentimento. Mas nossa <strong>IA já sugere</strong> uma mensagem pra cada uma, baseada no nome dela. Você ajusta o que quiser 💌
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* How it Works Section — carrossel gameficado de 3 passos.
           Movida pra logo após o hero (2ª section) pra entregar o "como funciona"
           o quanto antes pra tráfego frio — antes de decorar com temas/features.
@@ -855,7 +970,7 @@ export default function DozeCartasLP() {
               transition={{ delay: 0.1 }}
               className="text-3xl md:text-5xl font-serif font-bold text-text-main mb-4"
             >
-              Como Funciona
+              Como Criar
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -1503,8 +1618,16 @@ export default function DozeCartasLP() {
               answer="Não tem mensalidade — você paga uma única vez R$ 29,90 e as cartas ficam ativas pra sempre. Sem cobrança recorrente, sem fidelidade, sem letra miúda. Se quiser editar ou resetar cartas no futuro, dá pra fazer direto pelo seu painel, sem custo."
             />
             <FAQItem
-              question="O que significa 'abertura única'?"
-              answer="Cada uma das 12 cartas só pode ser aberta uma única vez. Quando a pessoa clica para abrir, aparece uma confirmação perguntando se ela tem certeza. Depois de aberta, a carta fica marcada como 'aberta' e o conteúdo fica disponível para sempre, mas o momento mágico da primeira abertura é único."
+              question="O que significa 'abertura única'? Ela só vê uma vez?"
+              answer="Não! A 'abertura única' é só o momento mágico da primeira vez — quando ela clica e a carta abre com animação, foto, música e mensagem. Depois disso, a carta fica disponível pra ela revisitar quantas vezes quiser, sempre que sentir saudade, precisar de força, ou só quiser reler. A magia abre 1 vez, a lembrança fica pra sempre 💛"
+            />
+            <FAQItem
+              question="Vocês que escrevem as cartas ou eu?"
+              answer="Você que escreve — afinal, é o seu sentimento que torna o presente especial. Mas a gente facilita demais: nossa IA já sugere uma mensagem pra cada uma das 12 cartas, baseada no nome dela/dele e no tema da carta (carta pra dia difícil, pra comemorar, pra saudade...). Você lê, ajusta o que quiser (uma palavra, uma frase, ou reescreve do zero), ou deixa como tá. A maioria dos clientes muda só 2 ou 3 cartas."
+            />
+            <FAQItem
+              question="Vem tudo automático depois do pagamento?"
+              answer="Sim, 100% automático! Assim que o pagamento é confirmado (PIX cai em segundos), você recebe no email cadastrado: link das suas 12 cartas + QR Code pra imprimir + acesso ao seu painel pra acompanhar quando cada carta é aberta. Você pode enviar pra pessoa na mesma hora — sem espera, sem frete, sem cobrança recorrente."
             />
             <FAQItem
               question="Posso personalizar os temas das cartas?"
@@ -1523,8 +1646,8 @@ export default function DozeCartasLP() {
               answer="Após o pagamento, você acessa seu painel exclusivo com link, QR Code e sugestões de entrega. Pode enviar por WhatsApp com uma mensagem pronta, imprimir o QR Code para dar junto com um presente físico, ou simplesmente copiar o link. Pelo painel você também acompanha em tempo real quais cartas foram abertas."
             />
             <FAQItem
-              question="O link expira?"
-              answer="Não! O link e as cartas ficam disponíveis para sempre. A pessoa pode acessar quantas vezes quiser para reler as cartas já abertas. Você também pode acessar seu painel a qualquer momento para acompanhar, editar e resetar cartas."
+              question="O link expira? Ela pode reler as cartas depois?"
+              answer="O link nunca expira — fica ativo pra sempre. E sim, ela pode reler todas as cartas já abertas quantas vezes quiser: é só entrar no link/QR e clicar nas cartas. Você também pode acessar seu painel a qualquer momento pra acompanhar quando ela abre cada uma, editar (cartas que ainda não foram abertas) ou resetar pra ela poder viver a magia da primeira abertura de novo."
             />
           </motion.div>
 
